@@ -54,8 +54,8 @@ class Server {
 /**
 * If this module is not main runs the server.
 */
-/* if (!module.parent) {
+if (!module.parent) {
     return new Server().run();
 }
 
-module.exports = Server; */
+module.exports = Server;
