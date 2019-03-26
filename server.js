@@ -6,6 +6,40 @@ const passport = require('passport');
 const cors = require('cors');
 //const SocketIO = require('./modules/io/socket');
 
+// get the client
+const mysql = require('mysql2');
+
+// create the connection to database
+const connection = mysql.createConnection({
+    host: 'https://databases-auth.000webhost.com',
+    user: 'id9064819_root',
+    password: 'abc12345',
+    database: 'id9064819_da_kthdv'
+  });
+  var connection;
+
+  function handleDisconnect() {
+      console.log('1. connecting to db:');
+      connection = mysql.createConnection(db_config); // Recreate the connection, since
+                                                      // the old one cannot be reused.
+  
+      connection.connect(function(err) {              	// The server is either down
+          if (err) {                                     // or restarting (takes a while sometimes).
+              console.log('2. error when connecting to db:', err);
+              setTimeout(handleDisconnect, 1000); // We introduce a delay before attempting to reconnect,
+          }                                     	// to avoid a hot loop, and to allow our node script to
+      });                                     	// process asynchronous requests in the meantime.
+                                                  // If you're also serving http, display a 503 error.
+      connection.on('error', function(err) {
+          console.log('3. db error', err);
+          if (err.code === 'PROTOCOL_CONNECTION_LOST') { 	// Connection to the MySQL server is usually
+              handleDisconnect();                      	// lost due to either server restart, or a
+          } else {                                      	// connnection idle timeout (the wait_timeout
+              throw err;                                  // server variable configures this)
+          }
+      });
+  }
+  
 require('dotenv').config();
 
 /**
@@ -36,7 +70,7 @@ class Server {
     */
     run() {
         const { PORT } = process.env;
-
+        handleDisconnect();
         this.express.use(
             cors({
                 origin: '*',
