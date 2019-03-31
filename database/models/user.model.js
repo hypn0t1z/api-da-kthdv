@@ -22,6 +22,12 @@ const UserModel = sequelize.define(
             defaultValue: 'Inactive'
         },
         avatar: Sequelize.STRING,
+        phone: Sequelize.STRING,
+        role_id: {
+            type: Sequelize.INTEGER,
+            defaultValue: 0
+        },
+
         //Timestamp
         createdAt: Sequelize.DATE,
         updatedAt: Sequelize.DATE,

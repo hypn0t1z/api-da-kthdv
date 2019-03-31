@@ -21,6 +21,7 @@ class FieldsMiddleware extends Middleware {
     * @return {object | void} If all fields of the data was passed returned void or object with error messages.
     */
     static checkRequired(data, items = [], messages = []) {
+        console.log(data);
         let errors = {};
         for(let i in items){
             const item = items[i];

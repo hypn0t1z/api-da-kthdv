@@ -16,17 +16,29 @@ class AuthMiddleware extends Middleware {
     * Validate register request
     */
     static async login(req, res, next) {
-        const { email, password } = req.body;
-        const { lang } = req.headers;
+        const { value, password } = req.body;
+        let emailRegex = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+        let phoneRegex = /^(\+91-|\+91|0)?\d{10}$/;
+        let type = '';
+        if(value.match(emailRegex))
+        {
+            type = 'email'
+        }
+        else{
+            if(value.match(phoneRegex))
+                type = 'phone'
+            else
+                return res.status(400).send({ 'message' : 'Email hoặc số điện thoại không đúng định dạng' });
+        }
         const errors = {};
         const required = FieldsMiddleware.checkRequired(
-            { email, password }, 
+            { [type]: value, password } , 
             [ 
-                'email',
+                type,
                 'password'
             ],
             [ 
-                'Email không được bỏ trống', 
+                'Email hoặc số điện thoại không được bỏ trống', 
                 'Mật khẩu không được bỏ trống',
             ]
         );
@@ -35,25 +47,21 @@ class AuthMiddleware extends Middleware {
             return this.sendRequestError(required, res);
         }
 
-        if (!validator.isEmail(email)) {
-            errors.email = this.buildError(errors, 'email', 'Email không đúng định dạng');
+        const user = await UserModel.findOne({ where: { [type]: value } });
+        if (!user) {
+            errors.value = this.buildError(errors, type, 'Email hoặc số điện thoại không đúng');
         }else{
-            const user = await UserModel.findOne({ where: { email } });
-            if (!user) {
-                errors.email = this.buildError(errors, 'email', 'Email không tồn tại');
-            }else{
-                if(user.status == 'Banned'){
-                    return res.status(403).send({ 'message' : 'Tài khoản này đã bị cấm' });
-                }
-
-                if(user.status == 'Inactive'){
-                    return res.status(403).send({ 'message' : 'Tài khoản này chưa được xác nhận' })
-                }
+            if(user.status == 'Banned'){
+                return res.status(403).send({ 'message' : 'Tài khoản này đã bị cấm' });
             }
 
-            if (user && !(await bcrypt.compare(password, user.password))) {
-                errors.password = this.buildError(errors, 'password', 'Mật khẩu không đúng!');
+            if(user.status == 'Inactive'){
+                return res.status(403).send({ 'message' : 'Tài khoản này chưa được xác nhận' })
             }
+        }
+
+        if (user && !(await bcrypt.compare(password, user.password))) {
+            errors.password = this.buildError(errors, 'password', 'Mật khẩu không đúng!');
         }
 
         if (this.isError(errors)) {
@@ -67,21 +75,25 @@ class AuthMiddleware extends Middleware {
     * Validate register requestn 
     */
     static async register(req, res, next) {
-        const { lang } = req.headers;
-        const { email, password = '', username, 'password_c': confirmPassword } = req.body;
+        const { email, phone, password = '', username, address, 'password_c': confirmPassword } = req.body;
         const errors = {};
+        let phoneRegex = /^(\+91-|\+91|0)?\d{10}$/;
         const required = FieldsMiddleware.checkRequired(
-            { email, password, username, 'password_c': confirmPassword },
+            { email, phone, password, username, address, 'password_c': confirmPassword },
             [ 
                 'email',
+                'phone',
                 'password',
                 'username',
+                'address',
                 'password_c',
             ],
             [ 
                 'Email không được bỏ trống', 
+                'Số điện thoại không được bỏ trống', 
                 'Mật khẩu không được bỏ trống',
-                'Tên người dùng không được bỏ trống',
+                'Họ tên người dùng không được bỏ trống',
+                'Địa chỉ không được bỏ trống', 
                 'Xác nhận mật khẩu không được bỏ trống',
             ]
         );
@@ -92,12 +104,20 @@ class AuthMiddleware extends Middleware {
 
         if (!validator.isEmail(email)) {
             errors.email = this.buildError(errors, 'email', 'Email không đúng định dạng');
-        }else{
+        }
+        if(!phone.match(phoneRegex)){
+            errors.phone = this.buildError(errors, 'phone', 'Số điện thoại không đúng định dạng');
+        }
+        else{
             const userByEmail = await UserModel.findOne({ where: { email } });
+            const userByPhone = await UserModel.findOne({ where: { phone } });
             const userByUsername = await UserModel.findOne({ where: { username } });
 
             if (userByEmail) {
                 errors.email = this.buildError(errors, 'email', 'Email này đã được sử dụng');
+            }
+            if (userByPhone) {
+                errors.phone = this.buildError(errors, 'phone', 'Số điện thoại này đã được sử dụng');
             }
 
             if (userByUsername) {
@@ -133,7 +153,6 @@ class AuthMiddleware extends Middleware {
     * Validate forgot password request
     */
     static async forgotPassword(req, res, next){
-        const { lang } = req.headers;
         const { email, url, password, c_password, token } = req.body;
         const errors = {};
         if(!token){

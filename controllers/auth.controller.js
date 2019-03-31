@@ -11,9 +11,10 @@ class AuthController {
     */
     static async login(req, res){
         // Init
-        const { lang } = req.headers;
-        const { email, password } = req.body;
-        const user = await UserModel.findOne({ where: { email } });
+        const { value, password } = req.body;
+        let emailRegex = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+        let type = value.match(emailRegex) ? 'email' : 'phone';
+        const user = await UserModel.findOne({ where: { [type]: value } });
         const token = JWTService.generateTokenByUser(user);
 
         // Process
@@ -31,8 +32,7 @@ class AuthController {
     */
     static async register(req, res){
         // Init
-        const { email, password, username, url } = req.body;
-        const { lang } = req.headers;
+        const { email, password, username, url, phone, address } = req.body;
         const { USER_PASSWORD_SALT_ROUNDS: saltRounds = 10 } = process.env;
         const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_';
         const passwordHash = await bcrypt.hash(password, +saltRounds);
@@ -50,6 +50,9 @@ class AuthController {
             password: passwordHash,
             username,
             status: 'Inactive',
+            account_type: 'USER',
+            phone,
+            address,
             mail_token: mail_token,
         });
 
@@ -80,7 +83,6 @@ class AuthController {
     */
     static async confirmRegister(req, res){
         // Init
-        const { lang } = req.headers;
         const { mail_token } = req.body;
         const user = await UserModel.findOne({ where: { mail_token: mail_token } });
 
@@ -110,7 +112,6 @@ class AuthController {
     */
     static async forgotPassword(req, res){
         // Init
-        const { lang } = req.headers;
         const { email, url, password, token } = req.body;
         const { USER_PASSWORD_SALT_ROUNDS: saltRounds = 10 } = process.env;
 
