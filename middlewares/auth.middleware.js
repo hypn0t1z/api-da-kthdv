@@ -111,17 +111,12 @@ class AuthMiddleware extends Middleware {
         else{
             const userByEmail = await UserModel.findOne({ where: { email } });
             const userByPhone = await UserModel.findOne({ where: { phone } });
-            const userByUsername = await UserModel.findOne({ where: { username } });
 
             if (userByEmail) {
                 errors.email = this.buildError(errors, 'email', 'Email này đã được sử dụng');
             }
             if (userByPhone) {
                 errors.phone = this.buildError(errors, 'phone', 'Số điện thoại này đã được sử dụng');
-            }
-
-            if (userByUsername) {
-                errors.username = this.buildError(errors, 'username', 'Tên người dùng đã được sử dụng');
             }
         }
         if(validator.contains(password, " ")){
