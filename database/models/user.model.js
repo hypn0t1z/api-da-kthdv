@@ -23,6 +23,12 @@ const UserModel = sequelize.define(
         },
         avatar: Sequelize.STRING,
         phone: Sequelize.STRING,
+        province: Sequelize.INTEGER,
+        ward: Sequelize.INTEGER,
+        district: Sequelize.INTEGER,
+        address_more: Sequelize.STRING,
+        birthday: Sequelize.STRING,
+
         role_id: {
             type: Sequelize.INTEGER,
             defaultValue: 0

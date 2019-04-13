@@ -1,20 +1,20 @@
 const { sequelize, Sequelize } = require('..');
-const UserModel = require('./user.model');
 
 /**
-* ActiveTokenModel describes 'active_tokens' table
+* ImgServiceModel describes 'images_service' table
 */
-const ActiveTokenModel = sequelize.define(
-    'account_model',
+const ImgServiceModel = sequelize.define(
+    'images_service',
     {
         id: {
             type: Sequelize.INTEGER,
             autoIncrement: true,
             primaryKey: true,
         },
-        user_id: Sequelize.INTEGER,
-        token: Sequelize.TEXT,
-        lastseen: Sequelize.DATE,
+        provider_id: Sequelize.INTEGER,
+        path: Sequelize.STRING,
+        description: Sequelize.STRING,
+
         //Timestamp
         createdAt: Sequelize.DATE,
         updatedAt: Sequelize.DATE,
@@ -23,8 +23,8 @@ const ActiveTokenModel = sequelize.define(
         createdAt: 'createdAt',
         updatedAt: 'updatedAt',
         timestamps: true,
-        tableName: 'active_tokens',
+        tableName: 'images_service',
     },
 );
 
-module.exports = ActiveTokenModel;
+module.exports = ImgServiceModel;

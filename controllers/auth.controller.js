@@ -27,12 +27,21 @@ class AuthController {
     }
 
     /**
+     * Check email or phone number before create register form
+     * @param {*} req 
+     * @param {*} res 
+     */
+    static async beforeRegister(req, res) {
+        res.send({ 'message': 'Email và số điện thoại hợp lệ'})
+    }
+
+    /**
     * Register user
     * @return {obj} message
     */
     static async register(req, res){
         // Init
-        const { email, password, username, url, phone, address } = req.body;
+        const { email, password, username, url, phone } = req.body;
         const { USER_PASSWORD_SALT_ROUNDS: saltRounds = 10 } = process.env;
         const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_';
         const passwordHash = await bcrypt.hash(password, +saltRounds);
@@ -52,7 +61,6 @@ class AuthController {
             status: 'Inactive',
             account_type: 'USER',
             phone,
-            address,
             mail_token: mail_token,
         });
 
@@ -74,6 +82,49 @@ class AuthController {
         await ActiveTokenModel.create({ token, user_id: user.id });
 
         res.send({ 'message' : 'Đăng kí thành công, vui lòng kiểm tra email để xác nhận' });
+    }
+
+    /* Get profile
+    * @param {*} req 
+    * @param {*} res 
+    */
+    static async getProfile(req, res) {
+        const { id } = req.params;
+        let user = await UserModel.findOne({ where: { id, status: 'Active' }});
+        let data = {};
+        if(user) {
+            data = {
+                username: user.username,
+                province: user.province ? user.province : '',
+                district: user.district ? user.district : '',
+                ward: user.ward ? user.ward : '',
+                address_more: user.address_more ? user.address_more : '',
+                birthday: user.birthday ? user.birthday : ''
+            }
+            res.send({ 'message': 'Lấy thông tin chỉnh sửa thông tin thành công ', data });
+        }
+        else{
+            res.status(404).send({ 'message' : 'Tài khoản này không tồn tại hoặc chưa được xác nhận' });
+        }
+    }
+
+    /**
+     * Create profile
+     * @param {*} req 
+     * @param {*} res 
+     */
+    static async createProfile(req, res) {
+        const { id } = req.params;
+        const { province, district, ward, address_more, birthday } = req.body;
+        let user = await UserModel.findOne({ where: { id, status: 'Active' }});
+        await user.update({
+            province: province ? province : user.province,
+            district:district ? district : user.province,
+            ward: ward ? ward : user.ward,
+            address_more: address_more ? address_more : user.address_more ,
+            birthday: birthday ? birthday : user.birthday
+        })
+        res.send({ 'message': 'Cập nhật thông tin thành công'});
     }
 
     /**
