@@ -72,7 +72,56 @@ class AuthMiddleware extends Middleware {
     }
 
     /**
-    * Validate register requestn 
+     * Check email or phone number before create register form
+     * @param {*} req 
+     * @param {*} res 
+     * @param {*} next 
+     */
+    static async beforeRegister(req, res, next) {
+        const { email, phone } = req.body;
+        const errors = {};
+        let phoneRegex = /^(\+91-|\+91|0)?\d{10}$/;
+        const required = FieldsMiddleware.checkRequired(
+            { email, phone },
+            [ 
+                'email',
+                'phone',
+            ],
+            [ 
+                'Email không được bỏ trống', 
+                'Số điện thoại không được bỏ trống', 
+            ]
+        );
+
+        if (required) {
+            return this.sendRequestError(required, res);
+        }
+        if (!validator.isEmail(email)) {
+            errors.email = this.buildError(errors, 'email', 'Email không đúng định dạng');
+        }
+        if(!phone.match(phoneRegex)){
+            errors.phone = this.buildError(errors, 'phone', 'Số điện thoại không đúng định dạng');
+        }
+        else{
+            const userByEmail = await UserModel.findOne({ where: { email } });
+            const userByPhone = await UserModel.findOne({ where: { phone } });
+
+            if (userByEmail) {
+                errors.email = this.buildError(errors, 'email', 'Email này đã được sử dụng');
+            }
+            if (userByPhone) {
+                errors.phone = this.buildError(errors, 'phone', 'Số điện thoại này đã được sử dụng');
+            }
+        }
+
+        if (this.isError(errors)) {
+            return this.sendRequestError(errors, res);
+        }
+        next();
+    }
+
+    /**
+    * Validate register request
     */
     static async register(req, res, next) {
         const { email, phone, password = '', username, address, 'password_c': confirmPassword } = req.body;
@@ -85,15 +134,13 @@ class AuthMiddleware extends Middleware {
                 'phone',
                 'password',
                 'username',
-                'address',
                 'password_c',
             ],
             [ 
                 'Email không được bỏ trống', 
                 'Số điện thoại không được bỏ trống', 
                 'Mật khẩu không được bỏ trống',
-                'Họ tên người dùng không được bỏ trống',
-                'Địa chỉ không được bỏ trống', 
+                'Họ tên người dùng không được bỏ trống', 
                 'Xác nhận mật khẩu không được bỏ trống',
             ]
         );
@@ -143,6 +190,41 @@ class AuthMiddleware extends Middleware {
         }
         next();
     }
+
+    /**
+    * Validate profile request
+    */
+    static async createProfile(req, res, next) {
+    const { province, district, ward, address_more, birthday } = req.body;
+    const { id } = req.params;
+    const required = FieldsMiddleware.checkRequired(
+        { province, district, ward, address_more, birthday },
+        [ 
+            'province',
+            'district',
+            'ward',
+            'address_more',
+            'birthday',
+        ],
+        [ 
+            'Tỉnh/Thành phố không được bỏ trống',
+            'Quận/Huyện không được bỏ trống',
+            'Phường/Xã không được bỏ trống',
+            'Bạn không thể bỏ trống trường này',
+            'Ngày sinh không được bỏ trống', 
+        ]
+    );
+
+    if (required) {
+        return this.sendRequestError(required, res);
+    }
+
+    let user = await UserModel.findOne({ where: { id, status: 'Active' }});
+    if(!user) {
+        return res.status(404).send({ 'message' : 'Tài khoản này không tồn tại hoặc chưa được xác nhận' });
+    }
+    next();
+}
 
     /**
     * Validate forgot password request
