@@ -45,7 +45,7 @@ class MailService {
             mail_template = `
                 <h1>Hello `+ template.data.phone +`! </h1>
                 <p>You have been registered success from our website.</p>
-                <p>Please click <a style="color: red;" href="http://`+ template.data.url +`/confirm-register?token=`+ template.data.mail_token +`">HERE</a> to confirm your registration!</p>
+                <p>Please click <a style="color: red;" href="http://`+ template.data.url +`/api/auth/confirm-register/`+ template.data.mail_token +`">HERE</a> to confirm your registration!</p>
             `
             console.log(mail_template)
         }
@@ -53,7 +53,7 @@ class MailService {
             mail_template = `
                 <h1>Hello `+ template.data.username +`! </h1>
                 <p>You have requested new password from our website.</p>
-                <p>Please click <a style="color: red;" href="http://`+ template.data.url +`/forgot-pass?token=`+ template.data.forgot_token +`">HERE</a> to confirm!</p>
+                <p>Please click <a style="color: red;" href="http://`+ template.data.url +`/forgot-pass/`+ template.data.forgot_token +`">HERE</a> to confirm!</p>
             `
         }
         return mail_template;
