@@ -32,13 +32,13 @@ class AuthMiddleware extends Middleware {
         }
         const errors = {};
         const required = FieldsMiddleware.checkRequired(
-            { [type]: value, password } , 
-            [ 
+            { [type]: value, password } ,
+            [
                 type,
                 'password'
             ],
-            [ 
-                'Email hoặc số điện thoại không được bỏ trống', 
+            [
+                'Email hoặc số điện thoại không được bỏ trống',
                 'Mật khẩu không được bỏ trống',
             ]
         );
@@ -73,9 +73,9 @@ class AuthMiddleware extends Middleware {
 
     /**
      * Check email or phone number before create register form
-     * @param {*} req 
-     * @param {*} res 
-     * @param {*} next 
+     * @param {*} req
+     * @param {*} res
+     * @param {*} next
      */
     static async beforeRegister(req, res, next) {
         const { email, phone } = req.body;
@@ -83,13 +83,13 @@ class AuthMiddleware extends Middleware {
         let phoneRegex = /^(\+91-|\+91|0)?\d{10}$/;
         const required = FieldsMiddleware.checkRequired(
             { email, phone },
-            [ 
+            [
                 'email',
                 'phone',
             ],
-            [ 
-                'Email không được bỏ trống', 
-                'Số điện thoại không được bỏ trống', 
+            [
+                'Email không được bỏ trống',
+                'Số điện thoại không được bỏ trống',
             ]
         );
 
@@ -129,18 +129,18 @@ class AuthMiddleware extends Middleware {
         let phoneRegex = /^(\+91-|\+91|0)?\d{10}$/;
         const required = FieldsMiddleware.checkRequired(
             { email, phone, password, username, address, 'password_c': confirmPassword },
-            [ 
+            [
                 'email',
                 'phone',
                 'password',
                 'username',
                 'password_c',
             ],
-            [ 
-                'Email không được bỏ trống', 
-                'Số điện thoại không được bỏ trống', 
+            [
+                'Email không được bỏ trống',
+                'Số điện thoại không được bỏ trống',
                 'Mật khẩu không được bỏ trống',
-                'Họ tên người dùng không được bỏ trống', 
+                'Họ tên người dùng không được bỏ trống',
                 'Xác nhận mật khẩu không được bỏ trống',
             ]
         );
@@ -199,19 +199,19 @@ class AuthMiddleware extends Middleware {
     const { id } = req.params;
     const required = FieldsMiddleware.checkRequired(
         { province, district, ward, address_more, birthday },
-        [ 
+        [
             'province',
             'district',
             'ward',
             'address_more',
             'birthday',
         ],
-        [ 
+        [
             'Tỉnh/Thành phố không được bỏ trống',
             'Quận/Huyện không được bỏ trống',
             'Phường/Xã không được bỏ trống',
             'Bạn không thể bỏ trống trường này',
-            'Ngày sinh không được bỏ trống', 
+            'Ngày sinh không được bỏ trống',
         ]
     );
 
@@ -234,12 +234,12 @@ class AuthMiddleware extends Middleware {
         const errors = {};
         if(!token){
             const required = FieldsMiddleware.checkRequired(
-                { email }, 
+                { email },
                 [
                     'email',
                 ],
-                [ 
-                    'Email không được bỏ trống', 
+                [
+                    'Email không được bỏ trống',
                 ]
             );
 
@@ -263,7 +263,7 @@ class AuthMiddleware extends Middleware {
                 let expired = moment(user.updatedAt).add(12, 'hours').toISOString();
                 if(now <= expired){
                     const required = FieldsMiddleware.checkRequired(
-                        { password, c_password }, 
+                        { password, c_password },
                         [
                             'password',
                             'c_password',
@@ -273,11 +273,11 @@ class AuthMiddleware extends Middleware {
                             'Xác nhận mật khẩu không được bỏ trống',
                         ]
                     );
-        
+
                     if (required) {
                         return this.sendRequestError(required, res);
                     }
-        
+
                     if (password !== c_password) {
                         errors.password = this.buildError(
                             errors,
@@ -285,7 +285,7 @@ class AuthMiddleware extends Middleware {
                             'Mật khẩu và xác nhận không khớp!'
                         );
                     }
-        
+
                     if (!validator.isLength(password, { min: 6 })) {
                         errors.password = this.buildError(
                             errors,
