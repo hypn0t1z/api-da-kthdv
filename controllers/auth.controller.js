@@ -18,12 +18,12 @@ class AuthController {
         const token = JWTService.generateTokenByUser(user);
 
         // Process
-        const activeToken = await ActiveTokenModel.findOne({where: {user_id: user.id}})
+        const activeToken = await ActiveTokenModel.findOne({where: {user_id: user.id}});
 
-            (activeToken && (await activeToken.update({token}))) ||
-            (await ActiveTokenModel.create({token, user_id: user.id}));
+        (activeToken && (await activeToken.update({token}))) ||
+        (await ActiveTokenModel.create({token, user_id: user.id}));
 
-        res.send({token});
+        return res.send({token});
     }
 
     /**
