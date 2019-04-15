@@ -139,7 +139,7 @@ class AuthController {
         const {mail_token} = req.params
         const user = await AccountModel.findOne({where: {mail_token: mail_token}});
         if (!user || (user && user.status == 'Active') || !mail_token) {
-            res.status(403).send({'message': 'Tài khoản này đã xác nhận! Đăng nhập để tiếp tục'});
+            return res.status(403).send({'message': 'Tài khoản này đã xác nhận! Đăng nhập để tiếp tục'});
         } else {
             const token = JWTService.generateTokenByUser(user);
 
@@ -153,7 +153,7 @@ class AuthController {
                 mail_token: null,
             });
 
-            res.send({'message': 'Xác nhận đăng kí thành công! Đang đăng nhập, vui lòng chờ', 'token': token});
+            return res.send({'token': token});
         }
     }
 
