@@ -12,6 +12,7 @@ authRouter.post('/login', (req, res, next) => AuthMiddleware.login(req, res, nex
 authRouter.post('/register', (req, res, next) => AuthMiddleware.register(req, res, next));
 authRouter.post('/profile/:id', (req, res, next) => AuthMiddleware.createProfile(req, res, next));
 authRouter.post('/before/register', (req, res, next) => AuthMiddleware.beforeRegister(req, res, next));
+authRouter.get('/confirm-register/:mail_token', (req, res, next) => AuthMiddleware.confirmRegister(req, res, next))
 
 /**
  * Validate succes will process controller
@@ -29,5 +30,10 @@ authRouter.post('/before/register', (req, res) => AuthController.beforeRegister(
  */
 authRouter.post('/phoneExist', (req, res) => AuthPublicController.phoneExist(req, res));
 
+/**
+ * Confirm api
+ * @type {Router}
+ */
+authRouter.get('/confirm-register/:mail_token', (req, res) => AuthController.confirmRegister(req, res))
 
 module.exports = authRouter

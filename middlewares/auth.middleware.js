@@ -293,6 +293,16 @@ class AuthMiddleware extends Middleware {
         }
         next();
     }
+
+    /**
+     * Confirm email
+     */
+
+    static async confirmRegister(req, res, next) {
+        //do some thing
+        console.log("confirm register")
+        next()
+    }
 }
 
 exports.AuthMiddleware = AuthMiddleware;
