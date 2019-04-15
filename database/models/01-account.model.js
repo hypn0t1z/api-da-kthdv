@@ -23,7 +23,10 @@ const AccountModel = sequelize.define(
             type: Sequelize.STRING,
             defaultValue: 'Inactive'
         },
-        role: Sequelize.INTEGER,
+        role: {
+            type: Sequelize.INTEGER,
+            defaultValue: 0b001
+        },
 
         //Timestamp
         createdAt: Sequelize.DATE,

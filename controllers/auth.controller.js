@@ -41,7 +41,7 @@ class AuthController {
     */
     static async register(req, res){
         // Init
-        const { email, password, username, url, phone } = req.body;
+        const { email, password, url, phone } = req.body;
         const { USER_PASSWORD_SALT_ROUNDS: saltRounds = 10 } = process.env;
         const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_';
         const passwordHash = await bcrypt.hash(password, +saltRounds);

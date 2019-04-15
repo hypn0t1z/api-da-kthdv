@@ -124,7 +124,7 @@ class AuthMiddleware extends Middleware {
     * Validate register request
     */
     static async register(req, res, next) {
-        const { email, phone, password = '', username, address, 'password_c': confirmPassword } = req.body;
+        const { email, phone, password = ''} = req.body;
         const errors = {};
         let phoneRegex = /^(\+91-|\+91|0)?\d{10}$/;
         const required = FieldsMiddleware.checkRequired(
@@ -168,13 +168,6 @@ class AuthMiddleware extends Middleware {
         }
         if(validator.contains(password, " ")){
             errors.password = this.buildError(errors, 'password', 'Mật khẩu không được chưa khoảng trắng');
-        }
-        if (password !== confirmPassword) {
-            errors.password = this.buildError(
-                errors,
-                'password',
-                'Mật khẩu và xác nhận không khớp'
-            );
         }
 
         if (!validator.isLength(password, { min: 6 })) {
