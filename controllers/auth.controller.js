@@ -1,4 +1,4 @@
-const UserModel = require('../database/models/user.model');
+const AccountModel = require('../database/models/01-account.model');
 const JWTService = require('../services/jwt.service');
 const ActiveTokenModel = require('../database/models/active-token.model');
 const MailService = require('../services/mail.service');
@@ -14,7 +14,7 @@ class AuthController {
         const { value, password } = req.body;
         let emailRegex = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
         let type = value.match(emailRegex) ? 'email' : 'phone';
-        const user = await UserModel.findOne({ where: { [type]: value } });
+        const user = await AccountModel.findOne({ where: { [type]: value } });
         const token = JWTService.generateTokenByUser(user);
 
         // Process
@@ -54,7 +54,7 @@ class AuthController {
             mail_token += charset[random];
         }
 
-        const user = await UserModel.create({
+        const user = await AccountModel.create({
             email,
             password: passwordHash,
             username,
@@ -90,7 +90,7 @@ class AuthController {
     */
     static async getProfile(req, res) {
         const { id } = req.params;
-        let user = await UserModel.findOne({ where: { id, status: 'Active' }});
+        let user = await AccountModel.findOne({ where: { id, status: 'Active' }});
         let data = {};
         if(user) {
             data = {
@@ -116,7 +116,7 @@ class AuthController {
     static async createProfile(req, res) {
         const { id } = req.params;
         const { province, district, ward, address_more, birthday } = req.body;
-        let user = await UserModel.findOne({ where: { id, status: 'Active' }});
+        let user = await AccountModel.findOne({ where: { id, status: 'Active' }});
         await user.update({
             province: province ? province : user.province,
             district:district ? district : user.province,
@@ -135,7 +135,7 @@ class AuthController {
     static async confirmRegister(req, res){
         // Init
         const { mail_token } = req.body;
-        const user = await UserModel.findOne({ where: { mail_token: mail_token } });
+        const user = await AccountModel.findOne({ where: { mail_token: mail_token } });
 
         // Process
         if(!user || (user && user.status == 'Active') || !mail_token){
@@ -167,7 +167,7 @@ class AuthController {
         const { USER_PASSWORD_SALT_ROUNDS: saltRounds = 10 } = process.env;
 
         if(!token){
-            const user = await UserModel.findOne({ where: { email: email } });
+            const user = await AccountModel.findOne({ where: { email: email } });
             const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_';
             let forgot_token = '';
             for (let i = 0; i < 15; i++) {
@@ -193,7 +193,7 @@ class AuthController {
             await MailService.sendMail(msg, template);
             res.send({ 'message' : 'Yêu cầu thành công! Vui lòng kiểm tra mail để xác nhận' });
         }else{
-            const user = await UserModel.findOne({ where: { forgot_token: token } });
+            const user = await AccountModel.findOne({ where: { forgot_token: token } });
             if(!user){
                 return res.status(404).send({ 'message': 'Đường dẫn không tìm thấy, hoặc hết hạn' })
             }

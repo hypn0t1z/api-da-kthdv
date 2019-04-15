@@ -1,7 +1,7 @@
 const passport = require('passport');
 const Middleware = require('./middleware');
 const FieldsMiddleware = require('./fields.middleware');
-const UserModel = require('../database/models/user.model');
+const AccountModel = require('../database/models/01-account.model');
 const bcrypt = require('bcryptjs');
 const validator = require('validator');
 const moment = require('moment');
@@ -47,7 +47,7 @@ class AuthMiddleware extends Middleware {
             return this.sendRequestError(required, res);
         }
 
-        const user = await UserModel.findOne({ where: { [type]: value } });
+        const user = await AccountModel.findOne({ where: { [type]: value } });
         if (!user) {
             errors.value = this.buildError(errors, type, 'Email hoặc số điện thoại không đúng');
         }else{
@@ -103,8 +103,8 @@ class AuthMiddleware extends Middleware {
             errors.phone = this.buildError(errors, 'phone', 'Số điện thoại không đúng định dạng');
         }
         else{
-            const userByEmail = await UserModel.findOne({ where: { email } });
-            const userByPhone = await UserModel.findOne({ where: { phone } });
+            const userByEmail = await AccountModel.findOne({ where: { email } });
+            const userByPhone = await AccountModel.findOne({ where: { phone } });
 
             if (userByEmail) {
                 errors.email = this.buildError(errors, 'email', 'Email này đã được sử dụng');
@@ -156,8 +156,8 @@ class AuthMiddleware extends Middleware {
             errors.phone = this.buildError(errors, 'phone', 'Số điện thoại không đúng định dạng');
         }
         else{
-            const userByEmail = await UserModel.findOne({ where: { email } });
-            const userByPhone = await UserModel.findOne({ where: { phone } });
+            const userByEmail = await AccountModel.findOne({ where: { email } });
+            const userByPhone = await AccountModel.findOne({ where: { phone } });
 
             if (userByEmail) {
                 errors.email = this.buildError(errors, 'email', 'Email này đã được sử dụng');
@@ -219,7 +219,7 @@ class AuthMiddleware extends Middleware {
         return this.sendRequestError(required, res);
     }
 
-    let user = await UserModel.findOne({ where: { id, status: 'Active' }});
+    let user = await AccountModel.findOne({ where: { id, status: 'Active' }});
     if(!user) {
         return res.status(404).send({ 'message' : 'Tài khoản này không tồn tại hoặc chưa được xác nhận' });
     }
@@ -251,14 +251,14 @@ class AuthMiddleware extends Middleware {
                 errors.email = this.buildError(errors, 'email', 'Email không đúng định dạng');
             }
 
-            const user = await UserModel.findOne({ where: { email: email } });
+            const user = await AccountModel.findOne({ where: { email: email } });
             if (!user) {
                 errors.email = this.buildError(errors, 'email', 'Tài khoản này không tồn tại');
             }
         }
         else{
             let now = new moment().format();
-            let user = await UserModel.findOne({ where: { forgot_token: token }});
+            let user = await AccountModel.findOne({ where: { forgot_token: token }});
             if(user){
                 let expired = moment(user.updatedAt).add(12, 'hours').toISOString();
                 if(now <= expired){
