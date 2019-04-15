@@ -41,7 +41,8 @@ class AuthController {
     */
     static async register(req, res){
         // Init
-        const { email, password, url, phone } = req.body;
+        const url = "localhost:3002"
+        const { email, password, phone } = req.body;
         const { USER_PASSWORD_SALT_ROUNDS: saltRounds = 10 } = process.env;
         const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_';
         const passwordHash = await bcrypt.hash(password, +saltRounds);
@@ -55,12 +56,12 @@ class AuthController {
         }
 
         const user = await AccountModel.create({
-            email,
+            email: email,
             password: passwordHash,
-            username,
             status: 'Inactive',
             account_type: 'USER',
-            phone,
+            phone: phone,
+            role: 0b001,
             mail_token: mail_token,
         });
 
@@ -71,7 +72,7 @@ class AuthController {
         }
         const template = {
             data: {
-                username,
+                phone,
                 url,
                 mail_token,
             },

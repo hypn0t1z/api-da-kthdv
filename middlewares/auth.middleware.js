@@ -128,20 +128,16 @@ class AuthMiddleware extends Middleware {
         const errors = {};
         let phoneRegex = /^(\+91-|\+91|0)?\d{10}$/;
         const required = FieldsMiddleware.checkRequired(
-            { email, phone, password, username, address, 'password_c': confirmPassword },
+            { email, phone, password},
             [
                 'email',
                 'phone',
                 'password',
-                'username',
-                'password_c',
             ],
             [
                 'Email không được bỏ trống',
                 'Số điện thoại không được bỏ trống',
                 'Mật khẩu không được bỏ trống',
-                'Họ tên người dùng không được bỏ trống',
-                'Xác nhận mật khẩu không được bỏ trống',
             ]
         );
 
