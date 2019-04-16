@@ -23,7 +23,10 @@ class AuthController {
         (activeToken && (await activeToken.update({token}))) ||
         (await ActiveTokenModel.create({token, user_id: user.id}));
 
-        return res.send({token});
+        const res_return = {token: token}
+        console.log("return = ")
+        console.log(res_return)
+        return res.send(res_return);
     }
 
     /**

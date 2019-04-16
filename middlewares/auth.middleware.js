@@ -311,9 +311,9 @@ class AuthMiddleware extends Middleware {
         const activeToken = await ActiveTokenModel.findOne({where: {token: token}})
 
         if (!activeToken) {
-            return res.status(401).send("Token was dead, hmm!")
+            return res.status(401).send({message: 'Token was dead, hmm!'})
         } else
-            return res.status(200).send("Token is still alive, be fun");
+            return res.send({message: 'Token is still alive, be fun'})
     }
 }
 
