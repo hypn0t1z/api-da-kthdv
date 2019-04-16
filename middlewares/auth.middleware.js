@@ -2,6 +2,7 @@ const passport = require('passport');
 const Middleware = require('./middleware');
 const FieldsMiddleware = require('./fields.middleware');
 const AccountModel = require('../database/models/01-account.model');
+const ActiveTokenModel = require('../database/models/active-token.model')
 const bcrypt = require('bcryptjs');
 const validator = require('validator');
 const moment = require('moment');
@@ -302,6 +303,17 @@ class AuthMiddleware extends Middleware {
         //do some thing
         console.log("confirm register")
         next()
+    }
+
+    static async isTokenStillAlive(req, res, next) {
+        const {token} = req.params;
+
+        const activeToken = await ActiveTokenModel.findOne({where: {token: token}})
+
+        if (!activeToken) {
+            return res.status(401).send("Token was dead, hmm!")
+        } else
+            return res.status(200).send("Token is still alive, be fun");
     }
 }
 
