@@ -212,6 +212,10 @@ class AuthController {
             }
         }
     }
+
+    static async uploadAvatar(req, res) {
+        return res.send({message: "file uploaded!"});
+    }
 }
 
 module.exports = AuthController;

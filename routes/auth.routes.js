@@ -14,6 +14,7 @@ authRouter.post('/profile/:id', (req, res, next) => AuthMiddleware.createProfile
 authRouter.post('/before/register', (req, res, next) => AuthMiddleware.beforeRegister(req, res, next));
 authRouter.get('/confirm-register/:mail_token', (req, res, next) => AuthMiddleware.confirmRegister(req, res, next))
 authRouter.get('/is-token-still-alive/:token', (req, res, next) => AuthMiddleware.isTokenStillAlive(req, res, next))
+authRouter.post('/upload-avatar/', (req, res, next) => AuthMiddleware.uploadAvatar(req, res, next))
 
 /**
  * Validate succes will process controller
@@ -24,6 +25,7 @@ authRouter.post('/register', (req, res) => AuthController.register(req, res));
 authRouter.post('/profile/:id', (req, res) => AuthController.createProfile(req, res));
 authRouter.get('/profile/:id', (req, res) => AuthController.getProfile(req, res));
 authRouter.post('/before/register', (req, res) => AuthController.beforeRegister(req, res));
+authRouter.post('/upload-avatar/', (req, res) => AuthController.uploadAvatar(req, res))
 /**
  * public api
  * @type {Router}
