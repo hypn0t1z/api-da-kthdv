@@ -55,24 +55,13 @@ class CommonService {
             order: order ? order : [ ['id', 'DESC'] ],
             include: include ? include : [],
         });
-        if(modelTrans){
-            for(let i in data){
-                let dt = data[i];
-                data[i] = await this.encodeData(await this.getTransByTransModel(req, modelTrans, dt));
-            }
-        }else{
-            for(let i in data){
-                let dt = data[i];
-                data[i] = await this.encodeData(dt);
-            }
-        }
+
         return {
             total,
             per_page,
             current_page,
             last_page,
-            data,
-            ec: ENCODE_MODE && ENCODE_MODE == 'true' ? 'gl-clevebet' : '',
+            data
         };
     }
 }

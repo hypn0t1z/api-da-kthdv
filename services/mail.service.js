@@ -11,14 +11,14 @@ class MailService {
     */
     static async sendMail(msg, template){
         const config = {
-            host: process.env.MAIL_HOST,
-            port: process.env.MAIL_PORT,
+            service: process.env.MAIL_SERVICE,
             auth: {
                 user: process.env.MAIL_USERNAME,
                 pass: process.env.MAIL_PASSWORD,
             },
         };
         try{
+            console.log(config)
             const transporter = nodemailer.createTransport(config);
 
             const mailOptions = {
@@ -43,16 +43,17 @@ class MailService {
         let mail_template = '';
         if(template.type == 'register'){
             mail_template = `
-                <h1>Hello `+ template.data.username +`! </h1>
+                <h1>Hello `+ template.data.phone +`! </h1>
                 <p>You have been registered success from our website.</p>
-                <p>Please click <a style="color: red;" href="`+ template.data.url +`/confirm-register/`+ template.data.mail_token +`">HERE</a> to confirm your registration!</p>
+                <p>Please click <a style="color: red;" href="http://`+ template.data.url +`/api/auth/confirm-register/`+ template.data.mail_token +`">HERE</a> to confirm your registration!</p>
             `
+            console.log(mail_template)
         }
         if(template.type == 'forgot password'){
             mail_template = `
                 <h1>Hello `+ template.data.username +`! </h1>
                 <p>You have requested new password from our website.</p>
-                <p>Please click <a style="color: red;" href="`+ template.data.url +`/forgot-pass/`+ template.data.forgot_token +`">HERE</a> to confirm!</p>
+                <p>Please click <a style="color: red;" href="http://`+ template.data.url +`/forgot-pass/`+ template.data.forgot_token +`">HERE</a> to confirm!</p>
             `
         }
         return mail_template;

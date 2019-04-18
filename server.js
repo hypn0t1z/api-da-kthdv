@@ -45,7 +45,7 @@ class Server {
 
         this.express.use(passport.initialize());
         this.express.use(bodyParser.json({limit: '10mb', extended: true}));
-        this.express.use(bodyParser.urlencoded({limit: '10mb', extended: true}))
+        this.express.use(bodyParser.urlencoded({limit: '10mb', extended: false}))
         this.express.use('/api', routes);    
         this.express.use(express.static('static'));
         this.express.listen(PORT, () => console.log(`Server listening on port ${PORT}!`));
