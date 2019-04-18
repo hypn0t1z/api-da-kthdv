@@ -1,17 +1,9 @@
-#Ignore files from client-side
-client-side/node_modules
-client-side/.nuxt
-client-side/assets/build
-client-side/dist
-client-side/npm-debug.log
-client-side/static/images
-
 #Ignore files from server-side
 .env
 npm-debug.log
 node_modules
+static/images
 .idea/
-
 .DS_Store
 uploads/
 

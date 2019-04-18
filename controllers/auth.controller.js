@@ -2,6 +2,8 @@ const AccountModel = require('../database/models/01-account.model');
 const JWTService = require('../services/jwt.service');
 const ActiveTokenModel = require('../database/models/active-token.model');
 const MailService = require('../services/mail.service');
+const ProfileModel = require('../database/models/12-profile.model');
+const CommonService = require('../services/common.service');
 const bcrypt = require('bcryptjs');
 
 class AuthController {
@@ -94,16 +96,17 @@ class AuthController {
     */
     static async getProfile(req, res) {
         const {id} = req.params;
-        let user = await AccountModel.findOne({where: {id, status: 'Active'}});
+        let profile = await ProfileModel.findOne({where: { id }});
         let data = {};
-        if (user) {
+        if (profile) {
             data = {
-                username: user.username,
-                province: user.province ? user.province : '',
-                district: user.district ? user.district : '',
-                ward: user.ward ? user.ward : '',
-                address_more: user.address_more ? user.address_more : '',
-                birthday: user.birthday ? user.birthday : ''
+                avatar: profile.avatar ? profile.avatar : '',
+                username: profile.username,
+                province: profile.province ? profile.province : '',
+                district: profile.district ? profile.district : '',
+                ward: profile.ward ? profile.ward : '',
+                address_more: profile.address_more ? profile.address_more : '',
+                birthday: profile.birthday ? profile.birthday : ''
             }
             res.send({'message': 'Lấy thông tin chỉnh sửa thông tin thành công ', data});
         } else {
@@ -118,14 +121,16 @@ class AuthController {
      */
     static async createProfile(req, res) {
         const {id} = req.params;
-        const {province, district, ward, address_more, birthday} = req.body;
-        let user = await AccountModel.findOne({where: {id, status: 'Active'}});
-        await user.update({
-            province: province ? province : user.province,
-            district: district ? district : user.province,
-            ward: ward ? ward : user.ward,
-            address_more: address_more ? address_more : user.address_more,
-            birthday: birthday ? birthday : user.birthday
+        const {province, district, ward, address_more, birthday, avatar} = req.body;
+        let profile = await ProfileModel.findOne({where: { id }});
+        let image = avatar ? CommonService.uploadImage(avatar) : profile.avatar;
+        await profile.update({
+            avatar: image,
+            province: province ? province : profile.province,
+            district: district ? district : profile.province,
+            ward: ward ? ward : profile.ward,
+            address_more: address_more ? address_more : profile.address_more,
+            birthday: birthday ? birthday : profile.birthday
         })
         res.send({'message': 'Cập nhật thông tin thành công'});
     }

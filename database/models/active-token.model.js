@@ -4,7 +4,7 @@ const { sequelize, Sequelize } = require('..');
 * ActiveTokenModel describes 'active_tokens' table
 */
 const ActiveTokenModel = sequelize.define(
-    'account_model',
+    'active_tokens',
     {
         id: {
             type: Sequelize.INTEGER,

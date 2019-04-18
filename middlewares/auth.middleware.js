@@ -321,7 +321,7 @@ class AuthMiddleware extends Middleware {
         let formidable = require('formidable');
         // parse a file upload
         var form = new formidable.IncomingForm();
-        form.uploadDir = "./uploads";
+        form.uploadDir = "./static";
         form.keepExtensions = true;
         form.maxFieldsSize = 10 * 1024 * 1024; //10 MB
         form.multiples = false;
@@ -334,7 +334,7 @@ class AuthMiddleware extends Middleware {
                 });
             }
             console.log(JSON.stringify(files))
-            return response.send({file: files})
+            //return response.send({file: files})
             // var arrayOfFiles = [];
             // if (files[""] instanceof Array) {
             //     arrayOfFiles = files[""];
@@ -363,6 +363,7 @@ class AuthMiddleware extends Middleware {
             //     });
             // }
         });
+        next();
     }
 }
 
