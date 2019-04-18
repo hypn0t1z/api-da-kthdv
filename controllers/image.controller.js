@@ -20,7 +20,7 @@ class ImageController {
     static async uploadImage(req, res) {
         const { base64String } = req.body;
         let image = CommonService.uploadImage(base64String);
-        return image;
+        res.send({image});
     }
 }
 
