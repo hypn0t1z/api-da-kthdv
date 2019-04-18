@@ -1,6 +1,7 @@
 const { sequelize, Sequelize } = require('../');
 const ProfileModel = require('../models/12-profile.model');
 const RateModel = require('../models/11-rate.model');
+const ActiveToken = require('../models/active-token.model')
 
 /**
 * AccountModel describes 'accounts' table
@@ -23,7 +24,10 @@ const AccountModel = sequelize.define(
             type: Sequelize.STRING,
             defaultValue: 'Inactive'
         },
-        role: Sequelize.INTEGER,
+        role: {
+            type: Sequelize.INTEGER,
+            defaultValue: 0b001
+        },
 
         //Timestamp
         createdAt: Sequelize.DATE,
@@ -42,5 +46,8 @@ ProfileModel.belongsTo(AccountModel, { foreignKey: 'account_id' });
 
 AccountModel.hasMany(RateModel, { foreignKey: 'account_id' });
 RateModel.belongsTo(AccountModel, { foreignKey: 'account_id' });
+
+// AccountModel.hasOne(ActiveToken, {foreignKey: 'user_id'})
+ActiveToken.belongsTo(AccountModel, {foreignKey: 'user_id'})
 
 module.exports = AccountModel;

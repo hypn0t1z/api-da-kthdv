@@ -1,5 +1,4 @@
 const { sequelize, Sequelize } = require('..');
-const UserModel = require('./user.model');
 
 /**
 * ActiveTokenModel describes 'active_tokens' table

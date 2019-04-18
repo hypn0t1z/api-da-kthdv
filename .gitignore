@@ -10,3 +10,8 @@ client-side/static/images
 .env
 npm-debug.log
 node_modules
+.idea/
+
+.DS_Store
+uploads/
+
