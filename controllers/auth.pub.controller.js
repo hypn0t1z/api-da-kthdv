@@ -9,6 +9,7 @@ class AuthPublicController {
         const userByPhone = await AccountModel.findOne({ where: { phone } });
 
         if (userByPhone) {
+            return res.code()
             return res.send({
                 isExist: 1
             })
@@ -16,7 +17,6 @@ class AuthPublicController {
             return res.send({
                 isExist: 0
             })
-        next();
     }
 
 }
