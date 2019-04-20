@@ -46,7 +46,7 @@ class AuthController {
      */
     static async register(req, res) {
         // Init
-        const url = "localhost:3002"
+        const url = "13.76.227.37:3002"
         const {email, password, phone} = req.body;
         const {USER_PASSWORD_SALT_ROUNDS: saltRounds = 10} = process.env;
         const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_';
