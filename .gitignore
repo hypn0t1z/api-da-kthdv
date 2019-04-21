@@ -1,5 +1,4 @@
 #Ignore files from server-side
-.env
 npm-debug.log
 node_modules
 static/images
