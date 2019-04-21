@@ -46,8 +46,7 @@ class FieldsMiddleware extends Middleware {
             const item = items[i];
             const item_check = data[item];
             if(!item_check){
-                error[message] = message[i];
-                return error;
+                return message[i];
             }
         }
     }
