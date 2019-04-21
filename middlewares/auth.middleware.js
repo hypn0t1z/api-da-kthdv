@@ -27,10 +27,9 @@ class AuthMiddleware extends Middleware {
             if (value.match(phoneRegex))
                 type = 'phone'
             else
-                return res.status(400).send({'message': 'Email hoặc số điện thoại không đúng định dạng'});
+                return this.sendResponseMessage(res, 400, 'Email hoặc số điện thoại không đúng định dạng');
         }
-        const errors = {};
-        const required = FieldsMiddleware.checkRequired(
+        const message = FieldsMiddleware.simpleCheckRequired(
             {[type]: value, password},
             [
                 type,
@@ -42,29 +41,25 @@ class AuthMiddleware extends Middleware {
             ]
         );
 
-        if (required) {
-            return this.sendRequestError(required, res);
+        if (message) {
+            return this.sendResponseMessage(res, 400, message);
         }
 
         const user = await AccountModel.findOne({where: {[type]: value}});
         if (!user) {
-            errors.value = this.buildError(errors, type, 'Email hoặc số điện thoại không đúng');
+            return this.sendResponseMessage(res, 400, 'Email hoặc số điện thoại không đúng')
         } else {
             if (user.status == 'Banned') {
-                return res.status(403).send({'message': 'Tài khoản này đã bị cấm'});
+                return this.sendResponseMessage(res, 403, 'Tài khoản này đã bị cấm')
             }
 
             if (user.status == 'Inactive') {
-                return res.status(403).send({'message': 'Tài khoản này chưa được xác nhận'})
+                return this.sendResponseMessage(res, 403, 'Tài khoản này chưa được xác nhận')
             }
         }
 
         if (user && !(await bcrypt.compare(password, user.password))) {
-            errors.password = this.buildError(errors, 'password', 'Mật khẩu không đúng!');
-        }
-
-        if (this.isError(errors)) {
-            return this.sendRequestError(errors, res);
+            return this.sendResponseMessage(res, 400, 'Mật khẩu không đúng!')
         }
 
         next();
@@ -78,9 +73,8 @@ class AuthMiddleware extends Middleware {
      */
     static async beforeRegister(req, res, next) {
         const {email, phone} = req.body;
-        const errors = {};
         let phoneRegex = /^(\+91-|\+91|0)?\d{10}$/;
-        const required = FieldsMiddleware.checkRequired(
+        const message = FieldsMiddleware.simpleCheckRequired(
             {email, phone},
             [
                 'email',
@@ -92,29 +86,26 @@ class AuthMiddleware extends Middleware {
             ]
         );
 
-        if (required) {
-            return this.sendRequestError(required, res);
+        if (message) {
+            return this.sendResponseMessage(res, 400, message);
         }
         if (!validator.isEmail(email)) {
-            errors.email = this.buildError(errors, 'email', 'Email không đúng định dạng');
+            return this.sendResponseMessage(res, 400, 'Email không đúng định dạng');
         }
         if (!phone.match(phoneRegex)) {
-            errors.phone = this.buildError(errors, 'phone', 'Số điện thoại không đúng định dạng');
+            return this.sendResponseMessage(res, 400, 'Số điện thoại không đúng định dạng')
         } else {
             const userByEmail = await AccountModel.findOne({where: {email}});
             const userByPhone = await AccountModel.findOne({where: {phone}});
 
             if (userByEmail) {
-                errors.email = this.buildError(errors, 'email', 'Email này đã được sử dụng');
+                return this.sendResponseMessage(res, 400, 'Email này đã được sử dụng')
             }
             if (userByPhone) {
-                errors.phone = this.buildError(errors, 'phone', 'Số điện thoại này đã được sử dụng');
+                return this.sendResponseMessage(res, 400, 'Số điện thoại này đã được sử dụng')
             }
         }
 
-        if (this.isError(errors)) {
-            return this.sendRequestError(errors, res);
-        }
         next();
     }
 
@@ -125,7 +116,8 @@ class AuthMiddleware extends Middleware {
         const {email, phone, password = ''} = req.body;
         const errors = {};
         let phoneRegex = /^(\+91-|\+91|0)?\d{10}$/;
-        const required = FieldsMiddleware.checkRequired(
+
+        const required = FieldsMiddleware.simpleCheckRequired(
             {email, phone, password},
             [
                 'email',
@@ -140,40 +132,35 @@ class AuthMiddleware extends Middleware {
         );
 
         if (required) {
-            return this.sendRequestError(required, res);
+            return this.sendResponseMessage(required, res);
         }
 
         if (!validator.isEmail(email)) {
-            errors.email = this.buildError(errors, 'email', 'Email không đúng định dạng');
+            return this.sendResponseMessage(res, 400, 'Email không đúng định dạng');
         }
         if (!phone.match(phoneRegex)) {
-            errors.phone = this.buildError(errors, 'phone', 'Số điện thoại không đúng định dạng');
+            return this.sendResponseMessage(res, 400, 'Số điện thoại không đúng định dạng');
         } else {
             const userByEmail = await AccountModel.findOne({where: {email}});
             const userByPhone = await AccountModel.findOne({where: {phone}});
 
             if (userByEmail) {
-                errors.email = this.buildError(errors, 'email', 'Email này đã được sử dụng');
+                return this.sendResponseMessage(res, 400, 'Email này đã được sử dụng')
             }
             if (userByPhone) {
-                errors.phone = this.buildError(errors, 'phone', 'Số điện thoại này đã được sử dụng');
+                return this.sendResponseMessage(res, 400, 'Số điện thoại này đã được sử dụng')
             }
         }
         if (validator.contains(password, " ")) {
-            errors.password = this.buildError(errors, 'password', 'Mật khẩu không được chưa khoảng trắng');
+            return this.sendResponseMessage(res, 400, 'Mật khẩu không được chưa khoảng trắng');
         }
 
         if (!validator.isLength(password, {min: 6})) {
-            errors.password = this.buildError(
-                errors,
-                'password',
+            return this.sendResponseMessage(res, 400,
                 'Độ dài mật khẩu yêu cầu ít nhất 6 kí tự!'
             );
         }
 
-        if (this.isError(errors)) {
-            return this.sendRequestError(errors, res);
-        }
         next();
     }
 
@@ -183,7 +170,7 @@ class AuthMiddleware extends Middleware {
     static async createProfile(req, res, next) {
         const {province, district, ward, address_more, birthday} = req.body;
         const {id} = req.params;
-        const required = FieldsMiddleware.checkRequired(
+        const message = FieldsMiddleware.simpleCheckRequired(
             {province, district, ward, address_more, birthday},
             [
                 'province',
@@ -201,13 +188,13 @@ class AuthMiddleware extends Middleware {
             ]
         );
 
-        if (required) {
-            return this.sendRequestError(required, res);
+        if (message) {
+            return this.sendResponseMessage(res, 400, message)
         }
 
         let user = await AccountModel.findOne({where: {id, status: 'Active'}});
         if (!user) {
-            return res.status(404).send({'message': 'Tài khoản này không tồn tại hoặc chưa được xác nhận'});
+            return this.sendResponseMessage(res, 400, 'Tài khoản này không tồn tại hoặc chưa được xác nhận');
         }
         next();
     }
@@ -219,7 +206,7 @@ class AuthMiddleware extends Middleware {
         const {email, url, password, c_password, token} = req.body;
         const errors = {};
         if (!token) {
-            const required = FieldsMiddleware.checkRequired(
+            const message = FieldsMiddleware.simpleCheckRequired(
                 {email},
                 [
                     'email',
@@ -229,17 +216,17 @@ class AuthMiddleware extends Middleware {
                 ]
             );
 
-            if (required) {
-                return this.sendRequestError(required, res);
+            if (message) {
+                return this.sendResponseMessage(res, 400, message);
             }
 
             if (!validator.isEmail(email)) {
-                errors.email = this.buildError(errors, 'email', 'Email không đúng định dạng');
+                return this.sendResponseMessage(res, 400, 'Email không đúng định dạng');
             }
 
             const user = await AccountModel.findOne({where: {email: email}});
             if (!user) {
-                errors.email = this.buildError(errors, 'email', 'Tài khoản này không tồn tại');
+                return this.sendResponseMessage(res, 400, 'Tài khoản này không tồn tại');
             }
         } else {
             let now = new moment().format();
@@ -247,7 +234,7 @@ class AuthMiddleware extends Middleware {
             if (user) {
                 let expired = moment(user.updatedAt).add(12, 'hours').toISOString();
                 if (now <= expired) {
-                    const required = FieldsMiddleware.checkRequired(
+                    const message = FieldsMiddleware.simpleCheckRequired(
                         {password, c_password},
                         [
                             'password',
@@ -259,34 +246,23 @@ class AuthMiddleware extends Middleware {
                         ]
                     );
 
-                    if (required) {
-                        return this.sendRequestError(required, res);
+                    if (message) {
+                        return this.sendResponseMessage(res, 400, message)
                     }
 
                     if (password !== c_password) {
-                        errors.password = this.buildError(
-                            errors,
-                            'password',
-                            'Mật khẩu và xác nhận không khớp!'
-                        );
+                        return this.sendResponseMessage(res, 400, 'Mật khẩu và xác nhận không khớp!');
                     }
 
                     if (!validator.isLength(password, {min: 6})) {
-                        errors.password = this.buildError(
-                            errors,
-                            'password',
-                            'Độ dài mật khẩu yêu cầu ít nhất 6 kí tự!'
-                        );
+                        return this.sendResponseMessage(res, 400, 'Độ dài mật khẩu yêu cầu ít nhất 6 kí tự!');
                     }
                 } else {
-                    return res.status(404).send({'message': 'Đường dẫn không tìm thấy, hoặc hết hạn'});
+                    return this.sendResponseMessage(res, 403, 'Đường dẫn không tìm thấy, hoặc hết hạn');
                 }
             }
         }
 
-        if (this.isError(errors)) {
-            return this.sendRequestError(errors, res);
-        }
         next();
     }
 
@@ -306,9 +282,9 @@ class AuthMiddleware extends Middleware {
         const activeToken = await ActiveTokenModel.findOne({where: {token: token}})
 
         if (!activeToken) {
-            return res.status(401).send({message: 'Token was dead, hmm!'})
+            return this.sendResponseMessage(res, 401, 'Token was dead, hmm!')
         } else
-            return res.send({message: 'Token is still alive, be fun'})
+            return this.sendResponseMessage(res, 200, 'Token is still alive, be fun')
     }
 
 
@@ -317,52 +293,6 @@ class AuthMiddleware extends Middleware {
      */
 
     static async uploadAvatar(request, response, next) {
-        console.log(request.body)
-        let formidable = require('formidable');
-        // parse a file upload
-        var form = new formidable.IncomingForm();
-        form.uploadDir = "./static";
-        form.keepExtensions = true;
-        form.maxFieldsSize = 10 * 1024 * 1024; //10 MB
-        form.multiples = false;
-        form.parse(request, (err, fields, files) => {
-            if (err) {
-                return response.json({
-                    result: "failed",
-                    data: {},
-                    messege: `Cannot upload images.Error is : ${err}`
-                });
-            }
-            console.log(JSON.stringify(files))
-            //return response.send({file: files})
-            // var arrayOfFiles = [];
-            // if (files[""] instanceof Array) {
-            //     arrayOfFiles = files[""];
-            // } else {
-            //     arrayOfFiles.push(files[""]);
-            // }
-            //
-            // if (arrayOfFiles.length > 0) {
-            //     var fileNames = [];
-            //     arrayOfFiles.forEach((eachFile) => {
-            //         // fileNames.push(eachFile.path)
-            //         fileNames.push(eachFile.path.split('/')[1]);
-            //     });
-            //     response.json({
-            //         result: "ok",
-            //         data: fileNames,
-            //         numberOfImages: fileNames.length,
-            //         messege: "Upload images successfully"
-            //     });
-            // } else {
-            //     response.json({
-            //         result: "failed",
-            //         data: {},
-            //         numberOfImages: 0,
-            //         messege: "No images to upload !"
-            //     });
-            // }
-        });
         next();
     }
 }

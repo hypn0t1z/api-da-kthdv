@@ -34,8 +34,9 @@ class Middleware {
     * @param {object} res - Express response object @see {@link http://expressjs.com/en/api.html#res}.
     * @return {void}
     */
-    static sendRequestError(errors, res) {
-        res.status(400).send({ errors });
+
+    static sendResponseMessage(res, code, msg) {
+        res.status(code).send({code: code, message: msg});
     }
 
     /**

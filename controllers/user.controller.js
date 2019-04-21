@@ -6,10 +6,13 @@ const Op = Sequelize.Op;
 
 class UserController {
     /**
-     * Get list user
-     * @param {*} req { key_words (option), per_page (option)}
+     * Get list user with option params: key_words, per_page, page
+     * key_words: key word to search ( name, phone, email )
+     * per_page: default = 10 rows
+     * page: default = 1
+     * @param { key_words: option, per_page: option, page: default = 1 } req
      * @param {*} res 
-     * Get user by name, email or phone 
+     * @author Hung Dang
      */
     static async getUser(req, res) {
         const { key_words } = req.query;
@@ -49,7 +52,22 @@ class UserController {
         let resource = { model: AccountModel, req, where, include };
         let data = await CommonService.paginate(resource);
         let total = await AccountModel.count({ where, include });
-        res.status(200).send({ 'message': 'Đã tìm thấy ' + total+ ' kết quả', data });
+        return this.sendResponseMessage(res, 200, 'Đã tìm thấy ' + total+ ' kết quả', data)
+    }
+
+    /**
+     * Get user by phone
+     * @param {*} req 
+     * @param {*} res 
+     */
+    static async getUserByPhone(req, res) {
+        const { phone } = req.params;
+        console.log(phone)
+        const user = await AccountModel.findOne({ where: { phone } });
+        if (user) {
+            return this.sendResponseMessage(res, 200, "user exist!")
+        } else
+            return this.sendResponseMessage(res, 404, "user not exist!")
     }
 }
 

@@ -9,5 +9,5 @@ router.use('/user' , userroutes);
 
 router.get('/',  (req, res) => {
     res.send("Welcome to my vps api DA-KTHDV");
-})
+});
 module.exports = router;

@@ -2,8 +2,6 @@ var express = require('express')
 var authRouter = express.Router()
 const { AuthMiddleware } = require('../middlewares/auth.middleware');
 const AuthController = require('../controllers/auth.controller');
-const AuthPublicController = require('../controllers/auth.pub.controller');
-
 /**
  * Middleware router to check login & register
  * @author Hung Dang
@@ -26,11 +24,6 @@ authRouter.post('/profile/:id', (req, res) => AuthController.createProfile(req, 
 authRouter.get('/profile/:id', (req, res) => AuthController.getProfile(req, res));
 authRouter.post('/before/register', (req, res) => AuthController.beforeRegister(req, res));
 authRouter.post('/upload-avatar/', (req, res) => AuthController.uploadAvatar(req, res))
-/**
- * public api
- * @type {Router}
- */
-authRouter.post('/phoneExist', (req, res) => AuthPublicController.phoneExist(req, res));
 
 /**
  * Confirm api
