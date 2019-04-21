@@ -5,8 +5,10 @@ const MailService = require('../services/mail.service');
 const ProfileModel = require('../database/models/12-profile.model');
 const CommonService = require('../services/common.service');
 const bcrypt = require('bcryptjs');
+const Controller = require('./controller')
 
-class AuthController {
+
+class AuthController extends Controller{
     /**
      * Login user
      * @return {obj} token
@@ -26,9 +28,8 @@ class AuthController {
         (await ActiveTokenModel.create({token, user_id: user.id}));
 
         const res_return = {token: token}
-        console.log("return = ")
-        console.log(res_return)
-        return res.send(res_return);
+
+        return this.sendResponseMessage(res, 200, "Login sucess, here is token!!", res_return)
     }
 
     /**
@@ -37,7 +38,7 @@ class AuthController {
      * @param {*} res
      */
     static async beforeRegister(req, res) {
-        res.send({'message': 'Email và số điện thoại hợp lệ'})
+        return this.sendResponseMessage(res, 200, 'Email và số điện thoại hợp lệ')
     }
 
     /**
@@ -87,7 +88,7 @@ class AuthController {
 
         await ActiveTokenModel.create({token, user_id: user.id});
 
-        res.send({'message': 'Đăng kí thành công, vui lòng kiểm tra email để xác nhận'});
+        return this.sendResponseMessage(res, 200,  'Đăng kí thành công, vui lòng kiểm tra email để xác nhận')
     }
 
     /* Get profile
@@ -108,9 +109,9 @@ class AuthController {
                 address_more: profile.address_more ? profile.address_more : '',
                 birthday: profile.birthday ? profile.birthday : ''
             }
-            res.send({'message': 'Lấy thông tin chỉnh sửa thông tin thành công ', data});
+            return this.sendResponseMessage(res, 200, 'Lấy thông tin chỉnh sửa thông tin thành công', data)
         } else {
-            res.status(404).send({'message': 'Tài khoản này không tồn tại hoặc chưa được xác nhận'});
+            return this.sendResponseMessage(res, 404, 'Tài khoản này không tồn tại hoặc chưa được xác nhận')
         }
     }
 
@@ -132,7 +133,7 @@ class AuthController {
             address_more: address_more ? address_more : profile.address_more,
             birthday: birthday ? birthday : profile.birthday
         })
-        res.send({'message': 'Cập nhật thông tin thành công'});
+        return this.sendResponseMessage(res, 200, 'Cập nhật thông tin thành công')
     }
 
     /**
@@ -142,12 +143,11 @@ class AuthController {
      */
     static async confirmRegister(req, res) {
         // Init
-        console.log("confirm register")
         console.log(req.params)
         const {mail_token} = req.params
         const user = await AccountModel.findOne({where: {mail_token: mail_token}});
         if (!user || (user && user.status == 'Active') || !mail_token) {
-            return res.status(403).send({'message': 'Tài khoản này đã xác nhận! Đăng nhập để tiếp tục'});
+            return this.sendResponseMessage(res, 403, 'Tài khoản này đã xác nhận! Đăng nhập để tiếp tục')
         } else {
             const token = JWTService.generateTokenByUser(user);
 
@@ -161,7 +161,7 @@ class AuthController {
                 mail_token: null,
             });
 
-            return res.send({'token': token});
+            return this.sendResponseMessage(res, 200, "confirm success, this is token", {token: token})
         }
     }
 
@@ -199,27 +199,27 @@ class AuthController {
                 type: 'forgot password',
             }
             await MailService.sendMail(msg, template);
-            res.send({'message': 'Yêu cầu thành công! Vui lòng kiểm tra mail để xác nhận'});
+            return this.sendResponseMessage(res, 200, 'Yêu cầu thành công! Vui lòng kiểm tra mail để xác nhận')
         } else {
             const user = await AccountModel.findOne({where: {forgot_token: token}});
             if (!user) {
-                return res.status(404).send({'message': 'Đường dẫn không tìm thấy, hoặc hết hạn'})
+                return this.sendResponseMessage(res, 404, 'Đường dẫn không tìm thấy, hoặc hết hạn')
             }
             if (!password) {
-                return res.send({'message': 'Xác nhận thay đổi mật khẩu'});
+                return this.sendResponseMessage(res, 400, "mat khau khong duoc de trong")
             } else {
                 const passwordHash = await bcrypt.hash(password, +saltRounds);
                 user.update({
                     password: passwordHash,
                     forgot_token: null,
                 });
-                return res.send({'message': 'Thay đổi mật khẩu thành công!'});
+                return this.sendResponseMessage(res, 200, 'Thay đổi mật khẩu thành công!')
             }
         }
     }
 
     static async uploadAvatar(req, res) {
-        return res.send({message: "file uploaded!"});
+        return this.sendResponseMessage(res, 200, 'file uploaded')
     }
 }
 
