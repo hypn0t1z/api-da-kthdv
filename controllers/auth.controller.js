@@ -69,7 +69,6 @@ class AuthController {
             role: 0b001,
             mail_token: mail_token,
         });
-
         const token = JWTService.generateTokenByUser(user);
         const msg = {
             reciver: email,
@@ -96,22 +95,20 @@ class AuthController {
     */
     static async getProfile(req, res) {
         const {id} = req.params;
-        let profile = await ProfileModel.findOne({where: { id }});
-        let data = {};
-        if (profile) {
-            data = {
-                avatar: profile.avatar ? profile.avatar : '',
-                username: profile.username,
-                province: profile.province ? profile.province : '',
-                district: profile.district ? profile.district : '',
-                ward: profile.ward ? profile.ward : '',
-                address_more: profile.address_more ? profile.address_more : '',
-                birthday: profile.birthday ? profile.birthday : ''
-            }
-            res.send({'message': 'Lấy thông tin chỉnh sửa thông tin thành công ', data});
-        } else {
-            res.status(404).send({'message': 'Tài khoản này không tồn tại hoặc chưa được xác nhận'});
+        if(id){
+            var profile = await ProfileModel.findOne({where: { account_id: id }});
         }
+        let data = {
+            id: id ? id : '',
+            avatar: profile.avatar ? profile.avatar : '',
+            username: profile.username,
+            province: profile.province ? profile.province : '',
+            district: profile.district ? profile.district : '',
+            ward: profile.ward ? profile.ward : '',
+            address_more: profile.address_more ? profile.address_more : '',
+            birthday: profile.birthday ? profile.birthday : ''
+        }
+        res.send({'message': 'Lấy thông tin chỉnh sửa thông tin thành công ', data});
     }
 
     /**
