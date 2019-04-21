@@ -39,6 +39,18 @@ class FieldsMiddleware extends Middleware {
             return errors;
         }
     }
+
+    static simpleCheckRequired(data, items = [], message = []) {
+        let errors = {};
+        for(let i in items){
+            const item = items[i];
+            const item_check = data[item];
+            if(!item_check){
+                error[message] = message[i];
+                return error;
+            }
+        }
+    }
 }
 
 module.exports = FieldsMiddleware;
