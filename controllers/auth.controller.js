@@ -70,7 +70,9 @@ class AuthController extends Controller{
             role: 0b001,
             mail_token: mail_token,
         });
-
+        ProfileModel.create({
+            account_id: user.id,
+        })
         const token = JWTService.generateTokenByUser(user);
         const msg = {
             reciver: email,
@@ -91,13 +93,16 @@ class AuthController extends Controller{
         return this.sendResponseMessage(res, 200,  'Đăng kí thành công, vui lòng kiểm tra email để xác nhận')
     }
 
-    /* Get profile
+    /**
+    * Get profile
+    * if (status == NULL ) ---> Profile not created yet
     * @param {*} req 
     * @param {*} res 
+    * @author Hung Dang
     */
     static async getProfile(req, res) {
         const {id} = req.params;
-        let profile = await ProfileModel.findOne({where: { id }});
+        let profile = await ProfileModel.findOne({where: { account_id: id }});
         let data = {};
         if (profile) {
             data = {
@@ -107,7 +112,8 @@ class AuthController extends Controller{
                 district: profile.district ? profile.district : '',
                 ward: profile.ward ? profile.ward : '',
                 address_more: profile.address_more ? profile.address_more : '',
-                birthday: profile.birthday ? profile.birthday : ''
+                birthday: profile.birthday ? profile.birthday : '',
+                status: profile.status ? profile.status : ''
             }
             return this.sendResponseMessage(res, 200, 'Lấy thông tin chỉnh sửa thông tin thành công', data)
         } else {
