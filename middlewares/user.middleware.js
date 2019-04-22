@@ -1,6 +1,5 @@
 const Middleware = require('./middleware');
 const AccountModel = require('../database/models/01-account.model')
-const ProifleModel = require('../database/models/12-profile.model')
 
 class UserMiddleware extends Middleware {
     static async getUserByPhone(req, res, next) {

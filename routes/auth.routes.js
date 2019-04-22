@@ -29,6 +29,6 @@ authRouter.post('/upload-avatar/', (req, res) => AuthController.uploadAvatar(req
  * Confirm api
  * @type {Router}
  */
-authRouter.get('/confirm-register/:mail_token', (req, res) => AuthController.confirmRezgister(req, res))
+authRouter.get('/confirm-register/:mail_token', (req, res) => AuthController.confirmRegister(req, res))
 
 module.exports = authRouter
