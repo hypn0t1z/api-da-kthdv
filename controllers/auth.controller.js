@@ -6,6 +6,7 @@ const ProfileModel = require('../database/models/12-profile.model');
 const CommonService = require('../services/common.service');
 const bcrypt = require('bcryptjs');
 const Controller = require('./controller')
+const CustomerModel = require('../database/models/04-customer.model')
 
 
 class AuthController extends Controller{
@@ -72,6 +73,12 @@ class AuthController extends Controller{
         ProfileModel.create({
             account_id: user.id,
         })
+
+        CustomerModel.create({
+            account_id: user.id
+        })
+
+
         const token = JWTService.generateTokenByUser(user);
         const msg = {
             reciver: email,
