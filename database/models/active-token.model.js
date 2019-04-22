@@ -11,7 +11,7 @@ const ActiveTokenModel = sequelize.define(
             autoIncrement: true,
             primaryKey: true,
         },
-        user_id: Sequelize.INTEGER,
+        account_id: Sequelize.INTEGER,
         token: Sequelize.TEXT,
         lastseen: Sequelize.DATE,
         //Timestamp

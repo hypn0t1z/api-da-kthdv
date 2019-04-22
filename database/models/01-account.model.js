@@ -47,7 +47,7 @@ ProfileModel.belongsTo(AccountModel, { foreignKey: 'account_id' });
 AccountModel.hasMany(RateModel, { foreignKey: 'account_id' });
 RateModel.belongsTo(AccountModel, { foreignKey: 'account_id' });
 
-// AccountModel.hasOne(ActiveToken, {foreignKey: 'user_id'})
-ActiveToken.belongsTo(AccountModel, {foreignKey: 'user_id'})
+AccountModel.hasOne(ActiveToken, {foreignKey: 'account_id'})
+ActiveToken.belongsTo(AccountModel, {foreignKey: 'account_id'})
 
 module.exports = AccountModel;

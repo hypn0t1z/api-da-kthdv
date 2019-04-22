@@ -132,7 +132,7 @@ class AuthMiddleware extends Middleware {
         );
 
         if (required) {
-            return this.sendResponseMessage(required, res);
+            return this.sendResponseMessage(res, 400, required);
         }
 
         if (!validator.isEmail(email)) {
