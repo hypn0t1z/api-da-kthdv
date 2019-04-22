@@ -8,4 +8,9 @@ userRouter.get('/phone/:phone', (req, res, next) => UserMiddleWare.getUserByPhon
 userRouter.get('/', (req, res) => UserController.getUser(req, res));
 userRouter.get('/phone/:phone', (req, res) => UserController.getUserByPhone(req, res))
 
+
+userRouter.get('/:id/profile', (req, res, next) => UserMiddleWare.getUserProfile(req, res, next))
+userRouter.get('/:id/profile', (req, res) => UserController.getUserProfile(req, res))
+
+
 module.exports = userRouter
