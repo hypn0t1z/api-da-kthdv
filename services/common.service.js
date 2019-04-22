@@ -20,7 +20,6 @@ class CommonService {
         }
         file_name = file_name + new Date().getTime();
         if(base64String){
-            let resource = `${root_folder}`;
             let dest = `${root_folder}static/images`;
             fs.writeFile(`${file_name}.png`, base64String, {encoding: 'base64'}, function(err) {
                 fs.createReadStream(`${root_folder}/${file_name}.png`).pipe(fs.createWriteStream(`${dest}/${file_name}.png`));
@@ -39,8 +38,7 @@ class CommonService {
     */
     static async paginate(resource){
         // Init
-        const { ENCODE_MODE } = process.env;
-        const { model, modelTrans, req, where, order, include } = resource;
+        const { model, req, where, order, include } = resource;
         const per_page = req.query.per_page && req.query.per_page > 1 ? parseInt(req.query.per_page) : 10;
         const total = await model.count({ where });
         const last_page = Math.ceil(total / per_page) || 0;
@@ -55,7 +53,7 @@ class CommonService {
             order: order ? order : [ ['id', 'DESC'] ],
             include: include ? include : [],
         });
-
+        console.log(data)
         return {
             total,
             per_page,

@@ -16,6 +16,7 @@ const ProfileModel = sequelize.define(
         avatar: Sequelize.STRING,
         birthday: Sequelize.STRING,
         address_id: Sequelize.INTEGER,
+        status: Sequelize.STRING,
 
         //Timestamp
         createdAt: Sequelize.DATE,

@@ -49,7 +49,5 @@ const UserModel = sequelize.define(
 /**
 * Describes users <=> active_token relationship
 */
-UserModel.hasOne(ActiveTokenModel, { foreignKey: 'user_id' });
-ActiveTokenModel.belongsTo(UserModel, { foreignKey: 'user_id' });
 
 module.exports = UserModel;

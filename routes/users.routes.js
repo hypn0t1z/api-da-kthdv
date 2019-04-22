@@ -1,11 +1,11 @@
 var express = require('express')
 var userRouter = express.Router()
-const userController = require('../controllers/user.controller')
-const userMiddleWare = require('../middlewares/user.middleware')
+const UserController = require('../controllers/user.controller')
+const UserMiddleWare = require('../middlewares/user.middleware')
 
-userRouter.get('/phone/:phone', (req, res, next) => userMiddleWare.getUserByPhone(req, res, next));
+userRouter.get('/phone/:phone', (req, res, next) => UserMiddleWare.getUserByPhone(req, res, next));
 
-
-userRouter.get('/phone/:phone', (req, res) => userController.getUserByPhone(req, res))
+userRouter.get('/', (req, res) => UserController.getUser(req, res));
+userRouter.get('/phone/:phone', (req, res) => UserController.getUserByPhone(req, res))
 
 module.exports = userRouter

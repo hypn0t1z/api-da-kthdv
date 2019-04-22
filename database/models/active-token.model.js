@@ -1,4 +1,4 @@
-const { sequelize, Sequelize } = require('..');
+const { sequelize, Sequelize } = require('../');
 
 /**
 * ActiveTokenModel describes 'active_tokens' table
@@ -11,9 +11,9 @@ const ActiveTokenModel = sequelize.define(
             autoIncrement: true,
             primaryKey: true,
         },
-        user_id: Sequelize.INTEGER,
         token: Sequelize.TEXT,
         lastseen: Sequelize.DATE,
+        account_id: Sequelize.INTEGER,
         //Timestamp
         createdAt: Sequelize.DATE,
         updatedAt: Sequelize.DATE,
