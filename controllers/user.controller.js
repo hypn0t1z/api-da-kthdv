@@ -70,6 +70,19 @@ class UserController extends Controller {
         } else
             return this.sendResponseMessage(res, 404, "user not exist!")
     }
+
+    static async getUserProfile(req, res) {
+        const {id} = req.params;
+
+        const profile = await ProfileModel.findOne({where: {account_id: id}})
+        if (!profile)
+            return this.sendResponseMessage(res, 404, "profile with this id not found", {});
+
+        if (!profile.full_name || !profile.avatar || !profile.birthday || !profile.address_id)
+            return this.sendResponseMessage(res, 404, "profile not complete", profile)
+
+        return this.sendResponseMessage(res, 200, "get profile success", profile)
+    }
 }
 
 module.exports = UserController;

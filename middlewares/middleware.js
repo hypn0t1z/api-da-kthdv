@@ -39,6 +39,10 @@ class Middleware {
         res.status(code).send({code: code, message: msg});
     }
 
+    static sendResponseMessage(res, code, msg) {
+        res.status(code).send({code: code, message: msg});
+    }
+
     /**
     * @summary SendServerError method sends server error message.
     * @description If the 'NODE_ENV' is not 'production' (PROD) of the process environment, adds error message and stack trace in the response body.
