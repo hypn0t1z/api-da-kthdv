@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const passportJWT = require('passport-jwt');
-const UserModel = require('../database/models/user.model');
+const AccountModel = require('../database/models/01-account.model');
 
 const ExtractJwt = passportJWT.ExtractJwt;
 const JwtStrategy = passportJWT.Strategy;
@@ -21,17 +21,17 @@ class JWTService {
     /**
     * This method generates access token by user model.
     *
-    * @param {object} userModel
+    * @param {object} accountModel
     */
-    static generateTokenByUser(userModel) {
-        if (!userModel) {
+    static generateTokenByUser(accountModel) {
+        if (!accountModel) {
             return false;
         }
 
-        const { id, username, email, account_type, avatar } = userModel;
+        const { id, email, account_type, role } = accountModel;
 
         return jwt.sign(
-            { id, username, email, account_type, avatar },
+            { id, email, account_type, role },
             secretOrKey,
         );
     }
@@ -49,9 +49,9 @@ class JWTService {
                 const { id } = jwtPayload;
 
                 try {
-                    const userModel = await UserModel.findOne({ where: { id } });
+                    const accountModel = await AccountModel.findOne({ where: { id } });
 
-                    next(null, userModel || false);
+                    next(null, accountModel || false);
                 } catch (e) {
                     next(null, false);
                 }
