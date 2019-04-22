@@ -2,9 +2,10 @@ const AccountModel = require('../database/models/01-account.model');
 const ProfileModel = require('../database/models/12-profile.model');
 const CommonService = require('../services/common.service');
 const { sequelize, Sequelize } = require('sequelize');
+const Controller = require('./controller')
 const Op = Sequelize.Op;
 
-class UserController {
+class UserController extends Controller {
     /**
      * Get list user with option params: key_words, per_page, page
      * key_words: key word to search ( name, phone, email )
@@ -37,6 +38,7 @@ class UserController {
             include = [
                 {
                     model: ProfileModel,
+                    required: false,
                     where: {
                         full_name: {
                             [Op.like]: '%' + key_words + '%'
@@ -47,7 +49,7 @@ class UserController {
         }
         else{
             where = { status: 'Active' };
-            include = [{ model: ProfileModel }];
+            include = [{ model: ProfileModel, required: false }];
         }
         let resource = { model: AccountModel, req, where, include };
         let data = await CommonService.paginate(resource);
