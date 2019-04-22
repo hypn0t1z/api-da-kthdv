@@ -136,7 +136,8 @@ class AuthController extends Controller{
             district: district ? district : profile.province,
             ward: ward ? ward : profile.ward,
             address_more: address_more ? address_more : profile.address_more,
-            birthday: birthday ? birthday : profile.birthday
+            birthday: birthday ? birthday : profile.birthday,
+            status: 'completed'
         })
         return this.sendResponseMessage(res, 200, 'Cập nhật thông tin thành công')
     }
