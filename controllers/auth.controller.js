@@ -27,7 +27,10 @@ class AuthController extends Controller{
         (activeToken && (await activeToken.update({token}))) ||
         (await ActiveTokenModel.create({ token, account_id: account.id }));
 
-        const res_return = {token: token}
+        const res_return = {
+            token: token,
+            id: account.id
+        }
 
         return this.sendResponseMessage(res, 200, "Login sucess, here is token!!", res_return)
     }
