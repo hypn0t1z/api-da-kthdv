@@ -87,7 +87,7 @@ class AuthController extends Controller{
         }
         await MailService.sendMail(msg, template);
 
-        await ActiveTokenModel.create({token, account_id: user.id});
+        await ActiveTokenModel.create({ token, account_id: user.id });
 
         return this.sendResponseMessage(res, 200,  'Đăng kí thành công, vui lòng kiểm tra email để xác nhận')
     }
