@@ -20,8 +20,7 @@ class UserController extends Controller {
         let where = '';
         let include = '';
         if(key_words && key_words.length ){
-            where = { 
-                status: 'Active',
+            where = {
                 [Op.or]: [
                     {
                         email: {
@@ -48,7 +47,6 @@ class UserController extends Controller {
             ]; 
         }
         else{
-            where = { status: 'Active' };
             include = [{ model: ProfileModel, required: false }];
         }
         let resource = { model: AccountModel, req, where, include };
