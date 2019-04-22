@@ -64,7 +64,6 @@ class UserController extends Controller {
      */
     static async getUserByPhone(req, res) {
         const { phone } = req.params;
-        console.log(phone)
         const user = await AccountModel.findOne({ where: { phone } });
         if (user) {
             return this.sendResponseMessage(res, 200, "user exist!")

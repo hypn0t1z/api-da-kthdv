@@ -15,17 +15,16 @@ class AuthController extends Controller{
      */
     static async login(req, res) {
         // Init
-        const {value, password} = req.body;
+        const { value, password } = req.body;
         let emailRegex = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
         let type = value.match(emailRegex) ? 'email' : 'phone';
-        const user = await AccountModel.findOne({where: {[type]: value}});
-        const token = JWTService.generateTokenByUser(user);
-
+        const account = await AccountModel.findOne( {where: { [type]: value } });
+        const token = JWTService.generateTokenByUser(account);
         // Process
-        const activeToken = await ActiveTokenModel.findOne({where: {user_id: user.id}});
+        const activeToken = await ActiveTokenModel.findOne({where: {account_id: account.id}});
 
         (activeToken && (await activeToken.update({token}))) ||
-        (await ActiveTokenModel.create({token, user_id: user.id}));
+        (await ActiveTokenModel.create({ token, account_id: account.id }));
 
         const res_return = {token: token}
 
@@ -88,7 +87,7 @@ class AuthController extends Controller{
         }
         await MailService.sendMail(msg, template);
 
-        await ActiveTokenModel.create({token, user_id: user.id});
+        await ActiveTokenModel.create({token, account_id: user.id});
 
         return this.sendResponseMessage(res, 200,  'Đăng kí thành công, vui lòng kiểm tra email để xác nhận')
     }
@@ -149,7 +148,6 @@ class AuthController extends Controller{
      */
     static async confirmRegister(req, res) {
         // Init
-        console.log(req.params)
         const {mail_token} = req.params
         const user = await AccountModel.findOne({where: {mail_token: mail_token}});
         if (!user || (user && user.status == 'Active') || !mail_token) {
@@ -157,10 +155,10 @@ class AuthController extends Controller{
         } else {
             const token = JWTService.generateTokenByUser(user);
 
-            const activeToken = await ActiveTokenModel.findOne({where: {user_id: user.id}});
+            const activeToken = await ActiveTokenModel.findOne({where: {account_id: user.id}});
 
             (activeToken && (await activeToken.update({token}))) ||
-            (await ActiveTokenModel.create({token, user_id: user.id}));
+            (await ActiveTokenModel.create({token, account_id: user.id}));
 
             user.update({
                 status: 'Active',
