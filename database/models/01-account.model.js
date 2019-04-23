@@ -1,5 +1,6 @@
 const { sequelize, Sequelize } = require('../');
 const ProfileModel = require('../models/12-profile.model');
+//const ProviderModel = require('./06-provider.model');
 const RateModel = require('../models/11-rate.model');
 const ActiveTokenModel = require('../models/active-token.model')
 
@@ -40,6 +41,8 @@ const AccountModel = sequelize.define(
         tableName: 'accounts',
     },
 );
+/* AccountModel.hasOne(ProviderModel, { foreignKey: 'account_id' });
+ProviderModel.belongsTo(AccountModel, { foreignKey: 'account_id' }); */
 
 AccountModel.hasOne(ProfileModel, { foreignKey: 'account_id' });
 ProfileModel.belongsTo(AccountModel, { foreignKey: 'account_id' });

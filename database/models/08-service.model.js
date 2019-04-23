@@ -30,13 +30,19 @@ const ServiceModel = sequelize.define(
     },
 );
 
-ServiceModel.hasMany(MidServiceModel, { foreignKey: 'service_id' });
-MidServiceModel.belongsTo(ServiceModel, { foreignKey: 'service_id' });
+ServiceModel.hasMany(ServiceTypeModel, { foreignKey: 'service_id' });
+ServiceTypeModel.belongsTo(ServiceModel, { foreignKey: 'service_id' });
 
-ServiceModel.belongsToMany(ServiceTypeModel, { foreignKey: 'service_id', through: MidServiceModel });
-ServiceTypeModel.belongsToMany(ServiceModel, { foreignKey: 'service_type_id', through: MidServiceModel });
+/* ServiceModel.belongsToMany(ServiceTypeModel, { foreignKey: 'service_type_id', through: MidServiceModel });
+ServiceTypeModel.belongsToMany(ServiceModel, { foreignKey: 'service_id', through: MidServiceModel }); */
 
 ServiceModel.hasMany(TransactionModel, { foreignKey: 'service_id' });
 TransactionModel.belongsTo(ServiceModel, { foreignKey: 'service_id' });
+
+/* var UserProjects = sequelize.define('userprojects', {
+    *   started: Sequelize.BOOLEAN
+    * })
+    * User.hasMany(Project, { through: UserProjects })
+    * Project.hasMany(User, { through: UserProjects }) */
 
 module.exports = ServiceModel;

@@ -1,5 +1,5 @@
 const { sequelize, Sequelize } = require('../');
-const ProviderModel = require('../models/06-provider.model');
+const ProviderModel = require('./06-provider.model');
 /**
 * StatusModel describes 'status' table
 */
