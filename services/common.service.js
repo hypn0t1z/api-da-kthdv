@@ -1,6 +1,9 @@
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET: secretOrKey } = process.env;
+const ProvinceModel = require('../database/models/15-devvn_tinhthanhpho.model');
+const DistrictModel = require('../database/models/14-devvn_quanhuyen.model');
+const WardModel = require('../database/models/16-devvn_xaphuongthitran.model');
 class CommonService {
 
     /**
@@ -61,6 +64,26 @@ class CommonService {
             last_page,
             data
         };
+    }
+    /**
+     * 01|002|00040
+     * @param {*} query 
+     */
+    static async getAddress(query){
+        let province = query.substr(0,2);
+        let district = query.substr(2,3);
+        let ward = query.substr(5,9);
+        let address = await ProvinceModel.findOne({ 
+            where: { matp: province }, 
+            include: { 
+                model: DistrictModel, 
+                where: { maqh: district }, 
+                include: {
+                    model: WardModel,
+                    where: { xaid: ward }
+                } 
+            }})
+        return { address }
     }
 }
 

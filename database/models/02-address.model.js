@@ -1,6 +1,6 @@
 const { sequelize, Sequelize } = require('../');
-const ProfileModel = require('../models/12-profile.model');
-const ProviderModel = require('../models/06-provider.model');
+const ProfileModel = require('./12-profile.model');
+const ProviderModel = require('./06-provider.model');
 
 /**
 * AddressModel describes 'Address' table
@@ -13,9 +13,9 @@ const AddressModel = sequelize.define(
             autoIncrement: true,
             primaryKey: true,
         },
-        province: Sequelize.INTEGER,
-        district: Sequelize.INTEGER,
-        ward: Sequelize.INTEGER,
+        province: Sequelize.STRING,
+        district: Sequelize.STRING,
+        ward: Sequelize.STRING,
         address_more: Sequelize.STRING,
 
         //Timestamp
@@ -37,6 +37,6 @@ AddressModel.hasMany(ProfileModel, { foreignKey: 'address_id' });
 ProfileModel.belongsTo(AddressModel, { foreignKey: 'address_id' });
 
 AddressModel.hasMany(ProviderModel, { foreignKey: 'address_id' });
-ProviderModel.belongsTo(ProviderModel, { foreignKey: 'address_id' });
+ProviderModel.belongsTo(AddressModel, { foreignKey: 'address_id' });
 
 module.exports = AddressModel;
