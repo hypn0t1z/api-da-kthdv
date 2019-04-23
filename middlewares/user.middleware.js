@@ -56,6 +56,15 @@ class UserMiddleware extends Middleware {
         }
         next();
     }
+
+    static async getAccount(req, res, next) {
+        const {id} = req.params;
+
+        const account = await AccountModel.findOne({ where: {id}})
+        if (!account)
+            return this.sendResponseMessage(res, 404, `account with id = ${id} not found`)
+        next()
+    }
 }
 
 module.exports = UserMiddleware;

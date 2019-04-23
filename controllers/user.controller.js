@@ -173,6 +173,20 @@ class UserController extends Controller {
         }
         return this.sendResponseMessage(res, 200, "create provider success")
     }
+
+    static async getAccount(req, res) {
+        const {id} = req.params;
+
+        const account = await AccountModel.findOne({ where: {id}})
+
+        const data = {
+            id: account.id,
+            email: account.email,
+            phone: account.phone,
+            role: account.role
+        }
+        return this.sendResponseMessage(res, 200, "Get account success", data)
+    }
 }
 
 module.exports = UserController;
