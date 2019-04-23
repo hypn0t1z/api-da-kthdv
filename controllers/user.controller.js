@@ -91,7 +91,10 @@ class UserController extends Controller {
      */
     static async getProvider(req, res) {
         const {id} = req.params;
-        
+        let user = await AccountModel.findOne({where: {id, status: 'Active'}});
+        if (!user) {
+            return this.sendResponseMessage(res, 400, 'Tài khoản này không tồn tại hoặc chưa được xác nhận');
+        }    
         const provider = await ProviderModel.findOne({where: {account_id: id}, include: [ AddressModel ]})
         let data = {
             identity_card: provider && provider.identity_card ? provider.identity_card : '',
@@ -113,6 +116,7 @@ class UserController extends Controller {
 
     /**
      * Create provider
+     * @description: Check if exist provider, if existed --> Update , else --> Create
      * @param {*} req 
      * @param {*} res 
      */
