@@ -1,5 +1,4 @@
 const { sequelize, Sequelize } = require('..');
-const MidServiceModel = require('../models/13-mid-services.model');
 const ServiceTypeModel = require('../models/07-service-type.model');
 const TransactionModel = require('../models/09-transaction.model');
 /**
@@ -30,11 +29,8 @@ const ServiceModel = sequelize.define(
     },
 );
 
-ServiceModel.hasMany(ServiceTypeModel, { foreignKey: 'service_id' });
-ServiceTypeModel.belongsTo(ServiceModel, { foreignKey: 'service_id' });
-
-/* ServiceModel.belongsToMany(ServiceTypeModel, { foreignKey: 'service_type_id', through: MidServiceModel });
-ServiceTypeModel.belongsToMany(ServiceModel, { foreignKey: 'service_id', through: MidServiceModel }); */
+ServiceModel.hasOne(ServiceTypeModel, { foreignKey: 'service_type_id' });
+ServiceTypeModel.belongsTo(ServiceModel, { foreignKey: 'service_type_id' });
 
 ServiceModel.hasMany(TransactionModel, { foreignKey: 'service_id' });
 TransactionModel.belongsTo(ServiceModel, { foreignKey: 'service_id' });

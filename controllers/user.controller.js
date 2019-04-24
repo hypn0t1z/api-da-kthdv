@@ -91,9 +91,9 @@ class UserController extends Controller {
      */
     static async getProvider(req, res) {
         const {id} = req.params;
-        let user = await AccountModel.findOne({where: {id, status: 'Active'}});
+        let user = await AccountModel.findOne({where: { id, status: 'Active', role: 0b010 }});
         if (!user) {
-            return this.sendResponseMessage(res, 400, 'Tài khoản này không tồn tại hoặc chưa được xác nhận');
+            return this.sendResponseMessage(res, 400, 'Tài khoản này không tồn tại hoặc chưa đăng kí nhà cung cấp dịch vụ');
         }    
         const provider = await ProviderModel.findOne({where: {account_id: id}, include: [ AddressModel ]})
         let data = {
@@ -123,6 +123,9 @@ class UserController extends Controller {
     static async createProvider(req, res) {
         const {id} = req.params;
         const { identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more, latitude, longtitude } = req.body;
+        let account = await AccountModel.findOne({ where: { id } });
+        console.log(account.roles.concat(0b010))
+        account.update({ roles: [0b001, 0b010] });
         const provider = await ProviderModel.findOne({where: {account_id: id}, include: [ AddressModel ]});
         let address = '';
         if(provider){

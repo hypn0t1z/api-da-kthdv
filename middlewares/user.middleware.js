@@ -24,7 +24,11 @@ class UserMiddleware extends Middleware {
      */
     static async createProvider(req, res, next) {
         const {id} = req.params;
-        const { identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more, latitude, longtitude } = req.body;
+        const { identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more } = req.body;
+        let user = await AccountModel.findOne({where: {id, status: 'Active'}});
+        if (!user) {
+            return this.sendResponseMessage(res, 400, 'Tài khoản này không tồn tại hoặc chưa được xác nhận');
+        }
         const message = FieldsMiddleware.simpleCheckRequired(
             { identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more },
             [
@@ -49,10 +53,6 @@ class UserMiddleware extends Middleware {
 
         if (message) {
             return this.sendResponseMessage(res, 400, message)
-        }
-        let user = await AccountModel.findOne({where: {id, status: 'Active'}});
-        if (!user) {
-            return this.sendResponseMessage(res, 400, 'Tài khoản này không tồn tại hoặc chưa được xác nhận');
         }
         next();
     }
