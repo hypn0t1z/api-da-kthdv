@@ -238,6 +238,8 @@ class AuthController extends Controller{
     }
 
     static async isTokenStillAlive(req, res) {
+        const {token} = req.params;
+
         const activeToken = await ActiveTokenModel.findOne({where: {token: token}})
 
         const data = {id: activeToken.account_id}
