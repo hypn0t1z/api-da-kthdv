@@ -91,10 +91,15 @@ class UserController extends Controller {
      */
     static async getProvider(req, res) {
         const {id} = req.params;
-        let user = await AccountModel.findOne({where: { id, status: 'Active', role: 0b010 }});
+        let user = await AccountModel.findOne({where: { id, status: 'Active' }});
         if (!user) {
-            return this.sendResponseMessage(res, 400, 'Tài khoản này không tồn tại hoặc chưa đăng kí nhà cung cấp dịch vụ');
-        }    
+            return this.sendResponseMessage(res, 404, 'Tài khoản này không tồn tại hoặc chưa đăng kí nhà cung cấp dịch vụ');
+        }
+
+        //check is provider
+        if ((user.role & 0b010) === 0)
+            return this.sendResponseMessage(res, 400, 'This account is not provider')
+
         const provider = await ProviderModel.findOne({where: {account_id: id}, include: [ AddressModel ]})
         let data = {
             identity_card: provider && provider.identity_card ? provider.identity_card : '',
