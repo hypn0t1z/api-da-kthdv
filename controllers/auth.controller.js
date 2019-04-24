@@ -236,6 +236,14 @@ class AuthController extends Controller{
     static async uploadAvatar(req, res) {
         return this.sendResponseMessage(res, 200, 'file uploaded')
     }
+
+    static async isTokenStillAlive(req, res) {
+        const activeToken = await ActiveTokenModel.findOne({where: {token: token}})
+
+        const data = {id: activeToken.account_id}
+
+        return this.sendResponseMessage(res, 200, 'Token is still alive, be fun, and here is user id', data)
+    }
 }
 
 module.exports = AuthController;
