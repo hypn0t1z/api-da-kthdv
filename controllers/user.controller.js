@@ -109,8 +109,6 @@ class UserController extends Controller {
             latitude: provider && provider.latitude ? provider.latitude : '',
             longtitude: provider && provider.longtitude ? provider.longtitude : '',
         }
-        /* let x = await CommonService.getAddress('0100200040');
-        res.send({x}) */
         return this.sendResponseMessage(res, 200, "get provider success", data)
     }
 
@@ -124,8 +122,7 @@ class UserController extends Controller {
         const {id} = req.params;
         const { identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more, latitude, longtitude } = req.body;
         let account = await AccountModel.findOne({ where: { id } });
-        console.log(account.roles.concat(0b010))
-        account.update({ roles: [0b001, 0b010] });
+        account.update({ role: 0b010|account.role });
         const provider = await ProviderModel.findOne({where: {account_id: id}, include: [ AddressModel ]});
         let address = '';
         if(provider){
