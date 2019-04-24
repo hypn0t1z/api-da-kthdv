@@ -70,17 +70,19 @@ class CommonService {
      * @param {*} query 
      */
     static async getAddress(query){
-        let province = query.substr(0,2);
-        let district = query.substr(2,3);
-        let ward = query.substr(5,9);
+        let province = query ? query.substr(0,2) : '';
+        let district = query ? query.substr(2,3) : '';
+        let ward = query ? query.substr(5,9) : '';
         let address = await ProvinceModel.findOne({ 
-            where: { matp: province }, 
+            where: province ? { matp: province } : {}, 
             include: { 
                 model: DistrictModel, 
-                where: { maqh: district }, 
+                required: false,
+                where: district ? { maqh: district } : {}, 
                 include: {
                     model: WardModel,
-                    where: { xaid: ward }
+                    required: false,
+                    where: ward ? { xaid: ward } : {}
                 } 
             }})
         return { address }
