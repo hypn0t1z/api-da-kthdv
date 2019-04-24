@@ -72,7 +72,7 @@ class AuthController extends Controller{
             phone: phone,
             role: 0b001,
             mail_token: mail_token,
-        });
+        });      
         ProfileModel.create({
             account_id: user.id,
         })
