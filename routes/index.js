@@ -9,7 +9,7 @@ router.use('/auth' , authroutes);
 router.use('/image', imageroutes);
 router.use('/user' , userroutes);
 router.use('/address', addressroutes);
-router.use('/service', serviceroutes);
+//router.use('/service', serviceroutes);
 
 router.get('/',  (req, res) => {
     res.send("Welcome to my vps api DA-KTHDV");
