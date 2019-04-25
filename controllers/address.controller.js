@@ -4,6 +4,7 @@ const CommonService = require('../services/common.service');
 const WardModel = require('../database/models/16-devvn_xaphuongthitran.model');
 const DistrictModel = require('../database/models/14-devvn_quanhuyen.model');
 const ProvinceModel = require('../database/models/15-devvn_tinhthanhpho.model');
+const AccountModel = require('../database/models/01-account.model');
 
 class AddressController extends Controller {
     /**
@@ -30,7 +31,9 @@ class AddressController extends Controller {
 
     static async test(req, res) {
         /* const {id, order_id, status, price_amount, price_currency, receive_currency, receive_amount, pay_amount, pay_currency, created_at} = req.body; */
-        return this.sendResponseMessage(res, 200, "get all addresses success")
+        let test = await AccountModel.findOne({where: {id: 3}});
+        await test.update({account_type: 'LOL'})
+        return this.sendResponseMessage(res, 200, "get all addresses success", test)
     }
 }
 module.exports = AddressController;
