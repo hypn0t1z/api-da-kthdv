@@ -30,7 +30,8 @@ class AddressController extends Controller {
     }
 
     static async test(req, res) {
-        /* const {id, order_id, status, price_amount, price_currency, receive_currency, receive_amount, pay_amount, pay_currency, created_at} = req.body; */
+        const {id, order_id, status, price_amount, price_currency, receive_currency, receive_amount, pay_amount, pay_currency, created_at} = req.body;
+        console.log(req.body);
         let test = await AccountModel.findOne({where: {id: 3}});
         await test.update({account_type: 'LOL'})
         return this.sendResponseMessage(res, 200, "get all addresses success", test)
