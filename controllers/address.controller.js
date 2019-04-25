@@ -27,5 +27,10 @@ class AddressController extends Controller {
         let result = await CommonService.getAddress(address);
         return this.sendResponseMessage(res, 200, "get detail address success", result)
     }
+
+    static async test(req, res) {
+        const {id, order_id, status, price_amount, price_currency, receive_currency, receive_amount, pay_amount, pay_currency, created_at} = req.body;
+        return this.sendResponseMessage(res, 200, "get all addresses success")
+    }
 }
 module.exports = AddressController;
