@@ -4,12 +4,13 @@ const imageroutes = require('./image.routes');
 const userroutes = require('./users.routes');
 const addressroutes = require('./address.routes');
 const serviceroutes = require('./service.routes');
+const { accessToken } = require('../middlewares/auth.middleware');
 
 router.use('/auth' , authroutes);
-router.use('/image', imageroutes);
-router.use('/user' , userroutes);
+router.use('/image',accessToken, imageroutes);
+router.use('/user', accessToken, userroutes);
 router.use('/address', addressroutes);
-//router.use('/service', serviceroutes);
+router.use('/service', accessToken, serviceroutes);
 
 router.get('/',  (req, res) => {
     res.send("Welcome to my vps api DA-KTHDV");

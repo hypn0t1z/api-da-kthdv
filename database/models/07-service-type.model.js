@@ -1,5 +1,4 @@
-const { sequelize, Sequelize } = require('..');
-
+const { sequelize, Sequelize } = require('../');
 /**
 * ServiceTypeModel describes 'service_types' table
 */
