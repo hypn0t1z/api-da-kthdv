@@ -1,4 +1,4 @@
-const { sequelize, Sequelize } = require('..');
+const { sequelize, Sequelize } = require('../');
 const ServiceTypeModel = require('../models/07-service-type.model');
 const TransactionModel = require('../models/09-transaction.model');
 /**
@@ -13,9 +13,9 @@ const ServiceModel = sequelize.define(
             autoIncrement: true
         },
         provider_id: Sequelize.INTEGER,
-        address_id: Sequelize.INTEGER,
         price_min: Sequelize.FLOAT,
         price_max: Sequelize.FLOAT,
+        service_type_id: Sequelize.INTEGER,
 
         //Timestamp
         createdAt: Sequelize.DATE,
@@ -29,8 +29,8 @@ const ServiceModel = sequelize.define(
     },
 );
 
-ServiceModel.hasOne(ServiceTypeModel, { foreignKey: 'service_type_id' });
-ServiceTypeModel.belongsTo(ServiceModel, { foreignKey: 'service_type_id' });
+ServiceTypeModel.hasOne(ServiceModel, { foreignKey: 'service_type_id' });
+ServiceModel.belongsTo(ServiceTypeModel, { foreignKey: 'service_type_id' });
 
 ServiceModel.hasMany(TransactionModel, { foreignKey: 'service_id' });
 TransactionModel.belongsTo(ServiceModel, { foreignKey: 'service_id' });
