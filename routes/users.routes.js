@@ -22,7 +22,9 @@ userRouter.get('/:id/profile', (req, res) => UserController.getUserProfile(req, 
 userRouter.get('/:id/provider', (req, res) => UserController.getProvider(req, res));
 userRouter.post('/:id/provider', (req, res) => UserController.createProvider(req, res));
 
-userRouter.get('/:id', (req, res) => UserController.getAccount(req, res))
+userRouter.get('/:id', (req, res) => UserController.getAccount(req, res));
+
+userRouter.get('/block/:id', (req, res) => UserController.blockAccount(req, res))
 
 
 module.exports = userRouter

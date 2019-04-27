@@ -2,6 +2,7 @@ const AccountModel = require('../database/models/01-account.model');
 const ProfileModel = require('../database/models/12-profile.model');
 const AddressModel = require('../database/models/02-address.model');
 const ProviderModel = require('../database/models/06-provider.model');
+const ImageModel = require('../database/models/10-images-service.model');
 const CommonService = require('../services/common.service');
 const { sequelize, Sequelize } = require('sequelize');
 const Controller = require('./controller')
@@ -93,14 +94,16 @@ class UserController extends Controller {
         const {id} = req.params;
         let user = await AccountModel.findOne({where: { id, status: 'Active' }});
         if (!user) {
-            return this.sendResponseMessage(res, 404, 'Tài khoản này không tồn tại hoặc chưa đăng kí nhà cung cấp dịch vụ');
+            return this.sendResponseMessage(res, 404, 'Tài khoản này không tồn tại hoặc chưa xác nhận email');
         }
 
         //check is provider
         if ((user.role & 0b010) === 0)
             return this.sendResponseMessage(res, 400, 'This account is not provider')
 
-        const provider = await ProviderModel.findOne({where: {account_id: id}, include: [ AddressModel ]})
+        const provider = await ProviderModel.findOne({where: {account_id: id}, include: [ AddressModel, ImageModel ]});
+        let check_images = await ImageModel.findOne({ where: { provider_id: 2 } });
+            console.log(check_images)
         let data = {
             identity_card: provider && provider.identity_card ? provider.identity_card : '',
             open_time: provider && provider.open_time ? provider.open_time : '',
@@ -113,8 +116,9 @@ class UserController extends Controller {
             status_id: provider && provider.status_id ? provider.status_id : '',
             latitude: provider && provider.latitude ? provider.latitude : '',
             longtitude: provider && provider.longtitude ? provider.longtitude : '',
+            images: provider && provider.images_services ? provider.images_services : ''
         }
-        return this.sendResponseMessage(res, 200, "get provider success", data)
+        return this.sendResponseMessage(res, 200, "Get provider success", data)
     }
 
     /**
@@ -125,10 +129,10 @@ class UserController extends Controller {
      */
     static async createProvider(req, res) {
         const {id} = req.params;
-        const { identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more, latitude, longtitude } = req.body;
-        let account = await AccountModel.findOne({ where: { id } });
+        const { identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more, latitude, longtitude, images } = req.body;
+        let account = await AccountModel.findOne({ where: { id, status: 'Active' } });
         account.update({ role: 0b010|account.role });
-        const provider = await ProviderModel.findOne({where: {account_id: id}, include: [ AddressModel ]});
+        const provider = await ProviderModel.findOne({ where: { account_id: id }, include: [ AddressModel ]});
         let address = '';
         if(provider){
             if(provider.address){
@@ -155,7 +159,7 @@ class UserController extends Controller {
                 address_id: address.id ,
                 latitude: latitude ? latitude : provider.latitude,
                 longtitude: longtitude ? longtitude : provider.longtitude
-            })
+            })         
         }
         else{
             address = await AddressModel.create({
@@ -176,22 +180,69 @@ class UserController extends Controller {
                 longtitude: longtitude ? longtitude : '00.00'
             })
         }
+        if(images.length > 0){
+            let check_images = await ImageModel.findAll({ where: { provider_id: provider.id } });
+            if(check_images && Object.keys(check_images).length){
+                for(let i in check_images) {
+                    check_images[i].destroy();
+                }
+            }
+            for( let i in images ){
+                await ImageModel.create({
+                    provider_id: provider.id,
+                    path: await CommonService.uploadImage(images[i].path),
+                    description: images[i].description
+                })
+            }
+        }
         return this.sendResponseMessage(res, 200, "create provider success")
     }
 
+    /**
+     * Get account by id
+     * @param {*} req 
+     * @param {*} res 
+     */
     static async getAccount(req, res) {
         const {id} = req.params;
 
-        const account = await AccountModel.findOne({ where: {id}})
+        const account = await AccountModel.findOne({ where: {id}, include: [ProfileModel]})
 
         const data = {
             id: account.id,
             email: account.email,
             phone: account.phone,
-            role: account.role
+            role: account.role,
+            profle: account.profile
         }
         return this.sendResponseMessage(res, 200, "Get account success", data)
     }
+
+    /**
+     * Block account  /api/user/block/:id
+     */
+    static async blockAccount(req, res){
+        const {id} = req.params;
+        let user = req.user;
+        if ((user.role & 0b100) === 0){
+            return this.sendResponseMessage(res, 401, 'Không được phép')
+        }
+        let check_account = await AccountModel.findOne({ where: { id, status: 'Active' }});
+        if(check_account){
+            if(check_account.role == 0b100){
+                return this.sendResponseMessage(res, 401, 'Không thể xoá tài khoản Admin');
+            }else{
+                await check_account.update({
+                    status: 'Banned',
+                    role: 0b000,
+                })
+            }
+        }else{
+            return this.sendResponseMessage(res, 404, 'Tài khoản đã bị chặn hoặc không tồn tại');
+        }
+        return this.sendResponseMessage(res, 200, 'Chặn thành công', check_account);
+    }
+
 }
 
 module.exports = UserController;
