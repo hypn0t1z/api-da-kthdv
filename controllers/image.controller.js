@@ -5,6 +5,7 @@ class ImageController extends Controller{
 
     /**
      * Function get image 
+     * <img src="Gọi api getImage() với tham số là {path}"
      */
     static async getImage(req, res) {
         const url = req.headers.host;
