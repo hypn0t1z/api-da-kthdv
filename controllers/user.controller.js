@@ -124,7 +124,9 @@ class UserController extends Controller {
     /**
      * Create provider
      * @description: Check if exist provider, if existed --> Update , else --> Create
-     * @param {*} req 
+     * 
+     * @param {*} req images = [{ path: '{base64String}', description: '(option)' }, 
+     *                          { path: '{base64String}', description: '(option)' }] 
      * @param {*} res 
      */
     static async createProvider(req, res) {
@@ -134,6 +136,7 @@ class UserController extends Controller {
         account.update({ role: 0b010|account.role });
         const provider = await ProviderModel.findOne({ where: { account_id: id }, include: [ AddressModel ]});
         let address = '';
+        let message = '';
         if(provider){
             if(provider.address){
                 address = await provider.address.update({
@@ -151,7 +154,7 @@ class UserController extends Controller {
                     addr_more
                 })
             }
-            provider.update({
+            await provider.update({
                 identity_card: identity_card ? identity_card : provider.identity_card,
                 open_time: open_time ? open_time : provider.open_time,
                 close_time: close_time ? close_time : provider.close_time,
@@ -159,7 +162,8 @@ class UserController extends Controller {
                 address_id: address.id ,
                 latitude: latitude ? latitude : provider.latitude,
                 longtitude: longtitude ? longtitude : provider.longtitude
-            })         
+            })
+            message = 'Cập nhật nhà cung cấp dịch vụ thành công';        
         }
         else{
             address = await AddressModel.create({
@@ -179,6 +183,7 @@ class UserController extends Controller {
                 latitude: latitude ? latitude : '00.00',
                 longtitude: longtitude ? longtitude : '00.00'
             })
+            message = 'Thêm mới nhà cung cấp dịch vụ thành công'
         }
         if(images.length > 0){
             let check_images = await ImageModel.findAll({ where: { provider_id: provider.id } });
@@ -195,7 +200,7 @@ class UserController extends Controller {
                 })
             }
         }
-        return this.sendResponseMessage(res, 200, "create provider success")
+        return this.sendResponseMessage(res, 200, message)
     }
 
     /**
