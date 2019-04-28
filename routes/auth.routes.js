@@ -22,6 +22,8 @@ authRouter.post('/register', (req, res) => AuthController.register(req, res));
 authRouter.get('/profile/:id', (req, res) => AuthController.getProfile(req, res)); // id = account_id
 authRouter.post('/before/register', (req, res) => AuthController.beforeRegister(req, res));
 authRouter.post('/upload-avatar/', (req, res) => AuthController.uploadAvatar(req, res))
+authRouter.get('/is-token-still-alive/:token', (req, res) => AuthController.isTokenStillAlive(req, res))
+
 
 /**
  * Confirm api
