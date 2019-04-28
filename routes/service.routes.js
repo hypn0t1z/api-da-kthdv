@@ -18,5 +18,6 @@ serviceRouter.get('/edit/:id', (req, res) => ServiceController.getEdit(req, res)
 serviceRouter.get('/create', (req, res) => ServiceController.getCreate(req, res));
 serviceRouter.post('/create', (req, res) => ServiceController.createService(req, res));
 serviceRouter.post('/update/:id', (req, res) => ServiceController.updateService(req, res));
+serviceRouter.delete('/delete/:id', (req, res) => ServiceController.deleteService(req, res));
 
 module.exports = serviceRouter;

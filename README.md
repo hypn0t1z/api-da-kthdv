@@ -69,3 +69,29 @@ get: /block/:account_id
 get: /
 params: provider_id
 
+## Get profile by account id
+get: user/:account_id/profile
+
+## Create profile
+post: user/create-profile
+params: province, district, ward, address_more, birthday, avatar
+body:{
+        "avatar": base64String,
+        "province": "001",
+        "district": "0002",
+        "ward": "00004",
+        "address_more: "K85/H15/14",
+        "birthday": "1996-10-17",
+    }
+
+## Update Profile
+post: user/:account_id/update-profile
+params: province, district, ward, address_more, birthday, avatar
+body:{
+        "avatar": base64String,
+        "province": "001",
+        "district": "0002",
+        "ward": "00004",
+        "address_more: "K85/H15/14",
+        "birthday": "1996-10-17",
+    }

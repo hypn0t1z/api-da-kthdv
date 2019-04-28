@@ -110,7 +110,7 @@ class AuthController extends Controller{
     * @author Hung Dang
     */
     static async getProfile(req, res) {
-        const {id} = req.params;
+        const {id} = req.params;  // account_id
         let profile = await ProfileModel.findOne({where: { account_id: id }});
         let data = {};
         if (profile) {
@@ -128,28 +128,6 @@ class AuthController extends Controller{
         } else {
             return this.sendResponseMessage(res, 404, 'Tài khoản này không tồn tại hoặc chưa được xác nhận')
         }
-    }
-
-    /**
-     * Create profile
-     * @param {*} req
-     * @param {*} res
-     */
-    static async createProfile(req, res) {
-        const {id} = req.params;
-        const {province, district, ward, address_more, birthday, avatar} = req.body;
-        let profile = await ProfileModel.findOne({where: { account_id: id }});
-        let image = avatar ? CommonService.uploadImage(avatar) : profile.avatar;
-        await profile.update({
-            avatar: image,
-            province: province ? province : profile.province,
-            district: district ? district : profile.province,
-            ward: ward ? ward : profile.ward,
-            address_more: address_more ? address_more : profile.address_more,
-            birthday: birthday ? birthday : profile.birthday,
-            status: 'completed'
-        })
-        return this.sendResponseMessage(res, 200, 'Cập nhật thông tin thành công')
     }
 
     /**

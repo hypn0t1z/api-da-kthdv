@@ -71,19 +71,6 @@ class UserController extends Controller {
         } else
             return this.sendResponseMessage(res, 404, "user not exist!")
     }
-
-    static async getUserProfile(req, res) {
-        const {id} = req.params;
-
-        const profile = await ProfileModel.findOne({where: {account_id: id}})
-        if (!profile)
-            return this.sendResponseMessage(res, 404, "profile with this id not found", {});
-
-        if (!profile.full_name || !profile.avatar || !profile.birthday || !profile.address_id)
-            return this.sendResponseMessage(res, 404, "profile not complete", profile)
-
-        return this.sendResponseMessage(res, 200, "get profile success", profile)
-    }
     
     /**
      * Get info provider
@@ -103,7 +90,6 @@ class UserController extends Controller {
 
         const provider = await ProviderModel.findOne({where: {account_id: id}, include: [ AddressModel, ImageModel ]});
         let check_images = await ImageModel.findOne({ where: { provider_id: 2 } });
-            console.log(check_images)
         let data = {
             identity_card: provider && provider.identity_card ? provider.identity_card : '',
             open_time: provider && provider.open_time ? provider.open_time : '',
@@ -225,6 +211,8 @@ class UserController extends Controller {
 
     /**
      * Block account  /api/user/block/:id
+     * @param {id}
+     * @author Hung Dang
      */
     static async blockAccount(req, res){
         const {id} = req.params;
@@ -248,6 +236,82 @@ class UserController extends Controller {
         return this.sendResponseMessage(res, 200, 'Chặn thành công', check_account);
     }
 
+    /**
+     * Check profile with account id
+     * @param {id} req  
+     * @param {*} res 
+     */
+    static async isExistProfile(req, res){
+        const { id } = req.params; // account_id
+        let profile = await ProfileModel.findOne({where: { account_id: id }});
+        if(profile){
+            return this.sendResponseMessage(res, 200,  'Profile Existed', profile)
+        }
+        return this.sendResponseMessage(res, 404,  'Bạn chưa có thông tin cá nhân. Vui lòng tạo thông tin và thử lại')
+    }
+
+    /**
+     * Get profile info
+     * @param {*} req 
+     * @param {*} res 
+     * @author Tuan Tien Ty
+     */
+    static async getUserProfile(req, res) {
+        const {id} = req.params;
+
+        const profile = await ProfileModel.findOne({where: {account_id: id}})
+        if (!profile)
+            return this.sendResponseMessage(res, 404, "profile with this id not found", {});
+
+        if (!profile.full_name || !profile.avatar || !profile.birthday || !profile.address_id)
+            return this.sendResponseMessage(res, 404, "profile not complete", profile)
+
+        return this.sendResponseMessage(res, 200, "get profile success", profile)
+    }
+
+    /**
+     * Create profile
+     * @param {*} req 
+     * @param {*} res 
+     */
+    static async createProfile(req, res) {
+        const { id } = req.user;
+        const {province, district, ward, address_more, birthday, avatar} = req.body;
+        let image = avatar ? CommonService.uploadImage(avatar) : '';
+        await ProfileModel.create({
+            account_id: id,
+            avatar: image,
+            province: province ? province : '',
+            district: district ? district : '',
+            ward: ward ? ward : '',
+            address_more: address_more ? address_more : '',
+            birthday: birthday ? birthday : '',
+            status: 'created'
+        })
+        return this.sendResponseMessage(res, 200, 'Tạo thông tin thành công')
+    }
+
+    /**
+     * Update profile
+     * @param {*} req
+     * @param {*} res
+     */
+    static async updateProfile(req, res) {
+        const {id} = req.params;
+        const {province, district, ward, address_more, birthday, avatar} = req.body;
+        let profile = await ProfileModel.findOne({where: { account_id: id }});
+        let image = avatar ? CommonService.uploadImage(avatar) : profile.avatar;
+        await profile.update({
+            avatar: image,
+            province: province ? province : profile.province,
+            district: district ? district : profile.province,
+            ward: ward ? ward : profile.ward,
+            address_more: address_more ? address_more : profile.address_more,
+            birthday: birthday ? birthday : profile.birthday,
+            status: 'updated'
+        })
+        return this.sendResponseMessage(res, 200, 'Cập nhật thông tin thành công')
+    }
 }
 
 module.exports = UserController;
