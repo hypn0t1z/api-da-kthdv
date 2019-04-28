@@ -57,6 +57,11 @@ class UserMiddleware extends Middleware {
         next();
     }
 
+    /**
+     * Get Account
+     * @param {account_id} id
+     * @author Hoang Tuan
+     */
     static async getAccount(req, res, next) {
         const {id} = req.params;
 
@@ -65,6 +70,45 @@ class UserMiddleware extends Middleware {
             return this.sendResponseMessage(res, 404, `account with id = ${id} not found`)
         next()
     }
+
+    /**
+     * Validate profile request
+     * @param { id }
+     * @author Hung Dang
+     */
+    static async createOrUpdate(req, res, next) {
+        const {province, district, ward, address_more, birthday} = req.body;
+        const {id} = req.params; // account_id
+        const message = FieldsMiddleware.simpleCheckRequired(
+            {province, district, ward, address_more, birthday},
+            [
+                'province',
+                'district',
+                'ward',
+                'address_more',
+                'birthday',
+            ],
+            [
+                'Tỉnh/Thành phố không được bỏ trống',
+                'Quận/Huyện không được bỏ trống',
+                'Phường/Xã không được bỏ trống',
+                'Bạn không thể bỏ trống trường này',
+                'Ngày sinh không được bỏ trống',
+            ]
+        );
+
+        if (message) {
+            return this.sendResponseMessage(res, 400, message)
+        }
+        if(id){
+            let user = await AccountModel.findOne({where: {id, status: 'Active'}});
+            if (!user) {
+                return this.sendResponseMessage(res, 400, 'Tài khoản này không tồn tại hoặc chưa được xác nhận');
+            }
+        }
+        next();
+    }
+
 }
 
 module.exports = UserMiddleware;

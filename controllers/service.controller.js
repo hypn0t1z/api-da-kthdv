@@ -86,6 +86,11 @@ class ServiceController extends Controller {
         return this.sendResponseMessage(res, 200, "Get edit info service success", data);
     }
 
+    /**
+     * Update Service by service id
+     * @param {*} req 
+     * @param {*} res 
+     */
     static async updateService(req, res) {
         const { serviceDt } = req.body;
         const { id } = req.params;
@@ -96,6 +101,24 @@ class ServiceController extends Controller {
             service_type_id: serviceDt.service_type_id
         })
         return this.sendResponseMessage(res, 200, "Update service success", data );
+    }
+
+    /**
+     * Delete a service by service id
+     * @param { id } req
+     * @param {*} res
+     * @author Hung Dang
+     */
+    static async deleteService(req, res) {
+        const { id } = req.params; // service_id
+        let service = await ServiceModel.findOne({ where: { id } });
+        if(!service){
+            return this.sendResponseMessage(res, 404, "Service not found");
+        }
+        let provider_id = service.provider_id;
+        await service.destroy();
+        let services = await ServiceModel.findAll({ where: { provider_id } });
+        return this.sendResponseMessage(res, 200, "Delete service success", services);
     }
 }
 module.exports = ServiceController

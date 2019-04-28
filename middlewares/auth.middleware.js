@@ -2,6 +2,7 @@ const passport = require('passport');
 const Middleware = require('./middleware');
 const FieldsMiddleware = require('./fields.middleware');
 const AccountModel = require('../database/models/01-account.model');
+const ProfileModel = require('../database/models/12-profile.model');
 const ActiveTokenModel = require('../database/models/active-token.model')
 const bcrypt = require('bcryptjs');
 const validator = require('validator');
@@ -163,42 +164,7 @@ class AuthMiddleware extends Middleware {
 
         next();
     }
-
-    /**
-     * Validate profile request
-     */
-    static async createProfile(req, res, next) {
-        const {province, district, ward, address_more, birthday} = req.body;
-        const {id} = req.params;
-        const message = FieldsMiddleware.simpleCheckRequired(
-            {province, district, ward, address_more, birthday},
-            [
-                'province',
-                'district',
-                'ward',
-                'address_more',
-                'birthday',
-            ],
-            [
-                'Tỉnh/Thành phố không được bỏ trống',
-                'Quận/Huyện không được bỏ trống',
-                'Phường/Xã không được bỏ trống',
-                'Bạn không thể bỏ trống trường này',
-                'Ngày sinh không được bỏ trống',
-            ]
-        );
-
-        if (message) {
-            return this.sendResponseMessage(res, 400, message)
-        }
-
-        let user = await AccountModel.findOne({where: {id, status: 'Active'}});
-        if (!user) {
-            return this.sendResponseMessage(res, 400, 'Tài khoản này không tồn tại hoặc chưa được xác nhận');
-        }
-        next();
-    }
-
+    
     /**
      * Validate forgot password request
      */
