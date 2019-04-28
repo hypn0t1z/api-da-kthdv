@@ -138,7 +138,7 @@ class AuthController extends Controller{
     static async createProfile(req, res) {
         const {id} = req.params;
         const {province, district, ward, address_more, birthday, avatar} = req.body;
-        let profile = await ProfileModel.findOne({where: { id }});
+        let profile = await ProfileModel.findOne({where: { account_id: id }});
         let image = avatar ? CommonService.uploadImage(avatar) : profile.avatar;
         await profile.update({
             avatar: image,
