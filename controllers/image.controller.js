@@ -27,6 +27,10 @@ class ImageController extends Controller{
         const data = {image: image};
         return this.sendResponseMessage(res, 200, "upload image success", data);
     }
+
+    static async encodeBase64(req, res) {
+      
+    }
 }
 
 module.exports = ImageController;

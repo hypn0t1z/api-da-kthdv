@@ -96,3 +96,4 @@ body:{
         "birthday": "1996-10-17",
     }
 
+## Get Image
