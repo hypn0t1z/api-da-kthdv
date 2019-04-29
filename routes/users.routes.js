@@ -7,10 +7,12 @@ const UserMiddleWare = require('../middlewares/user.middleware')
  * Middlewares
  */
 userRouter.get('/phone/:phone', (req, res, next) => UserMiddleWare.getUserByPhone(req, res, next));
-userRouter.get('/:id/profile', (req, res, next) => UserMiddleWare.getUserProfile(req, res, next));
+// provider
 userRouter.post('/:id/provider', (req, res, next) => UserMiddleWare.createProvider(req, res, next))
 userRouter.get('/:id', (req, res, next) => UserMiddleWare.getAccount(req, res, next))
-userRouter.post('/create-profile', (req, res, next) => UserMiddleWare.createOrUpdate(req, res, next));
+// profile
+userRouter.get('/:id/profile', (req, res, next) => UserMiddleWare.getUserProfile(req, res, next));
+userRouter.post('/:id/create-profile', (req, res, next) => UserMiddleWare.createOrUpdate(req, res, next));
 userRouter.post('/:id/update-profile', (req, res, next) => UserMiddleWare.createOrUpdate(req, res, next));
 
 /**
@@ -21,7 +23,7 @@ userRouter.get('/phone/:phone', (req, res) => UserController.getUserByPhone(req,
 // profile
 userRouter.get('/:id/check-profile', (req, res) => UserController.isExistProfile(req, res)); // account_id
 userRouter.get('/:id/profile', (req, res) => UserController.getUserProfile(req, res)); // account_id
-userRouter.post('/create-profile', (req, res) => UserController.createProfile(req, res));
+userRouter.post('/:id/create-profile', (req, res) => UserController.createProfile(req, res));
 userRouter.post('/:id/update-profile', (req, res) => UserController.updateProfile(req, res)); // account_id
 // provider
 userRouter.get('/:id/provider', (req, res) => UserController.getProvider(req, res));
