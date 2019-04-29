@@ -2,6 +2,7 @@ var express = require('express')
 var serviceRouter = express.Router();
 const ServiceController = require('../controllers/service.controller');
 const ServiceMiddleware = require('../middlewares/service.middleware');
+const { accessToken } = require('../middlewares/auth.middleware');
 
 /**
  * Middlewares
@@ -16,8 +17,8 @@ serviceRouter.post('/update/:id', (req, res, next) => ServiceMiddleware.updateSe
 serviceRouter.get('/', (req, res) => ServiceController.getList(req, res));
 serviceRouter.get('/edit/:id', (req, res) => ServiceController.getEdit(req, res));
 serviceRouter.get('/create', (req, res) => ServiceController.getCreate(req, res));
-serviceRouter.post('/create', (req, res) => ServiceController.createService(req, res));
-serviceRouter.post('/update/:id', (req, res) => ServiceController.updateService(req, res));
-serviceRouter.delete('/delete/:id', (req, res) => ServiceController.deleteService(req, res));
+serviceRouter.post('/create', accessToken, (req, res) => ServiceController.createService(req, res));
+serviceRouter.patch('/update/:id', accessToken, (req, res) => ServiceController.updateService(req, res));
+serviceRouter.delete('/delete/:id', accessToken, (req, res) => ServiceController.deleteService(req, res));
 
 module.exports = serviceRouter;
