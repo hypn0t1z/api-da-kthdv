@@ -13,8 +13,8 @@ userRouter.post('/:id/provider', accessToken, (req, res, next) => UserMiddleWare
 userRouter.get('/:id', (req, res, next) => UserMiddleWare.getAccount(req, res, next))
 // profile
 userRouter.get('/:id/profile', (req, res, next) => UserMiddleWare.getUserProfile(req, res, next));
-userRouter.post('/:id/create-profile', accessToken, (req, res, next) => UserMiddleWare.createOrUpdate(req, res, next));
-userRouter.patch('/:id/update-profile', accessToken, (req, res, next) => UserMiddleWare.createOrUpdate(req, res, next));
+userRouter.post('/:id/create-profile', accessToken, (req, res, next) => UserMiddleWare.create(req, res, next));
+userRouter.patch('/:id/update-profile', accessToken, (req, res, next) => UserMiddleWare.update(req, res, next));
 
 /**
  * Controllers
