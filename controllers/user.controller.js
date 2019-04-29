@@ -270,14 +270,14 @@ class UserController extends Controller {
     }
 
     /**
-     * Create profile
+     * Create profile with account id
      * @param {*} req 
      * @param {*} res 
      */
     static async createProfile(req, res) {
-        const { id } = req.user;
+        const { id } = req.params;
         const {province, district, ward, address_more, birthday, avatar} = req.body;
-        let image = avatar ? CommonService.uploadImage(avatar) : '';
+        let image = avatar ? await CommonService.uploadImage(avatar) : '';
         let address = await AddressModel.create({
             province,
             district,
@@ -319,7 +319,7 @@ class UserController extends Controller {
                 address_more
             })
         }
-        let image = avatar ? CommonService.uploadImage(avatar) : profile.avatar;
+        let image = avatar ? await CommonService.uploadImage(avatar) : profile.avatar;
         await profile.update({
             avatar: image,
             address_id: address.id,
