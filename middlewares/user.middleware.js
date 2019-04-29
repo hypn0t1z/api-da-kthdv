@@ -77,7 +77,7 @@ class UserMiddleware extends Middleware {
      * @param { id }
      * @author Hung Dang
      */
-    static async createOrUpdate(req, res, next) {
+    static async create(req, res, next) {
         const {province, district, ward, address_more, birthday, full_name} = req.body;
         const {id} = req.params; // account_id
         const message = FieldsMiddleware.simpleCheckRequired(
@@ -112,6 +112,46 @@ class UserMiddleware extends Middleware {
         next();
     }
 
+    static async update(req, res, next) {
+        const {province, district, ward, address_more, birthday, full_name} = req.body;
+        const {id} = req.params; // account_id
+
+        const profile = ProfileModel.findOne({ where: {account_id: id}})
+
+        if (!profile)
+            return this.sendResponseMessage(res, 400, "This account not have profile!");
+
+        const message = FieldsMiddleware.simpleCheckRequired(
+            {full_name, province, district, ward, address_more, birthday},
+            [
+                "full_name",
+                'province',
+                'district',
+                'ward',
+                'address_more',
+                'birthday',
+            ],
+            [
+                'Họ và tên không được để trống',
+                'Tỉnh/Thành phố không được bỏ trống',
+                'Quận/Huyện không được bỏ trống',
+                'Phường/Xã không được bỏ trống',
+                'Số nhà/Ngõ/Ngách không được bỏ trống',
+                'Ngày sinh không được bỏ trống',
+            ]
+        );
+
+        if (message) {
+            return this.sendResponseMessage(res, 400, message)
+        }
+        if(id){
+            let user = await AccountModel.findOne({where: {id, status: 'Active'}});
+            if (!user) {
+                return this.sendResponseMessage(res, 400, 'Tài khoản này không tồn tại hoặc chưa được xác nhận');
+            }
+        }
+        next();
+    }
 }
 
 module.exports = UserMiddleware;
