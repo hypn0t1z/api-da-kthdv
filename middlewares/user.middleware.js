@@ -78,11 +78,12 @@ class UserMiddleware extends Middleware {
      * @author Hung Dang
      */
     static async createOrUpdate(req, res, next) {
-        const {province, district, ward, address_more, birthday} = req.body;
+        const {province, district, ward, address_more, birthday, full_name} = req.body;
         const {id} = req.params; // account_id
         const message = FieldsMiddleware.simpleCheckRequired(
-            {province, district, ward, address_more, birthday},
+            {full_name, province, district, ward, address_more, birthday},
             [
+                "full_name",
                 'province',
                 'district',
                 'ward',
@@ -90,10 +91,11 @@ class UserMiddleware extends Middleware {
                 'birthday',
             ],
             [
+                'Họ và tên không được để trống',
                 'Tỉnh/Thành phố không được bỏ trống',
                 'Quận/Huyện không được bỏ trống',
                 'Phường/Xã không được bỏ trống',
-                'Bạn không thể bỏ trống trường này',
+                'Số nhà/Ngõ/Ngách không được bỏ trống',
                 'Ngày sinh không được bỏ trống',
             ]
         );
