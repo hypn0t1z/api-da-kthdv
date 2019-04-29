@@ -243,7 +243,7 @@ class UserController extends Controller {
      */
     static async isExistProfile(req, res){
         const { id } = req.params; // account_id
-        let profile = await ProfileModel.findOne({where: { account_id: id }});
+        let profile = await ProfileModel.findOne({ where: { account_id: id }, include: [ AddressModel ] });
         if(profile){
             return this.sendResponseMessage(res, 200,  'Profile Existed', profile)
         }
@@ -259,7 +259,7 @@ class UserController extends Controller {
     static async getUserProfile(req, res) {
         const {id} = req.params;
 
-        const profile = await ProfileModel.findOne({where: {account_id: id}})
+        const profile = await ProfileModel.findOne({ where: { account_id: id }, include: [AddressModel] })
         if (!profile)
             return this.sendResponseMessage(res, 404, "profile with this id not found", {});
 
@@ -278,13 +278,16 @@ class UserController extends Controller {
         const { id } = req.user;
         const {province, district, ward, address_more, birthday, avatar} = req.body;
         let image = avatar ? CommonService.uploadImage(avatar) : '';
+        let address = await AddressModel.create({
+            province,
+            district,
+            ward,
+            address_more
+        });
         await ProfileModel.create({
             account_id: id,
             avatar: image,
-            province: province ? province : '',
-            district: district ? district : '',
-            ward: ward ? ward : '',
-            address_more: address_more ? address_more : '',
+            address_id: address.id,
             birthday: birthday ? birthday : '',
             status: 'created'
         })
@@ -299,14 +302,27 @@ class UserController extends Controller {
     static async updateProfile(req, res) {
         const {id} = req.params;
         const {province, district, ward, address_more, birthday, avatar} = req.body;
-        let profile = await ProfileModel.findOne({where: { account_id: id }});
+        let profile = await ProfileModel.findOne({where: { account_id: id }, include: [AddressModel] });
+        let address = {};
+        if(profile.address){
+            address = await profile.address.update({
+                province: province ? province : profile.province,
+                district: district ? district : profile.province,
+                ward: ward ? ward : profile.ward,
+                address_more: address_more ? address_more : profile.address_more,
+            })
+        }else{
+            address = await AddressModel.create({
+                province,
+                district,
+                ward,
+                address_more
+            })
+        }
         let image = avatar ? CommonService.uploadImage(avatar) : profile.avatar;
         await profile.update({
             avatar: image,
-            province: province ? province : profile.province,
-            district: district ? district : profile.province,
-            ward: ward ? ward : profile.ward,
-            address_more: address_more ? address_more : profile.address_more,
+            address_id: address.id,
             birthday: birthday ? birthday : profile.birthday,
             status: 'updated'
         })
