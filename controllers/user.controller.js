@@ -5,7 +5,7 @@ const ProviderModel = require('../database/models/06-provider.model');
 const ImageModel = require('../database/models/10-images-service.model');
 const CommonService = require('../services/common.service');
 const { sequelize, Sequelize } = require('sequelize');
-const Controller = require('./controller')
+const Controller = require('./controller');
 const Op = Sequelize.Op;
 
 class UserController extends Controller {
