@@ -7,7 +7,7 @@ const serviceroutes = require('./service.routes');
 const { accessToken } = require('../middlewares/auth.middleware');
 
 router.use('/auth' , authroutes);
-router.use('/image',accessToken, imageroutes);
+router.use('/image', imageroutes);
 router.use('/user', accessToken, userroutes);
 router.use('/address', addressroutes);
 router.use('/service', accessToken, serviceroutes);

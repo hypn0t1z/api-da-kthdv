@@ -277,6 +277,10 @@ class UserController extends Controller {
     static async createProfile(req, res) {
         const { id } = req.params;
         const {province, district, ward, address_more, birthday, avatar} = req.body;
+        let profile = await ProfileModel.findOne({ where: { account_id: id }});
+        if(profile){
+            return this.sendResponseMessage(res, 400, "Profile is existed");
+        }
         let image = avatar ? await CommonService.uploadImage(avatar) : '';
         let address = await AddressModel.create({
             province,

@@ -13,7 +13,7 @@ userRouter.get('/:id', (req, res, next) => UserMiddleWare.getAccount(req, res, n
 // profile
 userRouter.get('/:id/profile', (req, res, next) => UserMiddleWare.getUserProfile(req, res, next));
 userRouter.post('/:id/create-profile', (req, res, next) => UserMiddleWare.createOrUpdate(req, res, next));
-userRouter.post('/:id/update-profile', (req, res, next) => UserMiddleWare.createOrUpdate(req, res, next));
+userRouter.patch('/:id/update-profile', (req, res, next) => UserMiddleWare.createOrUpdate(req, res, next));
 
 /**
  * Controllers
@@ -24,7 +24,7 @@ userRouter.get('/phone/:phone', (req, res) => UserController.getUserByPhone(req,
 userRouter.get('/:id/check-profile', (req, res) => UserController.isExistProfile(req, res)); // account_id
 userRouter.get('/:id/profile', (req, res) => UserController.getUserProfile(req, res)); // account_id
 userRouter.post('/:id/create-profile', (req, res) => UserController.createProfile(req, res));
-userRouter.post('/:id/update-profile', (req, res) => UserController.updateProfile(req, res)); // account_id
+userRouter.patch('/:id/update-profile', (req, res) => UserController.updateProfile(req, res)); // account_id
 // provider
 userRouter.get('/:id/provider', (req, res) => UserController.getProvider(req, res));
 userRouter.post('/:id/provider', (req, res) => UserController.createProvider(req, res));
