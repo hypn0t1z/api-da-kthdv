@@ -113,6 +113,7 @@ class UserMiddleware extends Middleware {
     }
 
     static async update(req, res, next) {
+        console.log("debug")
         const {province, district, ward, address_more, birthday, full_name} = req.body;
         const {id} = req.params; // account_id
 
