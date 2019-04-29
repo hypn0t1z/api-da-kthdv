@@ -78,10 +78,10 @@ class UserMiddleware extends Middleware {
      * @author Hung Dang
      */
     static async createOrUpdate(req, res, next) {
-        const {province, district, ward, address_more, birthday} = req.body;
+        const {province, district, ward, address_more, birthday, full_name} = req.body;
         const {id} = req.params; // account_id
         const message = FieldsMiddleware.simpleCheckRequired(
-            {province, district, ward, address_more, birthday},
+            {full_name, province, district, ward, address_more, birthday},
             [
                 "full_name",
                 'province',

@@ -276,7 +276,7 @@ class UserController extends Controller {
      */
     static async createProfile(req, res) {
         const { id } = req.params;
-        const {province, district, ward, address_more, birthday, avatar} = req.body;
+        const {province, district, ward, address_more, birthday, avatar, full_name} = req.body;
         let profile = await ProfileModel.findOne({ where: { account_id: id }});
         if(profile){
             return this.sendResponseMessage(res, 400, "Profile is existed");
@@ -290,6 +290,7 @@ class UserController extends Controller {
         });
         await ProfileModel.create({
             account_id: id,
+            full_name,
             avatar: image,
             address_id: address.id,
             birthday: birthday ? birthday : '',
@@ -305,7 +306,7 @@ class UserController extends Controller {
      */
     static async updateProfile(req, res) {
         const {id} = req.params;
-        const {province, district, ward, address_more, birthday, avatar} = req.body;
+        const {province, district, ward, address_more, birthday, avatar, full_name} = req.body;
         let profile = await ProfileModel.findOne({where: { account_id: id }, include: [AddressModel] });
         let address = {};
         if(profile.address){
@@ -326,6 +327,7 @@ class UserController extends Controller {
         let image = avatar ? await CommonService.uploadImage(avatar) : profile.avatar;
         await profile.update({
             avatar: image,
+            full_name: full_name ? full_name : profile.full_name,
             address_id: address.id,
             birthday: birthday ? birthday : profile.birthday,
             status: 'updated'
