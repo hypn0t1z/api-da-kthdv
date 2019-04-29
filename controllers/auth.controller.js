@@ -73,10 +73,6 @@ class AuthController extends Controller{
             role: 0b001,
             mail_token: mail_token,
         });      
-        ProfileModel.create({
-            account_id: user.id,
-        })
-
         CustomerModel.create({
             account_id: user.id
         })
