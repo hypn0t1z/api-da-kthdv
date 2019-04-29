@@ -114,6 +114,31 @@ class UserMiddleware extends Middleware {
         next();
     }
 
+    static async getProvider(req, res, next) {
+        const {id} = req.params;
+        let user = await AccountModel.findOne({where: { id, status: 'Active' }});
+        if (!user) {
+            return this.sendResponseMessage(res, 404, 'Tài khoản này không tồn tại hoặc chưa xác nhận email');
+        }
+        next();
+    }
+
+    static async updateProfile(req, res, next) {
+        const {id} = req.params;
+        const user = await AccountModel.findOne( { where: {id} } )
+        if (!user)
+            return this.sendResponseMessage(res, 404, "user with this this id not found!")
+
+        next()
+    }
+
+    static async createProfile(req, res, next) {
+        next()
+    }
+
+    static async updateProvider(req, res, next) {
+        next()
+    }
 }
 
 module.exports = UserMiddleware;

@@ -328,6 +328,80 @@ class UserController extends Controller {
         })
         return this.sendResponseMessage(res, 200, 'Cập nhật thông tin thành công')
     }
+
+    static async updateProvider(req, res) {
+        const {id} = req.params;
+        const { identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more, latitude, longtitude, images } = req.body;
+        let account = await AccountModel.findOne({ where: { id, status: 'Active' } });
+        account.update({ role: 0b010|account.role });
+        const provider = await ProviderModel.findOne({ where: { account_id: id }, include: [ AddressModel ]});
+        let address = '';
+        let message = '';
+        if(provider){
+            if(provider.address){
+                address = await provider.address.update({
+                    province: addr_province ? addr_province : provider.address.province,
+                    district: addr_district ? addr_district : provider.address.district,
+                    ward: addr_ward ? addr_ward : provider.address.ward,
+                    addr_more: addr_more ? addr_more : provider.address.addr_more,
+                })
+            }
+            else{
+                address = await AddressModel.create({
+                    province: addr_province,
+                    district: addr_district,
+                    ward: addr_ward,
+                    addr_more
+                })
+            }
+            await provider.update({
+                identity_card: identity_card ? identity_card : provider.identity_card,
+                open_time: open_time ? open_time : provider.open_time,
+                close_time: close_time ? close_time : provider.close_time,
+                phone: phone ? phone : provider.phone,
+                address_id: address.id ,
+                latitude: latitude ? latitude : provider.latitude,
+                longtitude: longtitude ? longtitude : provider.longtitude
+            })
+            message = 'Cập nhật nhà cung cấp dịch vụ thành công';
+        }
+        else{
+            address = await AddressModel.create({
+                province: addr_province,
+                district: addr_district,
+                ward: addr_ward,
+                addr_more
+            });
+            await ProviderModel.create({
+                account_id: id,
+                status_id: 1,
+                identity_card: identity_card ? identity_card : '',
+                open_time: open_time ? open_time : '',
+                close_time: close_time ? close_time : '',
+                phone: phone ? phone : '',
+                address_id: address.id ,
+                latitude: latitude ? latitude : '00.00',
+                longtitude: longtitude ? longtitude : '00.00'
+            })
+            message = 'Thêm mới nhà cung cấp dịch vụ thành công'
+        }
+        if(images.length > 0){
+            let check_images = await ImageModel.findAll({ where: { provider_id: provider.id } });
+            if(check_images && Object.keys(check_images).length){
+                for(let i in check_images) {
+                    check_images[i].destroy();
+                }
+            }
+            for( let i in images ){
+                await ImageModel.create({
+                    provider_id: provider.id,
+                    path: await CommonService.uploadImage(images[i].path),
+                    description: images[i].description
+                })
+            }
+        }
+        return this.sendResponseMessage(res, 200, 'Cập nhật thông tin thành công')
+    }
 }
 
 module.exports = UserController;
