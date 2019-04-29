@@ -29,5 +29,23 @@ class AddressController extends Controller {
         return this.sendResponseMessage(res, 200, "get detail address success", result)
     }
 
+    /**
+     * Get address by address id
+     * @param {*} req 
+     * @param {*} res 
+     */
+    static async getAddressById(req, res) {
+        const {id} = req.params;
+        let address = await AddressModel.findOne({ where: { id } });
+        if(!address){
+            return this.sendResponseMessage(res, 404, "Địa chỉ không tồn tại")
+        }
+        let province = address.province ? address.province : '';
+        let district = address.district ? address.district : '';
+        let ward = address.ward ? address.ward : '';
+        let result = await CommonService.getAddress(province+district+ward);
+        return this.sendResponseMessage(res, 200, "Lấy thông tin địa chỉ thành công", result)
+    }
+
 }
 module.exports = AddressController;
