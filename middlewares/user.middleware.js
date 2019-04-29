@@ -117,7 +117,7 @@ class UserMiddleware extends Middleware {
         const {province, district, ward, address_more, birthday, full_name} = req.body;
         const {id} = req.params; // account_id
 
-        const profile = ProfileModel.findOne({ where: {account_id: id}})
+        const profile = await ProfileModel.findOne({ where: {account_id: id}})
 
         if (!profile)
             return this.sendResponseMessage(res, 400, "This account not have profile!");
