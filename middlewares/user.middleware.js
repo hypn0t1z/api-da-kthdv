@@ -106,10 +106,6 @@ class UserMiddleware extends Middleware {
             if (!user) {
                 return this.sendResponseMessage(res, 400, 'Tài khoản này không tồn tại hoặc chưa được xác nhận');
             }
-            let profile = await ProfileModel.findOne({ where: { account_id: id }});
-            if(!profile){
-                return this.sendResponseMessage(res, 404, 'Tài khoản này chưa có thông tin cá nhân')
-            }
         }
         next();
     }
