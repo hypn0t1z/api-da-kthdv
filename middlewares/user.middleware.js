@@ -121,6 +121,8 @@ class UserMiddleware extends Middleware {
         if (!profile)
             return this.sendResponseMessage(res, 400, "This account not have profile!");
 
+        console.log(profile)
+
         const message = FieldsMiddleware.simpleCheckRequired(
             {full_name, province, district, ward, address_more, birthday},
             [
