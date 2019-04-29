@@ -1,9 +1,9 @@
 const { sequelize, Sequelize } = require('../');
-const AccountModel = require('../models/01-account.model');
-const ServiceModel = require('../models/08-service.model');
-const RateModel = require('../models/11-rate.model');
-const TransactionModel = require('../models/09-transaction.model');
-const ImgServiceModel = require('../models/10-images-service.model');
+const ServiceModel = require('./08-service.model');
+const RateModel = require('./11-rate.model');
+const TransactionModel = require('./09-transaction.model');
+const ImgServiceModel = require('./10-images-service.model');
+const AddressModel = require('./02-address.model');
 /**
 * ProviderModel describes 'providers' table
 */
@@ -39,11 +39,9 @@ const ProviderModel = sequelize.define(
 /**
 * Describes providers relationship
 */
-ProviderModel.hasOne(AccountModel, { foreignKey: 'account_id' });
-AccountModel.belongsTo(ProviderModel, { foreignKey: 'account_id' });
 
-ProviderModel.hasOne(ServiceModel, { foreignKey: 'address_id' });
-ServiceModel.belongsTo(ProviderModel, { foreignKey: 'address_id' });
+ProviderModel.hasMany(ServiceModel, { foreignKey: 'provider_id' });
+ServiceModel.belongsTo(ProviderModel, { foreignKey: 'provider_id' });
 
 ProviderModel.hasMany(TransactionModel, { foreignKey: 'provider_id' });
 TransactionModel.belongsTo(ProviderModel, { foreignKey: 'provider_id' });

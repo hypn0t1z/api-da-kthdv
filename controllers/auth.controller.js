@@ -6,6 +6,7 @@ const ProfileModel = require('../database/models/12-profile.model');
 const CommonService = require('../services/common.service');
 const bcrypt = require('bcryptjs');
 const Controller = require('./controller')
+const CustomerModel = require('../database/models/04-customer.model')
 
 
 class AuthController extends Controller{
@@ -26,7 +27,10 @@ class AuthController extends Controller{
         (activeToken && (await activeToken.update({token}))) ||
         (await ActiveTokenModel.create({ token, account_id: account.id }));
 
-        const res_return = {token: token}
+        const res_return = {
+            token: token,
+            id: account.id
+        }
 
         return this.sendResponseMessage(res, 200, "Login sucess, here is token!!", res_return)
     }
@@ -46,7 +50,7 @@ class AuthController extends Controller{
      */
     static async register(req, res) {
         // Init
-        const url = "13.76.227.37:3002"
+        const url = "13.76.227.37:" + process.env.PORT
         const {email, password, phone} = req.body;
         const {USER_PASSWORD_SALT_ROUNDS: saltRounds = 10} = process.env;
         const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_';
@@ -68,10 +72,12 @@ class AuthController extends Controller{
             phone: phone,
             role: 0b001,
             mail_token: mail_token,
-        });
-        ProfileModel.create({
-            account_id: user.id,
+        });      
+        CustomerModel.create({
+            account_id: user.id
         })
+
+
         const token = JWTService.generateTokenByUser(user);
         const msg = {
             reciver: email,
@@ -100,7 +106,7 @@ class AuthController extends Controller{
     * @author Hung Dang
     */
     static async getProfile(req, res) {
-        const {id} = req.params;
+        const {id} = req.params;  // account_id
         let profile = await ProfileModel.findOne({where: { account_id: id }});
         let data = {};
         if (profile) {
@@ -118,27 +124,6 @@ class AuthController extends Controller{
         } else {
             return this.sendResponseMessage(res, 404, 'Tài khoản này không tồn tại hoặc chưa được xác nhận')
         }
-    }
-
-    /**
-     * Create profile
-     * @param {*} req
-     * @param {*} res
-     */
-    static async createProfile(req, res) {
-        const {id} = req.params;
-        const {province, district, ward, address_more, birthday, avatar} = req.body;
-        let profile = await ProfileModel.findOne({where: { id }});
-        let image = avatar ? CommonService.uploadImage(avatar) : profile.avatar;
-        await profile.update({
-            avatar: image,
-            province: province ? province : profile.province,
-            district: district ? district : profile.province,
-            ward: ward ? ward : profile.ward,
-            address_more: address_more ? address_more : profile.address_more,
-            birthday: birthday ? birthday : profile.birthday
-        })
-        return this.sendResponseMessage(res, 200, 'Cập nhật thông tin thành công')
     }
 
     /**
@@ -224,6 +209,16 @@ class AuthController extends Controller{
 
     static async uploadAvatar(req, res) {
         return this.sendResponseMessage(res, 200, 'file uploaded')
+    }
+
+    static async isTokenStillAlive(req, res) {
+        const {token} = req.params;
+
+        const activeToken = await ActiveTokenModel.findOne({where: {token: token}})
+
+        const data = {id: activeToken.account_id}
+
+        return this.sendResponseMessage(res, 200, 'Token is still alive, be fun, and here is user id', data)
     }
 }
 

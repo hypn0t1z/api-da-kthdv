@@ -1,4 +1,4 @@
-const { sequelize, Sequelize } = require('..');
+const { sequelize, Sequelize } = require('../');
 
 /**
 * TransactionModel describes 'transactions' table

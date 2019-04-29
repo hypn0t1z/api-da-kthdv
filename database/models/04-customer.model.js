@@ -27,8 +27,8 @@ const CustomerModel = sequelize.define(
     },
 );
 
-CustomerModel.hasOne(AccountModel, { foreignKey: 'account_id' });
-AccountModel.belongsTo(CustomerModel, { foreignKey: 'account_id' });
+// CustomerModel.hasOne(AccountModel, { foreignKey: 'account_id' });
+// AccountModel.belongsTo(CustomerModel, { foreignKey: 'account_id' });
 
 CustomerModel.hasMany(TransactionModel, { foreignKey: 'customer_id' });
 TransactionModel.belongsTo(CustomerModel, { foreignKey: 'customer_id' });

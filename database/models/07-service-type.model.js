@@ -1,6 +1,4 @@
-const { sequelize, Sequelize } = require('..');
-const MidServiceModel = require('../models/13-mid-services.model');
-
+const { sequelize, Sequelize } = require('../');
 /**
 * ServiceTypeModel describes 'service_types' table
 */
@@ -26,8 +24,5 @@ const ServiceTypeModel = sequelize.define(
         tableName: 'service_types',
     },
 );
-
-ServiceTypeModel.hasMany(MidServiceModel, { foreignKey: 'service_type_id' });
-MidServiceModel.belongsTo(ServiceTypeModel, { foreignKey: 'service_type_id' });
 
 module.exports = ServiceTypeModel;
