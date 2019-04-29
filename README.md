@@ -76,7 +76,8 @@ get: user/:account_id/profile
 post: user/1/create-profile
 params: province, district, ward, address_more, birthday, avatar
 body:{
-        "avatar": {base64String},
+        "full_name": "Dang Ba SoCuTo",
+        "avatar": {base64String}, //option
         "province": "001",
         "district": "0002",
         "ward": "00004",
@@ -88,7 +89,8 @@ body:{
 post: user/:account_id/update-profile
 params: province, district, ward, address_more, birthday, avatar
 body:{
-        "avatar": {base64String},
+        "full_name": "Dang Ba SoCuTo",
+        "avatar": {base64String}, //option 
         "province": "001",
         "district": "0002",
         "ward": "00004",
