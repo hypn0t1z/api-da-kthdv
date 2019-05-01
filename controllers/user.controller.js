@@ -78,7 +78,7 @@ class UserController extends Controller {
      * @param {*} res 
      */
     static async getProvider(req, res) {
-        const {id} = req.params;
+        const {id} = req.params; // account_id
         let user = await AccountModel.findOne({where: { id, status: 'Active' }});
         if (!user) {
             return this.sendResponseMessage(res, 404, 'Tài khoản này không tồn tại hoặc chưa xác nhận email');
@@ -88,8 +88,7 @@ class UserController extends Controller {
         if ((user.role & 0b010) === 0)
             return this.sendResponseMessage(res, 400, 'This account is not provider')
 
-        const provider = await ProviderModel.findOne({where: {account_id: id}, include: [ AddressModel, ImageModel ]});
-        let check_images = await ImageModel.findOne({ where: { provider_id: 2 } });
+        const provider = await ProviderModel.findOne({where: {account_id: id}, include: [ AddressModel ]});
         let data = {
             identity_card: provider && provider.identity_card ? provider.identity_card : '',
             open_time: provider && provider.open_time ? provider.open_time : '',
@@ -102,13 +101,14 @@ class UserController extends Controller {
             status_id: provider && provider.status_id ? provider.status_id : '',
             latitude: provider && provider.latitude ? provider.latitude : '',
             longtitude: provider && provider.longtitude ? provider.longtitude : '',
-            images: provider && provider.images_services ? provider.images_services : ''
         }
+        const images = await ImageModel.findAll({ where: { account_id: id } });
+        data.images = images;
         return this.sendResponseMessage(res, 200, "Get provider success", data)
     }
 
     /**
-     * Create provider
+     * Create provider by account_id
      * @description: Check if exist provider, if existed --> Update , else --> Create
      * 
      * @param {*} req images = [{ path: '{base64String}', description: '(option)' }, 
@@ -116,7 +116,59 @@ class UserController extends Controller {
      * @param {*} res 
      */
     static async createProvider(req, res) {
-        const {id} = req.params;
+        const {id} = req.params; // account_id
+        const { identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more, latitude, longtitude, images } = req.body;
+        let account = await AccountModel.findOne({ where: { id, status: 'Active' } });
+        account.update({ role: 0b010|account.role });
+        const provider = await ProviderModel.findOne({ where: { account_id: id }, include: [ AddressModel ]});
+        let address = '';
+        let message = '';
+        if(provider){
+            return this.sendResponseMessage(res, 400, "Nhà cung cấp dịch vụ đã tồn tại. Vui lòng chọn cập nhật");      
+        }
+        else{
+            address = await AddressModel.create({
+                province: addr_province,
+                district: addr_district,
+                ward: addr_ward,
+                addr_more
+            });
+            await ProviderModel.create({
+                account_id: id,
+                status_id: 1,
+                identity_card: identity_card ? identity_card : '',
+                open_time: open_time ? open_time : '',
+                close_time: close_time ? close_time : '',
+                phone: phone ? phone : '',
+                address_id: address.id ,
+                latitude: latitude ? latitude : '00.00',
+                longtitude: longtitude ? longtitude : '00.00'
+            })
+            message = 'Thêm mới nhà cung cấp dịch vụ thành công'
+        }
+        if(images.length > 0){
+            let check_images = await ImageModel.findAll({ where: { account_id: id } });
+            if(check_images && Object.keys(check_images).length){
+                for(let i in check_images) {
+                    check_images[i].destroy();
+                }
+            }
+            for( let i in images ){
+                await ImageModel.create({
+                    account_id: id,
+                    path: await CommonService.uploadImage(images[i].path),
+                    description: images[i].description
+                })
+            }
+        }
+        return this.sendResponseMessage(res, 200, message)
+    }
+
+    /**
+     * Update Provider by account_id
+     */
+    static async updateProvider(req, res) {
+        const {id} = req.params; // account_id
         const { identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more, latitude, longtitude, images } = req.body;
         let account = await AccountModel.findOne({ where: { id, status: 'Active' } });
         account.update({ role: 0b010|account.role });
@@ -150,29 +202,11 @@ class UserController extends Controller {
                 longtitude: longtitude ? longtitude : provider.longtitude
             })
             message = 'Cập nhật nhà cung cấp dịch vụ thành công';        
-        }
-        else{
-            address = await AddressModel.create({
-                province: addr_province,
-                district: addr_district,
-                ward: addr_ward,
-                addr_more
-            });
-            await ProviderModel.create({
-                account_id: id,
-                status_id: 1,
-                identity_card: identity_card ? identity_card : '',
-                open_time: open_time ? open_time : '',
-                close_time: close_time ? close_time : '',
-                phone: phone ? phone : '',
-                address_id: address.id ,
-                latitude: latitude ? latitude : '00.00',
-                longtitude: longtitude ? longtitude : '00.00'
-            })
-            message = 'Thêm mới nhà cung cấp dịch vụ thành công'
+        }else{
+            return this.sendResponseMessage(res, 404, 'Tài khoản chưa đăng kí nhà cung cấp dịch vụ');
         }
         if(images.length > 0){
-            let check_images = await ImageModel.findAll({ where: { provider_id: provider.id } });
+            let check_images = await ImageModel.findAll({ where: { account_id: id } });
             if(check_images && Object.keys(check_images).length){
                 for(let i in check_images) {
                     check_images[i].destroy();
@@ -180,7 +214,7 @@ class UserController extends Controller {
             }
             for( let i in images ){
                 await ImageModel.create({
-                    provider_id: provider.id,
+                    account_id: id,
                     path: await CommonService.uploadImage(images[i].path),
                     description: images[i].description
                 })
@@ -275,7 +309,7 @@ class UserController extends Controller {
      * @param {*} res 
      */
     static async createProfile(req, res) {
-        const { id } = req.params;
+        const { id } = req.params; // account_id
         const {province, district, ward, address_more, birthday, avatar, full_name} = req.body;
         let profile = await ProfileModel.findOne({ where: { account_id: id }});
         if(profile){

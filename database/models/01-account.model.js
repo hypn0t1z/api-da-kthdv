@@ -1,6 +1,7 @@
 const { sequelize, Sequelize } = require('../');
 const ProfileModel = require('../models/12-profile.model');
-//const ProviderModel = require('./06-provider.model');
+const ImgServiceModel = require('./10-images-service.model');
+const ServiceModel = require('./08-service.model');
 const RateModel = require('../models/11-rate.model');
 const ActiveTokenModel = require('../models/active-token.model')
 
@@ -41,8 +42,6 @@ const AccountModel = sequelize.define(
         tableName: 'accounts',
     },
 );
-/* AccountModel.hasOne(ProviderModel, { foreignKey: 'account_id' });
-ProviderModel.belongsTo(AccountModel, { foreignKey: 'account_id' }); */
 
 AccountModel.hasOne(ProfileModel, { foreignKey: 'account_id' });
 ProfileModel.belongsTo(AccountModel, { foreignKey: 'account_id' });
@@ -52,5 +51,13 @@ RateModel.belongsTo(AccountModel, { foreignKey: 'account_id' });
 
 AccountModel.hasOne(ActiveTokenModel, {foreignKey: 'account_id'})
 ActiveTokenModel.belongsTo(AccountModel, {foreignKey: 'account_id'})
+
+AccountModel.hasMany(ServiceModel, { foreignKey: 'account_id' });
+ServiceModel.belongsTo(AccountModel, { foreignKey: 'account_id' });
+
+AccountModel.hasMany(ImgServiceModel, { foreignKey: 'account_id' });
+ImgServiceModel.belongsTo(AccountModel, { foreignKey: 'account_id' });
+
+
 
 module.exports = AccountModel;

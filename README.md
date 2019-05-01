@@ -37,8 +37,11 @@ Must use nodemon or any package that similar
 ```
 $ nodemon server.js
 ```
-## Create/Update Provider
-post: /:account_id/provider
+## Get provider
+get: /:account_id/provider
+
+## Create Provider
+post: /:account_id/create-provider
 body: {
         "identity_card": 13232938323,
         "phone": "04442349589",
@@ -49,7 +52,32 @@ body: {
         "addr_ward": "00001",
         "address_more": "k85/15/14",
         "latitude": "7392",
-        "longtitude": "2223" 
+        "longtitude": "2223" ,
+        "images": [
+            {
+                "path": {base64String},
+                "description": ""
+            },
+            {
+                "path": {base64String},
+                "description": ""
+            }
+        ]
+    }
+
+## Update Provider
+patch: /:account_id/update-provider
+body: {
+        "identity_card": 13232938323,
+        "phone": "04442349589",
+        "addr_province": "01",
+        "addr_district": "001",
+        "open_time": "2h",
+        "close_time": "4h",
+        "addr_ward": "00001",
+        "address_more": "k85/15/14",
+        "latitude": "7392",
+        "longtitude": "2223", 
         "images": [
             {
                 "path": {base64String},
@@ -66,8 +94,8 @@ body: {
 get: /block/:account_id
 
 ## Get list provider's services 
-get: /
-params: provider_id
+get: /:account_id
+params: account_id
 
 ## Get profile by account id
 get: user/:account_id/profile

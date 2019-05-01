@@ -8,9 +8,12 @@ const { accessToken } = require('../middlewares/auth.middleware');
  * Middlewares
  */
 userRouter.get('/phone/:phone', (req, res, next) => UserMiddleWare.getUserByPhone(req, res, next));
+
 // provider
-userRouter.post('/:id/provider', accessToken, (req, res, next) => UserMiddleWare.createProvider(req, res, next))
+userRouter.post('/:id/create-provider', accessToken, (req, res, next) => UserMiddleWare.createProvider(req, res, next))
+userRouter.patch('/:id/update-provider', accessToken, (req, res, next) => UserMiddleWare.createProvider(req, res, next))
 userRouter.get('/:id', (req, res, next) => UserMiddleWare.getAccount(req, res, next))
+
 // profile
 userRouter.get('/:id/profile', (req, res, next) => UserMiddleWare.getUserProfile(req, res, next));
 userRouter.post('/:id/create-profile', accessToken, (req, res, next) => UserMiddleWare.createOrUpdate(req, res, next));
@@ -21,16 +24,21 @@ userRouter.patch('/:id/update-profile', accessToken, (req, res, next) => UserMid
  */
 userRouter.get('/', (req, res) => UserController.getUser(req, res));
 userRouter.get('/phone/:phone', (req, res) => UserController.getUserByPhone(req, res))
+
 // profile
 userRouter.get('/:id/check-profile', (req, res) => UserController.isExistProfile(req, res)); // account_id
 userRouter.get('/:id/profile', (req, res) => UserController.getUserProfile(req, res)); // account_id
-userRouter.post('/:id/create-profile', accessToken, (req, res) => UserController.createProfile(req, res));
+userRouter.post('/:id/create-profile', accessToken, (req, res) => UserController.createProfile(req, res)); 
 userRouter.patch('/:id/update-profile', accessToken, (req, res) => UserController.updateProfile(req, res)); // account_id
-// provider
-userRouter.get('/:id/provider', (req, res) => UserController.getProvider(req, res));
-userRouter.post('/:id/provider', accessToken, (req, res) => UserController.createProvider(req, res));
+
+// Provider
+userRouter.get('/:id/provider', (req, res) => UserController.getProvider(req, res)); //account_id
+userRouter.post('/:id/create-provider', accessToken, (req, res) => UserController.createProvider(req, res)); // account_id
+userRouter.patch('/:id/update-provider', accessToken, (req, res) => UserController.updateProvider(req, res)); // account_id
+
 // account
 userRouter.get('/:id', (req, res) => UserController.getAccount(req, res));
+
 // block account
 userRouter.get('/block/:id', accessToken, (req, res) => UserController.blockAccount(req, res))
 
