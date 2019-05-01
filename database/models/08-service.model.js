@@ -12,7 +12,7 @@ const ServiceModel = sequelize.define(
             primaryKey: true,
             autoIncrement: true
         },
-        provider_id: Sequelize.INTEGER,
+        account_id: Sequelize.INTEGER,
         price_min: Sequelize.FLOAT,
         price_max: Sequelize.FLOAT,
         service_type_id: Sequelize.INTEGER,

@@ -6,16 +6,16 @@ const ServiceTypeModel = require('../database/models/07-service-type.model');
 class ServiceController extends Controller {
 
     /**
-     * Get list service by provider_id
+     * Get list service by account_id
      * @param {*} req 
      * @param {*} res 
      */
     static async getList(req, res) {
-        const { provider_id } = req.query;
-        let check_service = await ServiceModel.findOne({ where: { provider_id } });
+        const { id } = req.query;
+        let check_service = await ServiceModel.findOne({ where: { account_id: id } });
         let services = {};
         if(check_service && Object.keys(check_service).length){
-            services = await ServiceModel.findAll({ where: { provider_id }, include: [ServiceTypeModel]});
+            services = await ServiceModel.findAll({ where: { account_id: id }, include: [ServiceTypeModel]});
             return this.sendResponseMessage(res, 200, "Get services success", services)
         }
         return this.sendResponseMessage(res, 200, "Not found service");
@@ -115,9 +115,9 @@ class ServiceController extends Controller {
         if(!service){
             return this.sendResponseMessage(res, 404, "Service not found");
         }
-        let provider_id = service.provider_id;
+        let { account_id } = service;
         await service.destroy();
-        let services = await ServiceModel.findAll({ where: { provider_id } });
+        let services = await ServiceModel.findAll({ where: { account_id } });
         return this.sendResponseMessage(res, 200, "Delete service success", services);
     }
 }

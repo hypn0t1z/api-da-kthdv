@@ -40,16 +40,10 @@ const ProviderModel = sequelize.define(
 * Describes providers relationship
 */
 
-ProviderModel.hasMany(ServiceModel, { foreignKey: 'provider_id' });
-ServiceModel.belongsTo(ProviderModel, { foreignKey: 'provider_id' });
-
 ProviderModel.hasMany(TransactionModel, { foreignKey: 'provider_id' });
 TransactionModel.belongsTo(ProviderModel, { foreignKey: 'provider_id' });
 
 ProviderModel.hasMany(RateModel, { foreignKey: 'provider_id' });
 RateModel.belongsTo(ProviderModel, { foreignKey: 'provider_id' });
-
-ProviderModel.hasMany(ImgServiceModel, { foreignKey: 'provider_id' });
-ImgServiceModel.belongsTo(ProviderModel, { foreignKey: 'provider_id' });
 
 module.exports = ProviderModel;

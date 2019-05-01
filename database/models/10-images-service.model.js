@@ -11,7 +11,7 @@ const ImgServiceModel = sequelize.define(
             autoIncrement: true,
             primaryKey: true,
         },
-        provider_id: Sequelize.INTEGER,
+        account_id: Sequelize.INTEGER,
         path: Sequelize.STRING,
         description: Sequelize.STRING,
 
