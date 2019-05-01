@@ -444,16 +444,16 @@ class UserController extends Controller {
     }
 
     static async getProviderServices(req, res) {
-        const {user_id} = req.params;
-        let services = await ServiceModel.findAll({where: {provider_id: user_id}, include: [ServiceTypeModel]});
+        const {id} = req.params;
+        let services = await ServiceModel.findAll({where: {provider_id: id}, include: [ServiceTypeModel]});
         return this.sendResponseMessage(res, 200, "Get services success", services)
     }
 
     static async createProviderService(req, res) {
-        const {user_id} = req.params;
+        const {user_id: id} = req.params;
         const {serviceDt} = req.body;
         await ServiceModel.create({
-            provider_id: user_id,
+            provider_id: id,
             price_min: serviceDt.price_min,
             price_max: serviceDt.price_max,
             service_type_id: serviceDt.service_type_id
@@ -475,12 +475,11 @@ class UserController extends Controller {
     }
 
     static async deleteService(req, res) {
-        const user_id = req.params.id;
+        const id = req.params.id;
         const service_id = req.params.service_id;
         let service = await ServiceModel.findOne({ where: { service_id } });
-        let { provider_id } = service;
         await service.destroy();
-        let services = await ServiceModel.findAll({ where: { user_id } });
+        let services = await ServiceModel.findAll({ where: { user_id: id } });
         return this.sendResponseMessage(res, 200, "Delete service success", services);
     }
 }

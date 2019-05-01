@@ -195,8 +195,8 @@ class UserMiddleware extends Middleware {
     }
 
     static async getProviderServices(req, res, next) {
-        const {user_id} = req.params;
-        this.isProvider(user_id, req, res)
+        const {id} = req.params;
+        this.isProvider(id, req, res)
         next()
     }
 
@@ -217,8 +217,8 @@ class UserMiddleware extends Middleware {
     }
 
     static createProviderService(req, res, next) {
-        const {user_id} = req.params;
-        this.isProvider(user_id)
+        const {id} = req.params;
+        this.isProvider(id)
 
         const {serviceDt} = req.body;
         const message = FieldsMiddleware.simpleCheckRequired(
@@ -254,21 +254,21 @@ class UserMiddleware extends Middleware {
     }
 
     static async updateService(req, res, next) {
-        const user_id = req.params.id;
+        const id = req.params.id;
         const service_id = req.params.service_id;
 
-        this.isProvider(user_id, req, res)
-        this.isServiceExist(service_id, user_id, req, res)
+        this.isProvider(id, req, res)
+        this.isServiceExist(service_id, id, req, res)
 
         next()
     }
 
     static deleteService(req, res, next) {
-        const user_id = req.params.id;
+        const id = req.params.id;
         const service_id = req.params.service_id;
 
-        this.isProvider(user_id, req, res)
-        this.isServiceExist(service_id, user_id, req, res)
+        this.isProvider(id, req, res)
+        this.isServiceExist(service_id, id, req, res)
 
         next()
     }
