@@ -12,7 +12,7 @@ const ServiceModel = sequelize.define(
             primaryKey: true,
             autoIncrement: true
         },
-        account_id: Sequelize.INTEGER,
+        provider_id: Sequelize.INTEGER,
         price_min: Sequelize.FLOAT,
         price_max: Sequelize.FLOAT,
         service_type_id: Sequelize.INTEGER,
@@ -34,11 +34,5 @@ ServiceModel.belongsTo(ServiceTypeModel, { foreignKey: 'service_type_id' });
 
 ServiceModel.hasMany(TransactionModel, { foreignKey: 'service_id' });
 TransactionModel.belongsTo(ServiceModel, { foreignKey: 'service_id' });
-
-/* var UserProjects = sequelize.define('userprojects', {
-    *   started: Sequelize.BOOLEAN
-    * })
-    * User.hasMany(Project, { through: UserProjects })
-    * Project.hasMany(User, { through: UserProjects }) */
 
 module.exports = ServiceModel;

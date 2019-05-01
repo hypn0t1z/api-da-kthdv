@@ -1,7 +1,9 @@
 const AccountModel = require('../database/models/01-account.model');
 const ProfileModel = require('../database/models/12-profile.model');
 const AddressModel = require('../database/models/02-address.model');
-const ProviderModel = require('../database/models/06-provider.model');
+const ProviderModel = require('../database/models/21-provider.model');
+const ServiceModel = require('../database/models/08-service.model');
+const ServiceTypeModel = require('../database/models/07-service-type.model');
 const ImageModel = require('../database/models/10-images-service.model');
 const CommonService = require('../services/common.service');
 const { sequelize, Sequelize } = require('sequelize');
@@ -41,11 +43,6 @@ class UserController extends Controller {
                 {
                     model: ProfileModel,
                     required: false,
-                    where: {
-                        full_name: {
-                            [Op.like]: '%' + key_words + '%'
-                        }
-                    }
                 }
             ]; 
         }
@@ -72,6 +69,61 @@ class UserController extends Controller {
             return this.sendResponseMessage(res, 404, "user not exist!")
     }
     
+    /**
+     * Get all provider
+     * @param {*} req 
+     * @param {*} res 
+     */
+    static async getAllProvider(req, res){
+        const providers =  await ProviderModel.findOne();
+        return this.sendResponseMessage(res, 200, "Lấy danh sách nhà cung cấp thành công");
+    }
+
+    /**
+     * Get provider by provider's name or phone
+     * @param {*} key_words (option) 
+     * @param {*} res 
+     * @returns { object } 
+     */
+    static async getProviderByKeyword(req, res){
+        const { key_words } = req.query;
+        let where = '';
+        let include = '';
+        if(key_words && key_words.length ){
+            where = {
+                [Op.or]: [
+                    {
+                        phone: {
+                            [Op.like]: '%' + key_words + '%'
+                        }
+                    },
+                    {
+                        name: {
+                            [Op.like]: '%' + key_words + '%'
+                        }
+                    },
+                ],
+            };
+            include = [
+                {
+                    model: ServiceModel,
+                    required: false,              
+                },
+            ]; 
+        }
+        else{
+            include = [{ 
+                model: ServiceModel, 
+                required: false
+            }];
+        }
+        let order = [ ['createdAt', 'DESC'] ];
+        let resource = { model: ProviderModel, req, where, include, order };
+        let data = await CommonService.paginate(resource);
+        let total = await ProviderModel.count({ where, include });
+        return this.sendResponseMessage(res, 200, 'Đã tìm thấy ' + total+ ' kết quả', data)
+    }
+
     /**
      * Get info provider
      * @param {*} req 
@@ -102,7 +154,7 @@ class UserController extends Controller {
             latitude: provider && provider.latitude ? provider.latitude : '',
             longtitude: provider && provider.longtitude ? provider.longtitude : '',
         }
-        const images = await ImageModel.findAll({ where: { account_id: id } });
+        const images = await ImageModel.findAll({ where: { provider_id: id } });
         data.images = images;
         return this.sendResponseMessage(res, 200, "Get provider success", data)
     }
@@ -147,7 +199,7 @@ class UserController extends Controller {
             message = 'Thêm mới nhà cung cấp dịch vụ thành công'
         }
         if(images.length > 0){
-            let check_images = await ImageModel.findAll({ where: { account_id: id } });
+            let check_images = await ImageModel.findAll({ where: { provider_id: id } });
             if(check_images && Object.keys(check_images).length){
                 for(let i in check_images) {
                     check_images[i].destroy();
@@ -155,7 +207,7 @@ class UserController extends Controller {
             }
             for( let i in images ){
                 await ImageModel.create({
-                    account_id: id,
+                    provider_id: id,
                     path: await CommonService.uploadImage(images[i].path),
                     description: images[i].description
                 })
@@ -205,8 +257,9 @@ class UserController extends Controller {
         }else{
             return this.sendResponseMessage(res, 404, 'Tài khoản chưa đăng kí nhà cung cấp dịch vụ');
         }
+        console.log(images)
         if(images.length > 0){
-            let check_images = await ImageModel.findAll({ where: { account_id: id } });
+            let check_images = await ImageModel.findAll({ where: { provider_id: id } });
             if(check_images && Object.keys(check_images).length){
                 for(let i in check_images) {
                     check_images[i].destroy();
@@ -214,13 +267,39 @@ class UserController extends Controller {
             }
             for( let i in images ){
                 await ImageModel.create({
-                    account_id: id,
+                    provider_id: id,
                     path: await CommonService.uploadImage(images[i].path),
                     description: images[i].description
                 })
             }
         }
         return this.sendResponseMessage(res, 200, message)
+    }
+
+    /**
+     * Delete provider
+     * @param {*} req 
+     * @param {*} res 
+     */
+    static async deleteProvider(req, res){
+       /*  const {id} = req.params; // account_id
+        const account = await AccountModel.findOne({ where: { id , status: 'Active' } });
+        if(!account){
+            return this.sendResponseMessage(res, 404, "Tài khoản này không tồn tại hoặc chưa xác nhận email");
+        }
+        if ((account.role === 0b100) || (account.role === 0b010)){
+            const provider = await ProviderModel.findOne({ where: { account_id: id } });
+            if(!provider){
+                return this.sendResponseMessage(res, 404, "Không tìm thấy nhà cung cấp");
+            }
+            await provider.destroy();
+            account.update({
+                role: 0b001
+            })
+        }
+        else{
+            return this.sendResponseMessage(res, 401, 'Không được phép')
+        } */
     }
 
     /**

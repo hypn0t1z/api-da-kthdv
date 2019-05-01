@@ -32,9 +32,11 @@ userRouter.post('/:id/create-profile', accessToken, (req, res) => UserController
 userRouter.patch('/:id/update-profile', accessToken, (req, res) => UserController.updateProfile(req, res)); // account_id
 
 // Provider
+userRouter.get('/search/provider', (req, res) => UserController.getProviderByKeyword(req, res)); // search provider by key_words
 userRouter.get('/:id/provider', (req, res) => UserController.getProvider(req, res)); //account_id
 userRouter.post('/:id/create-provider', accessToken, (req, res) => UserController.createProvider(req, res)); // account_id
 userRouter.patch('/:id/update-provider', accessToken, (req, res) => UserController.updateProvider(req, res)); // account_id
+userRouter.delete('/:id/delete-provider', accessToken, (req, res) => UserController.deleteProvider(req, res)); // account_id
 
 // account
 userRouter.get('/:id', (req, res) => UserController.getAccount(req, res));

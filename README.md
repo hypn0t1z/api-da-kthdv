@@ -43,6 +43,7 @@ get: /:account_id/provider
 ## Create Provider
 post: /:account_id/create-provider
 body: {
+        "name": "Hungdang company",
         "identity_card": 13232938323,
         "phone": "04442349589",
         "addr_province": "01",
@@ -68,11 +69,12 @@ body: {
 ## Update Provider
 patch: /:account_id/update-provider
 body: {
+        "name": "Hungdang company 123",
         "identity_card": 13232938323,
         "phone": "04442349589",
         "addr_province": "01",
         "addr_district": "001",
-        "open_time": "2h",
+        "open_time": "1h",
         "close_time": "4h",
         "addr_ward": "00001",
         "address_more": "k85/15/14",
@@ -89,6 +91,9 @@ body: {
             }
         ]
     }
+
+## Delete Provider
+delete: /:account_id/delete-provider
 
 ## Block User
 get: /block/:account_id
