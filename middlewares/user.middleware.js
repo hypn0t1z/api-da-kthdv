@@ -218,7 +218,7 @@ class UserMiddleware extends Middleware {
 
     static createProviderService(req, res, next) {
         const {id} = req.params;
-        this.isProvider(id)
+        this.isProvider(id, req, res)
 
         const {serviceDt} = req.body;
         const message = FieldsMiddleware.simpleCheckRequired(
