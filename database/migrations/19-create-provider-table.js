@@ -1,14 +1,10 @@
 module.exports = {
     up: (queryInterface, Sequelize) =>
-        queryInterface.createTable('providers',
+        queryInterface.createTable('provider',
         {
-            id: {
-                type: Sequelize.INTEGER,
-                primaryKey: true,
-                autoIncrement: true
-            },
             account_id: {
                 type: Sequelize.INTEGER,
+                primaryKey: true,
                 references: {
                     model: 'accounts',
                     key: 'id'
@@ -29,6 +25,7 @@ module.exports = {
                     key: 'id'
                 },
             },
+            name: Sequelize.STRING,
             open_time: Sequelize.STRING,
             close_time: Sequelize.STRING,
             latitude: Sequelize.FLOAT,
@@ -39,5 +36,5 @@ module.exports = {
             createdAt: Sequelize.DATE,
             updatedAt: Sequelize.DATE,
         }),
-    down: (queryInterface, Sequelize) => queryInterface.dropTable('providers'),
+    down: (queryInterface, Sequelize) => queryInterface.dropTable('provider'),
   };

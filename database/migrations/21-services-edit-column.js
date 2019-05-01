@@ -3,16 +3,16 @@ module.exports = {
         return Promise.all([
             queryInterface.removeColumn(
                 'services',
-                'provider_id', Sequelize.INTEGER
+                'account_id', Sequelize.INTEGER,
             ),
             queryInterface.addColumn(
                 'services',
-                'account_id',
+                'provider_id',
                 {
                     type: Sequelize.INTEGER,
                     references: {
-                        model: 'accounts',
-                        key: 'id'
+                        model: 'provider',
+                        key: 'account_id'
                     }, 
                 }
             ),

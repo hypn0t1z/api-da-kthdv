@@ -1,21 +1,21 @@
 const Controller = require('./controller');
 const ServiceModel = require('../database/models/08-service.model');
-const ProviderModel = require('../database/models/06-provider.model');
+const ProviderModel = require('../database/models/21-provider.model');
 const ServiceTypeModel = require('../database/models/07-service-type.model');
 
 class ServiceController extends Controller {
 
     /**
-     * Get list service by account_id
+     * Get list service by provider_id
      * @param {*} req 
      * @param {*} res 
      */
     static async getList(req, res) {
         const { id } = req.query;
-        let check_service = await ServiceModel.findOne({ where: { account_id: id } });
+        let check_service = await ServiceModel.findOne({ where: { provider_id: id } });
         let services = {};
         if(check_service && Object.keys(check_service).length){
-            services = await ServiceModel.findAll({ where: { account_id: id }, include: [ServiceTypeModel]});
+            services = await ServiceModel.findAll({ where: { provider_id: id }, include: [ServiceTypeModel]});
             return this.sendResponseMessage(res, 200, "Get services success", services)
         }
         return this.sendResponseMessage(res, 200, "Not found service");
@@ -115,9 +115,9 @@ class ServiceController extends Controller {
         if(!service){
             return this.sendResponseMessage(res, 404, "Service not found");
         }
-        let { account_id } = service;
+        let { provider_id } = service;
         await service.destroy();
-        let services = await ServiceModel.findAll({ where: { account_id } });
+        let services = await ServiceModel.findAll({ where: { provider_id } });
         return this.sendResponseMessage(res, 200, "Delete service success", services);
     }
 }

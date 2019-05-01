@@ -238,7 +238,6 @@ class AuthMiddleware extends Middleware {
 
     static async confirmRegister(req, res, next) {
         //do some thing
-        console.log("confirm register")
         next()
     }
 

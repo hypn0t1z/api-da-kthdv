@@ -18,7 +18,6 @@ class MailService {
             },
         };
         try{
-            console.log(config)
             const transporter = nodemailer.createTransport(config);
 
             const mailOptions = {
@@ -47,7 +46,6 @@ class MailService {
                 <p>You have been registered success from our website.</p>
                 <p>Please click <a style="color: red;" href="http://`+ template.data.url +`/api/auth/confirm-register/`+ template.data.mail_token +`">HERE</a> to confirm your registration!</p>
             `
-            console.log(mail_template)
         }
         if(template.type == 'forgot password'){
             mail_template = `
