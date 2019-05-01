@@ -56,7 +56,6 @@ class CommonService {
             order: order ? order : [ ['id', 'DESC'] ],
             include: include ? include : [],
         });
-        console.log(data)
         return {
             total,
             per_page,

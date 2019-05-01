@@ -1,6 +1,6 @@
 const Middleware = require('./middleware');
 const ServiceModel = require('../database/models/08-service.model');
-const ProviderModel = require('../database/models/06-provider.model');
+const ProviderModel = require('../database/models/21-provider.model');
 const FieldsMiddleware = require('./fields.middleware');
 
 class ServiceMiddleware extends Middleware {

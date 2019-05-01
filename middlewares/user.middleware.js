@@ -59,6 +59,45 @@ class UserMiddleware extends Middleware {
     }
 
     /**
+     * Update provider by account_id
+     * @author Hung Dang
+     */
+    static async updateProvider(req, res, next) {
+        const {id} = req.params;
+        const { identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more } = req.body;
+        let user = await AccountModel.findOne({where: {id, status: 'Active'}});
+        if (!user) {
+            return this.sendResponseMessage(res, 400, 'Tài khoản này không tồn tại hoặc chưa được xác nhận');
+        }
+        const message = FieldsMiddleware.simpleCheckRequired(
+            { identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more },
+            [
+                'identity_card', 
+                'open_time', 
+                'close_time', 
+                'phone', 
+                'addr_province', 
+                'addr_district', 
+                'addr_ward',  
+            ],
+            [
+                'Số chứng minh nhân dân không được bỏ trống',
+                'Giờ mở cửa không được bỏ trống',
+                'Giờ đóng cửa không được bỏ trống',
+                'Số điện thoại liên hệ không được bỏ trống',
+                'Tỉnh/Thành phố không được bỏ trống',
+                'Quận/Huyện không được bỏ trống',
+                'Phường/Xã không được bỏ trống',
+            ]
+        );
+
+        if (message) {
+            return this.sendResponseMessage(res, 400, message)
+        }
+        next();
+    }
+
+    /**
      * Get Account
      * @param {account_id} id
      * @author Hoang Tuan
@@ -116,7 +155,7 @@ class UserMiddleware extends Middleware {
         const {province, district, ward, address_more, birthday, full_name} = req.body;
         const {id} = req.params; // account_id
 
-        const profile = ProfileModel.findOne({ where: {account_id: id}})
+        const profile = await ProfileModel.findOne({ where: {account_id: id}})
 
         if (!profile)
             return this.sendResponseMessage(res, 400, "This account not have profile!");

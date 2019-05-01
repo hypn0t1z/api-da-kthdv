@@ -24,7 +24,7 @@ class AddressController extends Controller {
      * @param {*} res 
      */
     static async getDetailAddress(req, res) {
-        const {address} = req.query;
+        const { address } = req.params;
         let result = await CommonService.getAddress(address);
         return this.sendResponseMessage(res, 200, "get detail address success", result)
     }

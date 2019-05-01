@@ -35,10 +35,4 @@ ServiceModel.belongsTo(ServiceTypeModel, { foreignKey: 'service_type_id' });
 ServiceModel.hasMany(TransactionModel, { foreignKey: 'service_id' });
 TransactionModel.belongsTo(ServiceModel, { foreignKey: 'service_id' });
 
-/* var UserProjects = sequelize.define('userprojects', {
-    *   started: Sequelize.BOOLEAN
-    * })
-    * User.hasMany(Project, { through: UserProjects })
-    * Project.hasMany(User, { through: UserProjects }) */
-
 module.exports = ServiceModel;

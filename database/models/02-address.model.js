@@ -1,6 +1,6 @@
 const { sequelize, Sequelize } = require('../');
 const ProfileModel = require('./12-profile.model');
-const ProviderModel = require('./06-provider.model');
+const ProviderModel = require('./21-provider.model');
 
 /**
 * AddressModel describes 'Address' table
