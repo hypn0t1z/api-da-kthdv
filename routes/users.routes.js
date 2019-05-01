@@ -11,7 +11,7 @@ userRouter.get('/phone/:phone', (req, res, next) => UserMiddleWare.getUserByPhon
 
 // provider
 userRouter.post('/:id/create-provider', accessToken, (req, res, next) => UserMiddleWare.createProvider(req, res, next))
-userRouter.patch('/:id/update-provider', accessToken, (req, res, next) => UserMiddleWare.createProvider(req, res, next))
+userRouter.patch('/:id/update-provider', accessToken, (req, res, next) => UserMiddleWare.updateProvider(req, res, next))
 userRouter.get('/:id', (req, res, next) => UserMiddleWare.getAccount(req, res, next))
 
 // profile
