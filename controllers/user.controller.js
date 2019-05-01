@@ -198,7 +198,7 @@ class UserController extends Controller {
             })
             message = 'Thêm mới nhà cung cấp dịch vụ thành công'
         }
-        if(images.length > 0){
+        if(images && images.length > 0){
             let check_images = await ImageModel.findAll({ where: { provider_id: id } });
             if(check_images && Object.keys(check_images).length){
                 for(let i in check_images) {
@@ -257,8 +257,7 @@ class UserController extends Controller {
         }else{
             return this.sendResponseMessage(res, 404, 'Tài khoản chưa đăng kí nhà cung cấp dịch vụ');
         }
-        console.log(images)
-        if(images.length > 0){
+        if(images && images.length > 0){
             let check_images = await ImageModel.findAll({ where: { provider_id: id } });
             if(check_images && Object.keys(check_images).length){
                 for(let i in check_images) {

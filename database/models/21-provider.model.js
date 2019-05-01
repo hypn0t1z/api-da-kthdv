@@ -8,7 +8,7 @@ const ImgServiceModel = require('./10-images-service.model');
 * ProviderModel describes 'providers' table
 */
 const ProviderModel = sequelize.define(
-    'providers',
+    'provider',
     {
         account_id: {
             type: Sequelize.INTEGER,
