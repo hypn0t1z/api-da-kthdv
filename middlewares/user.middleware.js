@@ -27,6 +27,7 @@ class UserMiddleware extends Middleware {
      */
     static async createProvider(req, res, next) {
         const {id} = req.params;
+
         const {identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more} = req.body;
         let user = await AccountModel.findOne({where: {id, status: 'Active'}});
         if (!user) {
@@ -196,15 +197,24 @@ class UserMiddleware extends Middleware {
 
     static async getProviderServices(req, res, next) {
         const {id} = req.params;
-        this.isProvider(id, req, res)
+        await this.isProvider(id, req, res)
+        next()
+    }
+
+    static async getProviderServicesWithId(req, res, next) {
+        const {id, service_id} = req.params;
+        await this.isProvider(id, req, res)
+        await this.isServiceExist(service_id, id, req, res)
         next()
     }
 
     static async isProvider(user_id, req, res) {
+        console.log(`check is provider with id ${user_id}`)
         const user = await AccountModel.findOne({where: {id: user_id}})
         if (!user)
             return this.sendResponseMessage(res, 404, `user with id ${user_id} not found`)
 
+        console.log(`user role is ${user.role}`)
         if ((user.role & 0b010) === 0) {
             //this is not provider,
             return this.sendResponseMessage(res, 400, `user with id ${user_id} was not provider`)
@@ -216,13 +226,13 @@ class UserMiddleware extends Middleware {
 
     }
 
-    static createProviderService(req, res, next) {
+    static async createProviderService(req, res, next) {
         const {id} = req.params;
-        this.isProvider(id, req, res)
+        await this.isProvider(id, req, res)
 
-        const {serviceDt} = req.body;
+        const {price_min, price_max, service_type_id} = req.body;
         const message = FieldsMiddleware.simpleCheckRequired(
-            { price_min: serviceDt.price_min, price_max: serviceDt.price_max, service_type_id: serviceDt.service_type_id },
+            { price_min: price_min, price_max: price_max, service_type_id: service_type_id },
             [
                 'price_min',
                 'price_max',
@@ -241,7 +251,7 @@ class UserMiddleware extends Middleware {
     }
 
     static async isServiceExist(service_id, provider_id, req, res) {
-        const service = ServiceModel.findOne({
+        const service = await ServiceModel.findOne({
             where: {
                 id: service_id,
                 provider_id: provider_id
@@ -257,18 +267,18 @@ class UserMiddleware extends Middleware {
         const id = req.params.id;
         const service_id = req.params.service_id;
 
-        this.isProvider(id, req, res)
-        this.isServiceExist(service_id, id, req, res)
+        await this.isProvider(id, req, res)
+        await this.isServiceExist(service_id, id, req, res)
 
         next()
     }
 
-    static deleteService(req, res, next) {
+    static async deleteService(req, res, next) {
         const id = req.params.id;
         const service_id = req.params.service_id;
 
-        this.isProvider(id, req, res)
-        this.isServiceExist(service_id, id, req, res)
+        await this.isProvider(id, req, res)
+        await this.isServiceExist(service_id, id, req, res)
 
         next()
     }

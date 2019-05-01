@@ -450,26 +450,29 @@ class UserController extends Controller {
     }
 
     static async createProviderService(req, res) {
-        const {user_id: id} = req.params;
-        const {serviceDt} = req.body;
+        const {id} = req.params;
+        const {price_min, price_max, service_type_id} = req.body;
         await ServiceModel.create({
             provider_id: id,
-            price_min: serviceDt.price_min,
-            price_max: serviceDt.price_max,
-            service_type_id: serviceDt.service_type_id
+            price_min: price_min,
+            price_max: price_max,
+            service_type_id: service_type_id
         })
         return this.sendResponseMessage(res, 200, "Create service success");
     }
 
     static async updateService(req, res) {
-        const { serviceDt } = req.body;
+        const {price_min, price_max, service_type_id} = req.body;
         const service_id = req.params.service_id;
+        const id = req.params.id
 
-        let service = await ServiceModel.findOne({ where: { service_id } });
+        let service = await ServiceModel.findOne({ where: { id: service_id } });
         let data = await service.update({
-            price_min: serviceDt.price_min,
-            price_max: serviceDt.price_max,
-            service_type_id: serviceDt.service_type_id
+            price_min: price_min,
+            price_max: price_max,
+            service_type_id: service_type_id,
+            provider_id: id
+
         })
         return this.sendResponseMessage(res, 200, "Update service success", data );
     }
@@ -477,10 +480,22 @@ class UserController extends Controller {
     static async deleteService(req, res) {
         const id = req.params.id;
         const service_id = req.params.service_id;
-        let service = await ServiceModel.findOne({ where: { service_id } });
+        let service = await ServiceModel.findOne({ where: { id: service_id } });
         await service.destroy();
-        let services = await ServiceModel.findAll({ where: { user_id: id } });
+        let services = await ServiceModel.findAll({ where: { provider_id: id } });
         return this.sendResponseMessage(res, 200, "Delete service success", services);
+    }
+
+    static async getProviderServicesWithId(req, res) {
+        const {id, service_id} = req.params;
+        let service = await ServiceModel.findOne({
+            where: {
+                provider_id: id,
+                id: service_id
+            },
+            include: [ServiceTypeModel]
+        });
+        return this.sendResponseMessage(res, 200, "Get services success", service)
     }
 }
 
