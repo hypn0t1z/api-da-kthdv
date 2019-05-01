@@ -23,7 +23,7 @@ userRouter.patch('/:id/update-profile', accessToken, (req, res, next) => UserMid
 userRouter.get('/:id/service', accessToken, (req, res, next) => UserMiddleWare.getProviderServices(req, res, next));
 userRouter.post('/:id/service', accessToken, (req, res, next) => UserMiddleWare.createProviderService(req, res, next));
 userRouter.patch('/:id/service/:service_id', accessToken, (req, res, next) => UserMiddleWare.updateService(req, res, next));
-userRouer.delete('/:id/service/:service_id', accessToken, (req, res, next) => UserMiddleWare.deleteService(req, res, next));
+userRouter.delete('/:id/service/:service_id', accessToken, (req, res, next) => UserMiddleWare.deleteService(req, res, next));
 
 
 /**
@@ -55,7 +55,7 @@ userRouter.get('/:id/block', accessToken, (req, res) => UserController.blockAcco
 userRouter.get('/:id/service', accessToken, (req, res) => UserController.getProviderServices(req, res));
 userRouter.post('/:id/service', accessToken,  (req, res) => UserController.createProviderService(req, res));
 userRouter.patch('/:id/service/:service_id', accessToken, (req, res) => UserController.updateService(req, res));
-userRouer.delete('/:id/service/:service_id', accessToken, (req, res) => UserController.deleteService(req, res));
+userRouter.delete('/:id/service/:service_id', accessToken, (req, res) => UserController.deleteService(req, res));
 
 
 
