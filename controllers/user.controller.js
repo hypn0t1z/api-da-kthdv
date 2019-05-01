@@ -297,7 +297,7 @@ class UserController extends Controller {
         if (!profile)
             return this.sendResponseMessage(res, 404, "profile with this id not found", {});
 
-        if (!profile.full_name || !profile.avatar || !profile.birthday || !profile.address_id)
+        if (!profile.full_name || !profile.birthday || !profile.address_id)
             return this.sendResponseMessage(res, 404, "profile not complete", profile)
 
         return this.sendResponseMessage(res, 200, "get profile success", profile)
