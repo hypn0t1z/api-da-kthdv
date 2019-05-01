@@ -42,7 +42,7 @@ userRouter.delete('/:id/delete-provider', accessToken, (req, res) => UserControl
 userRouter.get('/:id', (req, res) => UserController.getAccount(req, res));
 
 // block account
-userRouter.get('/block/:id', accessToken, (req, res) => UserController.blockAccount(req, res))
+userRouter.get('/:id/block', accessToken, (req, res) => UserController.blockAccount(req, res))
 
 
 module.exports = userRouter
