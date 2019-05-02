@@ -152,6 +152,7 @@ class UserController extends Controller {
             status_id: provider && provider.status_id ? provider.status_id : '',
             latitude: provider && provider.latitude ? provider.latitude : '',
             longtitude: provider && provider.longtitude ? provider.longtitude : '',
+            status: provider && provider.status ? provider.status : 'ON',
         }
         const images = await ImageModel.findAll({where: {provider_id: id}});
         data.images = images;
@@ -168,7 +169,7 @@ class UserController extends Controller {
      */
     static async createProvider(req, res) {
         const {id} = req.params; // account_id
-        const {identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more, latitude, longtitude, images, name} = req.body;
+        const {identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more, latitude, longtitude, images, name, status} = req.body;
         let account = await AccountModel.findOne({where: {id, status: 'Active'}});
         account.update({role: 0b010 | account.role});
         const provider = await ProviderModel.findOne({where: {account_id: id}, include: [AddressModel]});
@@ -181,7 +182,7 @@ class UserController extends Controller {
                 province: addr_province,
                 district: addr_district,
                 ward: addr_ward,
-                addr_more
+                address_more: addr_more
             });
             await ProviderModel.create({
                 account_id: id,
@@ -193,7 +194,8 @@ class UserController extends Controller {
                 phone: phone ? phone : '',
                 address_id: address.id,
                 latitude: latitude ? latitude : '00.00',
-                longtitude: longtitude ? longtitude : '00.00'
+                longtitude: longtitude ? longtitude : '00.00',
+                status: status ? status.toUpperCase() : 'ON'
             })
             message = 'Thêm mới nhà cung cấp dịch vụ thành công'
         }
@@ -220,7 +222,7 @@ class UserController extends Controller {
      */
     static async updateProvider(req, res) {
         const {id} = req.params; // account_id
-        const {identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more, latitude, longtitude, images, name} = req.body;
+        const {identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more, latitude, longtitude, images, name, status} = req.body;
         let account = await AccountModel.findOne({where: {id, status: 'Active'}});
         account.update({role: 0b010 | account.role});
         const provider = await ProviderModel.findOne({where: {account_id: id}, include: [AddressModel]});
@@ -232,14 +234,14 @@ class UserController extends Controller {
                     province: addr_province ? addr_province : provider.address.province,
                     district: addr_district ? addr_district : provider.address.district,
                     ward: addr_ward ? addr_ward : provider.address.ward,
-                    addr_more: addr_more ? addr_more : provider.address.addr_more,
+                    address_more: addr_more ? addr_more : provider.address.addr_more,
                 })
             } else {
                 address = await AddressModel.create({
                     province: addr_province,
                     district: addr_district,
                     ward: addr_ward,
-                    addr_more
+                    address_more: addr_more
                 })
             }
             await provider.update({
@@ -250,7 +252,8 @@ class UserController extends Controller {
                 phone: phone ? phone : provider.phone,
                 address_id: address.id,
                 latitude: latitude ? latitude : provider.latitude,
-                longtitude: longtitude ? longtitude : provider.longtitude
+                longtitude: longtitude ? longtitude : provider.longtitude,
+                status: status ? status.toUpperCase() : provider.status
             })
             message = 'Cập nhật nhà cung cấp dịch vụ thành công';
         } else {
