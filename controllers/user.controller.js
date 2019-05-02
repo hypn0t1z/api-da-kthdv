@@ -301,7 +301,8 @@ class UserController extends Controller {
     }
 
     static async changeStatusProvider(req, res) {
-        const {id} = req.params;
+        const {status} = req.params;
+    
         const provider = await ProviderModel.findOne({ where: { status_id: id } });
         
     }

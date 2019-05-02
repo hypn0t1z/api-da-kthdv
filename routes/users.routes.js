@@ -45,6 +45,7 @@ userRouter.get('/:id/provider', (req, res) => UserController.getProvider(req, re
 userRouter.post('/:id/create-provider', accessToken, (req, res) => UserController.createProvider(req, res)); // account_id
 userRouter.patch('/:id/update-provider', accessToken, (req, res) => UserController.updateProvider(req, res)); // account_id
 userRouter.delete('/:id/delete-provider', accessToken, (req, res) => UserController.deleteProvider(req, res)); // account_id
+userRouter.get('/:id/provider/status')
 
 // account
 userRouter.get('/:id', (req, res) => UserController.getAccount(req, res));
