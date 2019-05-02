@@ -170,6 +170,7 @@ class UserController extends Controller {
     static async createProvider(req, res) {
         const {id} = req.params; // account_id
         const {identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more, latitude, longtitude, images, name, status} = req.body;
+        console.log(addr_more);
         let account = await AccountModel.findOne({where: {id, status: 'Active'}});
         account.update({role: 0b010 | account.role});
         const provider = await ProviderModel.findOne({where: {account_id: id}, include: [AddressModel]});
