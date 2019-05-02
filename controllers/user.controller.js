@@ -73,9 +73,9 @@ class UserController extends Controller {
      * @param {*} req
      * @param {*} res
      */
-    static async getAllProvider(req, res) {
-        const providers = await ProviderModel.findOne();
-        return this.sendResponseMessage(res, 200, "Lấy danh sách nhà cung cấp thành công");
+    static async getAllProvider(req, res){
+        const providers =  await ProviderModel.findAll();
+        return this.sendResponseMessage(res, 200, "Lấy danh sách nhà cung cấp thành công", providers);
     }
 
     /**
@@ -295,6 +295,12 @@ class UserController extends Controller {
          else{
              return this.sendResponseMessage(res, 401, 'Không được phép')
          } */
+    }
+
+    static async changeStatusProvider(req, res) {
+        const {id} = req.params;
+        const provider = await ProviderModel.findOne({ where: { status_id: id } });
+        
     }
 
     /**
