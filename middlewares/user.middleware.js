@@ -28,7 +28,6 @@ class UserMiddleware extends Middleware {
     static async createProvider(req, res, next) {
         const {id} = req.params;
         const {identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more, name} = req.body;
-        console.log(addr_more);
         let user = await AccountModel.findOne({where: {id, status: 'Active'}});
         if (!user) {
             return this.sendResponseMessage(res, 400, 'Tài khoản này không tồn tại hoặc chưa được xác nhận');
@@ -116,7 +115,6 @@ class UserMiddleware extends Middleware {
      */
     static async changeStatusProvider(req, res, next){
         const { id, status } = req.params;
-        const { status } = req.body;
         let statusUC  = status.toUpperCase();
         await this.isProvider(id, req, res);
         if(statusUC !== 'ON' || statusUC !== 'OFF'){
