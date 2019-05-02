@@ -17,6 +17,7 @@ const ServiceModel = sequelize.define(
         price_max: Sequelize.FLOAT,
         service_type_id: Sequelize.INTEGER,
         description: Sequelize.TEXT,
+        notes: Sequelize.TEXT,
 
         //Timestamp
         createdAt: Sequelize.DATE,

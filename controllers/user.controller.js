@@ -140,6 +140,7 @@ class UserController extends Controller {
 
         const provider = await ProviderModel.findOne({where: {account_id: id}, include: [AddressModel]});
         let data = {
+            name: provider && provider.name ? provider.name : '',
             identity_card: provider && provider.identity_card ? provider.identity_card : '',
             open_time: provider && provider.open_time ? provider.open_time : '',
             close_time: provider && provider.close_time ? provider.close_time : '',
@@ -167,7 +168,7 @@ class UserController extends Controller {
      */
     static async createProvider(req, res) {
         const {id} = req.params; // account_id
-        const {identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more, latitude, longtitude, images} = req.body;
+        const {identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more, latitude, longtitude, images, name} = req.body;
         let account = await AccountModel.findOne({where: {id, status: 'Active'}});
         account.update({role: 0b010 | account.role});
         const provider = await ProviderModel.findOne({where: {account_id: id}, include: [AddressModel]});
@@ -185,6 +186,7 @@ class UserController extends Controller {
             await ProviderModel.create({
                 account_id: id,
                 status_id: 1,
+                name: name ? name : '',
                 identity_card: identity_card ? identity_card : '',
                 open_time: open_time ? open_time : '',
                 close_time: close_time ? close_time : '',
@@ -218,7 +220,7 @@ class UserController extends Controller {
      */
     static async updateProvider(req, res) {
         const {id} = req.params; // account_id
-        const {identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more, latitude, longtitude, images} = req.body;
+        const {identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more, latitude, longtitude, images, name} = req.body;
         let account = await AccountModel.findOne({where: {id, status: 'Active'}});
         account.update({role: 0b010 | account.role});
         const provider = await ProviderModel.findOne({where: {account_id: id}, include: [AddressModel]});
@@ -241,6 +243,7 @@ class UserController extends Controller {
                 })
             }
             await provider.update({
+                name: name ? name : provider.name,
                 identity_card: identity_card ? identity_card : provider.identity_card,
                 open_time: open_time ? open_time : provider.open_time,
                 close_time: close_time ? close_time : provider.close_time,
