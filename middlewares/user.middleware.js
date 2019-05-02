@@ -27,14 +27,14 @@ class UserMiddleware extends Middleware {
      */
     static async createProvider(req, res, next) {
         const {id} = req.params;
-
         const {identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more, name} = req.body;
+        console.log(addr_more);
         let user = await AccountModel.findOne({where: {id, status: 'Active'}});
         if (!user) {
             return this.sendResponseMessage(res, 400, 'Tài khoản này không tồn tại hoặc chưa được xác nhận');
         }
         const message = FieldsMiddleware.simpleCheckRequired(
-            {identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more, name},
+            {name, identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more},
             [
                 'name',
                 'identity_card',
@@ -44,6 +44,7 @@ class UserMiddleware extends Middleware {
                 'addr_province',
                 'addr_district',
                 'addr_ward',
+                'addr_more'
             ],
             [
                 'Tên nhà cung cấp dịch vụ không được bỏ trống',
@@ -54,6 +55,7 @@ class UserMiddleware extends Middleware {
                 'Tỉnh/Thành phố không được bỏ trống',
                 'Quận/Huyện không được bỏ trống',
                 'Phường/Xã không được bỏ trống',
+                'Số nhà/đường/phố/ngõ/ngách không được bỏ trống'
             ]
         );
 
@@ -75,7 +77,7 @@ class UserMiddleware extends Middleware {
             return this.sendResponseMessage(res, 400, 'Tài khoản này không tồn tại hoặc chưa được xác nhận');
         }
         const message = FieldsMiddleware.simpleCheckRequired(
-            {identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more, name},
+            {name, identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more},
             [
                 'name',
                 'identity_card',
@@ -85,6 +87,7 @@ class UserMiddleware extends Middleware {
                 'addr_province',
                 'addr_district',
                 'addr_ward',
+                'addr_more',
             ],
             [
                 'Tên nhà cung cấp dịch vụ không được bỏ trống',
@@ -95,11 +98,29 @@ class UserMiddleware extends Middleware {
                 'Tỉnh/Thành phố không được bỏ trống',
                 'Quận/Huyện không được bỏ trống',
                 'Phường/Xã không được bỏ trống',
+                'Số nhà/đường/phố/ngõ/ngách không được bỏ trống'
             ]
         );
 
         if (message) {
             return this.sendResponseMessage(res, 400, message)
+        }
+        next();
+    }
+
+    /**
+     * 
+     * @param {*} req 
+     * @param {*} res 
+     * @param {*} next 
+     */
+    static async changeStatusProvider(req, res, next){
+        const { id, status } = req.params;
+        const { status } = req.body;
+        let statusUC  = status.toUpperCase();
+        await this.isProvider(id, req, res);
+        if(statusUC !== 'ON' || statusUC !== 'OFF'){
+            return this.sendResponseMessage(res, 400, `Lỗi chọn trạng thái nhà cung cấp`);
         }
         next();
     }
