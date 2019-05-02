@@ -6,7 +6,7 @@ const ServiceModel = require('../database/models/08-service.model');
 const ServiceTypeModel = require('../database/models/07-service-type.model');
 const ImageModel = require('../database/models/10-images-service.model');
 const CommonService = require('../services/common.service');
-const { sequelize, Sequelize } = require('sequelize');
+const {sequelize, Sequelize} = require('sequelize');
 const Controller = require('./controller');
 const Op = Sequelize.Op;
 
@@ -17,14 +17,14 @@ class UserController extends Controller {
      * per_page: default = 10 rows
      * page: default = 1
      * @param { key_words: option, per_page: option, page: default = 1 } req
-     * @param {*} res 
+     * @param {*} res
      * @author Hung Dang
      */
     static async getUser(req, res) {
-        const { key_words } = req.query;
+        const {key_words} = req.query;
         let where = '';
         let include = '';
-        if(key_words && key_words.length ){
+        if (key_words && key_words.length) {
             where = {
                 [Op.or]: [
                     {
@@ -44,35 +44,34 @@ class UserController extends Controller {
                     model: ProfileModel,
                     required: false,
                 }
-            ]; 
+            ];
+        } else {
+            include = [{model: ProfileModel, required: false}];
         }
-        else{
-            include = [{ model: ProfileModel, required: false }];
-        }
-        let resource = { model: AccountModel, req, where, include };
+        let resource = {model: AccountModel, req, where, include};
         let data = await CommonService.paginate(resource);
-        let total = await AccountModel.count({ where, include });
-        return this.sendResponseMessage(res, 200, 'Đã tìm thấy ' + total+ ' kết quả', data)
+        let total = await AccountModel.count({where, include});
+        return this.sendResponseMessage(res, 200, 'Đã tìm thấy ' + total + ' kết quả', data)
     }
 
     /**
      * Get user by phone
-     * @param {*} req 
-     * @param {*} res 
+     * @param {*} req
+     * @param {*} res
      */
     static async getUserByPhone(req, res) {
-        const { phone } = req.params;
-        const user = await AccountModel.findOne({ where: { phone } });
+        const {phone} = req.params;
+        const user = await AccountModel.findOne({where: {phone}});
         if (user) {
             return this.sendResponseMessage(res, 200, "user exist!")
         } else
             return this.sendResponseMessage(res, 404, "user not exist!")
     }
-    
+
     /**
      * Get all provider
-     * @param {*} req 
-     * @param {*} res 
+     * @param {*} req
+     * @param {*} res
      */
     static async getAllProvider(req, res){
         const providers =  await ProviderModel.findAll();
@@ -81,15 +80,15 @@ class UserController extends Controller {
 
     /**
      * Get provider by provider's name or phone
-     * @param {*} key_words (option) 
-     * @param {*} res 
-     * @returns { object } 
+     * @param {*} key_words (option)
+     * @param {*} res
+     * @returns { object }
      */
-    static async getProviderByKeyword(req, res){
-        const { key_words } = req.query;
+    static async getProviderByKeyword(req, res) {
+        const {key_words} = req.query;
         let where = '';
         let include = '';
-        if(key_words && key_words.length ){
+        if (key_words && key_words.length) {
             where = {
                 [Op.or]: [
                     {
@@ -107,31 +106,30 @@ class UserController extends Controller {
             include = [
                 {
                     model: ServiceModel,
-                    required: false,              
+                    required: false,
                 },
-            ]; 
-        }
-        else{
-            include = [{ 
-                model: ServiceModel, 
+            ];
+        } else {
+            include = [{
+                model: ServiceModel,
                 required: false
             }];
         }
-        let order = [ ['createdAt', 'DESC'] ];
-        let resource = { model: ProviderModel, req, where, include, order };
+        let order = [['createdAt', 'DESC']];
+        let resource = {model: ProviderModel, req, where, include, order};
         let data = await CommonService.paginate(resource);
-        let total = await ProviderModel.count({ where, include });
-        return this.sendResponseMessage(res, 200, 'Đã tìm thấy ' + total+ ' kết quả', data)
+        let total = await ProviderModel.count({where, include});
+        return this.sendResponseMessage(res, 200, 'Đã tìm thấy ' + total + ' kết quả', data)
     }
 
     /**
      * Get info provider
-     * @param {*} req 
-     * @param {*} res 
+     * @param {*} req
+     * @param {*} res
      */
     static async getProvider(req, res) {
         const {id} = req.params; // account_id
-        let user = await AccountModel.findOne({where: { id, status: 'Active' }});
+        let user = await AccountModel.findOne({where: {id, status: 'Active'}});
         if (!user) {
             return this.sendResponseMessage(res, 404, 'Tài khoản này không tồn tại hoặc chưa xác nhận email');
         }
@@ -140,7 +138,7 @@ class UserController extends Controller {
         if ((user.role & 0b010) === 0)
             return this.sendResponseMessage(res, 400, 'This account is not provider')
 
-        const provider = await ProviderModel.findOne({where: {account_id: id}, include: [ AddressModel ]});
+        const provider = await ProviderModel.findOne({where: {account_id: id}, include: [AddressModel]});
         let data = {
             identity_card: provider && provider.identity_card ? provider.identity_card : '',
             open_time: provider && provider.open_time ? provider.open_time : '',
@@ -154,7 +152,7 @@ class UserController extends Controller {
             latitude: provider && provider.latitude ? provider.latitude : '',
             longtitude: provider && provider.longtitude ? provider.longtitude : '',
         }
-        const images = await ImageModel.findAll({ where: { provider_id: id } });
+        const images = await ImageModel.findAll({where: {provider_id: id}});
         data.images = images;
         return this.sendResponseMessage(res, 200, "Get provider success", data)
     }
@@ -162,23 +160,22 @@ class UserController extends Controller {
     /**
      * Create provider by account_id
      * @description: Check if exist provider, if existed --> Update , else --> Create
-     * 
-     * @param {*} req images = [{ path: '{base64String}', description: '(option)' }, 
-     *                          { path: '{base64String}', description: '(option)' }] 
-     * @param {*} res 
+     *
+     * @param {*} req images = [{ path: '{base64String}', description: '(option)' },
+     *                          { path: '{base64String}', description: '(option)' }]
+     * @param {*} res
      */
     static async createProvider(req, res) {
         const {id} = req.params; // account_id
-        const { identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more, latitude, longtitude, images } = req.body;
-        let account = await AccountModel.findOne({ where: { id, status: 'Active' } });
-        account.update({ role: 0b010|account.role });
-        const provider = await ProviderModel.findOne({ where: { account_id: id }, include: [ AddressModel ]});
+        const {identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more, latitude, longtitude, images} = req.body;
+        let account = await AccountModel.findOne({where: {id, status: 'Active'}});
+        account.update({role: 0b010 | account.role});
+        const provider = await ProviderModel.findOne({where: {account_id: id}, include: [AddressModel]});
         let address = '';
         let message = '';
-        if(provider){
-            return this.sendResponseMessage(res, 400, "Nhà cung cấp dịch vụ đã tồn tại. Vui lòng chọn cập nhật");      
-        }
-        else{
+        if (provider) {
+            return this.sendResponseMessage(res, 400, "Nhà cung cấp dịch vụ đã tồn tại. Vui lòng chọn cập nhật");
+        } else {
             address = await AddressModel.create({
                 province: addr_province,
                 district: addr_district,
@@ -192,20 +189,20 @@ class UserController extends Controller {
                 open_time: open_time ? open_time : '',
                 close_time: close_time ? close_time : '',
                 phone: phone ? phone : '',
-                address_id: address.id ,
+                address_id: address.id,
                 latitude: latitude ? latitude : '00.00',
                 longtitude: longtitude ? longtitude : '00.00'
             })
             message = 'Thêm mới nhà cung cấp dịch vụ thành công'
         }
-        if(images && images.length > 0){
-            let check_images = await ImageModel.findAll({ where: { provider_id: id } });
-            if(check_images && Object.keys(check_images).length){
-                for(let i in check_images) {
+        if (images && images.length > 0) {
+            let check_images = await ImageModel.findAll({where: {provider_id: id}});
+            if (check_images && Object.keys(check_images).length) {
+                for (let i in check_images) {
                     check_images[i].destroy();
                 }
             }
-            for( let i in images ){
+            for (let i in images) {
                 await ImageModel.create({
                     provider_id: id,
                     path: await CommonService.uploadImage(images[i].path),
@@ -221,22 +218,21 @@ class UserController extends Controller {
      */
     static async updateProvider(req, res) {
         const {id} = req.params; // account_id
-        const { identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more, latitude, longtitude, images } = req.body;
-        let account = await AccountModel.findOne({ where: { id, status: 'Active' } });
-        account.update({ role: 0b010|account.role });
-        const provider = await ProviderModel.findOne({ where: { account_id: id }, include: [ AddressModel ]});
+        const {identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more, latitude, longtitude, images} = req.body;
+        let account = await AccountModel.findOne({where: {id, status: 'Active'}});
+        account.update({role: 0b010 | account.role});
+        const provider = await ProviderModel.findOne({where: {account_id: id}, include: [AddressModel]});
         let address = '';
         let message = '';
-        if(provider){
-            if(provider.address){
+        if (provider) {
+            if (provider.address) {
                 address = await provider.address.update({
                     province: addr_province ? addr_province : provider.address.province,
                     district: addr_district ? addr_district : provider.address.district,
                     ward: addr_ward ? addr_ward : provider.address.ward,
                     addr_more: addr_more ? addr_more : provider.address.addr_more,
                 })
-            }
-            else{
+            } else {
                 address = await AddressModel.create({
                     province: addr_province,
                     district: addr_district,
@@ -249,22 +245,22 @@ class UserController extends Controller {
                 open_time: open_time ? open_time : provider.open_time,
                 close_time: close_time ? close_time : provider.close_time,
                 phone: phone ? phone : provider.phone,
-                address_id: address.id ,
+                address_id: address.id,
                 latitude: latitude ? latitude : provider.latitude,
                 longtitude: longtitude ? longtitude : provider.longtitude
             })
-            message = 'Cập nhật nhà cung cấp dịch vụ thành công';        
-        }else{
+            message = 'Cập nhật nhà cung cấp dịch vụ thành công';
+        } else {
             return this.sendResponseMessage(res, 404, 'Tài khoản chưa đăng kí nhà cung cấp dịch vụ');
         }
-        if(images && images.length > 0){
-            let check_images = await ImageModel.findAll({ where: { provider_id: id } });
-            if(check_images && Object.keys(check_images).length){
-                for(let i in check_images) {
+        if (images && images.length > 0) {
+            let check_images = await ImageModel.findAll({where: {provider_id: id}});
+            if (check_images && Object.keys(check_images).length) {
+                for (let i in check_images) {
                     check_images[i].destroy();
                 }
             }
-            for( let i in images ){
+            for (let i in images) {
                 await ImageModel.create({
                     provider_id: id,
                     path: await CommonService.uploadImage(images[i].path),
@@ -277,28 +273,28 @@ class UserController extends Controller {
 
     /**
      * Delete provider
-     * @param {*} req 
-     * @param {*} res 
+     * @param {*} req
+     * @param {*} res
      */
-    static async deleteProvider(req, res){
-       /*  const {id} = req.params; // account_id
-        const account = await AccountModel.findOne({ where: { id , status: 'Active' } });
-        if(!account){
-            return this.sendResponseMessage(res, 404, "Tài khoản này không tồn tại hoặc chưa xác nhận email");
-        }
-        if ((account.role === 0b100) || (account.role === 0b010)){
-            const provider = await ProviderModel.findOne({ where: { account_id: id } });
-            if(!provider){
-                return this.sendResponseMessage(res, 404, "Không tìm thấy nhà cung cấp");
-            }
-            await provider.destroy();
-            account.update({
-                role: 0b001
-            })
-        }
-        else{
-            return this.sendResponseMessage(res, 401, 'Không được phép')
-        } */
+    static async deleteProvider(req, res) {
+        /*  const {id} = req.params; // account_id
+         const account = await AccountModel.findOne({ where: { id , status: 'Active' } });
+         if(!account){
+             return this.sendResponseMessage(res, 404, "Tài khoản này không tồn tại hoặc chưa xác nhận email");
+         }
+         if ((account.role === 0b100) || (account.role === 0b010)){
+             const provider = await ProviderModel.findOne({ where: { account_id: id } });
+             if(!provider){
+                 return this.sendResponseMessage(res, 404, "Không tìm thấy nhà cung cấp");
+             }
+             await provider.destroy();
+             account.update({
+                 role: 0b001
+             })
+         }
+         else{
+             return this.sendResponseMessage(res, 401, 'Không được phép')
+         } */
     }
 
     static async changeStatusProvider(req, res) {
@@ -309,13 +305,13 @@ class UserController extends Controller {
 
     /**
      * Get account by id
-     * @param {*} req 
-     * @param {*} res 
+     * @param {*} req
+     * @param {*} res
      */
     static async getAccount(req, res) {
         const {id} = req.params;
 
-        const account = await AccountModel.findOne({ where: {id}, include: [ProfileModel]})
+        const account = await AccountModel.findOne({where: {id}, include: [ProfileModel]})
 
         const data = {
             id: account.id,
@@ -332,23 +328,23 @@ class UserController extends Controller {
      * @param {id}
      * @author Hung Dang
      */
-    static async blockAccount(req, res){
+    static async blockAccount(req, res) {
         const {id} = req.params;
         let user = req.user;
-        if ((user.role & 0b100) === 0){
+        if ((user.role & 0b100) === 0) {
             return this.sendResponseMessage(res, 401, 'Không được phép')
         }
-        let check_account = await AccountModel.findOne({ where: { id, status: 'Active' }});
-        if(check_account){
-            if(check_account.role == 0b100){
+        let check_account = await AccountModel.findOne({where: {id, status: 'Active'}});
+        if (check_account) {
+            if (check_account.role == 0b100) {
                 return this.sendResponseMessage(res, 401, 'Không thể xoá tài khoản Admin');
-            }else{
+            } else {
                 await check_account.update({
                     status: 'Banned',
                     role: 0b000,
                 })
             }
-        }else{
+        } else {
             return this.sendResponseMessage(res, 404, 'Tài khoản đã bị chặn hoặc không tồn tại');
         }
         return this.sendResponseMessage(res, 200, 'Chặn thành công', check_account);
@@ -356,28 +352,28 @@ class UserController extends Controller {
 
     /**
      * Check profile with account id
-     * @param {id} req  
-     * @param {*} res 
+     * @param {id} req
+     * @param {*} res
      */
-    static async isExistProfile(req, res){
-        const { id } = req.params; // account_id
-        let profile = await ProfileModel.findOne({ where: { account_id: id }, include: [ AddressModel ] });
-        if(profile){
-            return this.sendResponseMessage(res, 200,  'Profile Existed', profile)
+    static async isExistProfile(req, res) {
+        const {id} = req.params; // account_id
+        let profile = await ProfileModel.findOne({where: {account_id: id}, include: [AddressModel]});
+        if (profile) {
+            return this.sendResponseMessage(res, 200, 'Profile Existed', profile)
         }
-        return this.sendResponseMessage(res, 404,  'Bạn chưa có thông tin cá nhân. Vui lòng tạo thông tin và thử lại')
+        return this.sendResponseMessage(res, 404, 'Bạn chưa có thông tin cá nhân. Vui lòng tạo thông tin và thử lại')
     }
 
     /**
      * Get profile info
-     * @param {*} req 
-     * @param {*} res 
+     * @param {*} req
+     * @param {*} res
      * @author Tuan Tien Ty
      */
     static async getUserProfile(req, res) {
         const {id} = req.params;
 
-        const profile = await ProfileModel.findOne({ where: { account_id: id }, include: [AddressModel] })
+        const profile = await ProfileModel.findOne({where: {account_id: id}, include: [AddressModel]})
         if (!profile)
             return this.sendResponseMessage(res, 404, "profile with this id not found", {});
 
@@ -389,14 +385,14 @@ class UserController extends Controller {
 
     /**
      * Create profile with account id
-     * @param {*} req 
-     * @param {*} res 
+     * @param {*} req
+     * @param {*} res
      */
     static async createProfile(req, res) {
-        const { id } = req.params; // account_id
+        const {id} = req.params; // account_id
         const {province, district, ward, address_more, birthday, avatar, full_name} = req.body;
-        let profile = await ProfileModel.findOne({ where: { account_id: id }});
-        if(profile){
+        let profile = await ProfileModel.findOne({where: {account_id: id}});
+        if (profile) {
             return this.sendResponseMessage(res, 400, "Profile is existed");
         }
         let image = avatar ? await CommonService.uploadImage(avatar) : '';
@@ -425,16 +421,16 @@ class UserController extends Controller {
     static async updateProfile(req, res) {
         const {id} = req.params;
         const {province, district, ward, address_more, birthday, avatar, full_name} = req.body;
-        let profile = await ProfileModel.findOne({where: { account_id: id }, include: [AddressModel] });
+        let profile = await ProfileModel.findOne({where: {account_id: id}, include: [AddressModel]});
         let address = {};
-        if(profile.address){
+        if (profile.address) {
             address = await profile.address.update({
                 province: province ? province : profile.province,
                 district: district ? district : profile.province,
                 ward: ward ? ward : profile.ward,
                 address_more: address_more ? address_more : profile.address_more,
             })
-        }else{
+        } else {
             address = await AddressModel.create({
                 province,
                 district,
@@ -451,6 +447,61 @@ class UserController extends Controller {
             status: 'updated'
         })
         return this.sendResponseMessage(res, 200, 'Cập nhật thông tin thành công')
+    }
+
+    static async getProviderServices(req, res) {
+        const {id} = req.params;
+        let services = await ServiceModel.findAll({where: {provider_id: id}, include: [ServiceTypeModel]});
+        return this.sendResponseMessage(res, 200, "Get services success", services)
+    }
+
+    static async createProviderService(req, res) {
+        const {id} = req.params;
+        const {price_min, price_max, service_type_id} = req.body;
+        await ServiceModel.create({
+            provider_id: id,
+            price_min: price_min,
+            price_max: price_max,
+            service_type_id: service_type_id
+        })
+        return this.sendResponseMessage(res, 200, "Create service success");
+    }
+
+    static async updateService(req, res) {
+        const {price_min, price_max, service_type_id} = req.body;
+        const service_id = req.params.service_id;
+        const id = req.params.id
+
+        let service = await ServiceModel.findOne({ where: { id: service_id } });
+        let data = await service.update({
+            price_min: price_min,
+            price_max: price_max,
+            service_type_id: service_type_id,
+            provider_id: id
+
+        })
+        return this.sendResponseMessage(res, 200, "Update service success", data );
+    }
+
+    static async deleteService(req, res) {
+        const id = req.params.id;
+        const service_id = req.params.service_id;
+        let service = await ServiceModel.findOne({ where: { id: service_id } });
+        await service.destroy();
+        let services = await ServiceModel.findAll({ where: { provider_id: id } });
+        return this.sendResponseMessage(res, 200, "Delete service success", services);
+    }
+
+    static async getProviderServicesWithId(req, res) {
+        const {id, service_id} = req.params;
+        let service = await ServiceModel.findOne({
+            where: {
+                provider_id: id,
+                id: service_id
+            },
+            include: [ServiceTypeModel]
+        });
+        return this.sendResponseMessage(res, 200, "Get services success", service)
     }
 }
 
