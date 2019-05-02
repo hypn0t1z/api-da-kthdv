@@ -36,6 +36,7 @@ class UserMiddleware extends Middleware {
         const message = FieldsMiddleware.simpleCheckRequired(
             {identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more},
             [
+                'name',
                 'identity_card',
                 'open_time',
                 'close_time',
@@ -45,6 +46,7 @@ class UserMiddleware extends Middleware {
                 'addr_ward',
             ],
             [
+                'Tên nhà cung cấp dịch vụ không được bỏ trống',
                 'Số chứng minh nhân dân không được bỏ trống',
                 'Giờ mở cửa không được bỏ trống',
                 'Giờ đóng cửa không được bỏ trống',
@@ -75,6 +77,7 @@ class UserMiddleware extends Middleware {
         const message = FieldsMiddleware.simpleCheckRequired(
             {identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more},
             [
+                'name',
                 'identity_card',
                 'open_time',
                 'close_time',
@@ -84,6 +87,7 @@ class UserMiddleware extends Middleware {
                 'addr_ward',
             ],
             [
+                'Tên nhà cung cấp dịch vụ không được bỏ trống',
                 'Số chứng minh nhân dân không được bỏ trống',
                 'Giờ mở cửa không được bỏ trống',
                 'Giờ đóng cửa không được bỏ trống',
