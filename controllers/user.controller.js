@@ -280,30 +280,34 @@ class UserController extends Controller {
      * @param {*} res
      */
     static async deleteProvider(req, res) {
-        /*  const {id} = req.params; // account_id
-         const account = await AccountModel.findOne({ where: { id , status: 'Active' } });
-         if(!account){
-             return this.sendResponseMessage(res, 404, "Tài khoản này không tồn tại hoặc chưa xác nhận email");
-         }
-         if ((account.role === 0b100) || (account.role === 0b010)){
-             const provider = await ProviderModel.findOne({ where: { account_id: id } });
-             if(!provider){
-                 return this.sendResponseMessage(res, 404, "Không tìm thấy nhà cung cấp");
-             }
-             await provider.destroy();
-             account.update({
-                 role: 0b001
-             })
-         }
-         else{
-             return this.sendResponseMessage(res, 401, 'Không được phép')
-         } */
+        /* const {id} = req.params; // account_id
+        const account = await AccountModel.findOne({ where: { id , status: 'Active' } });
+        if(!account){
+            return this.sendResponseMessage(res, 404, "Tài khoản này không tồn tại hoặc chưa xác nhận email");
+        }
+        if ((account.role === 0b100) || (account.role === 0b010)){
+            const provider = await ProviderModel.findOne({ where: { account_id: id } });
+            if(!provider){
+                return this.sendResponseMessage(res, 404, "Không tìm thấy nhà cung cấp");
+            }
+            await provider.destroy();
+            account.update({
+                role: 0b001
+            })
+        }
+        else{
+            return this.sendResponseMessage(res, 401, 'Không được phép')
+        } */
     }
 
     static async changeStatusProvider(req, res) {
-        const {id} = req.params;
-        const provider = await ProviderModel.findOne({ where: { status_id: id } });
-        
+        const { id, status } = req.params; //account_id
+        let statusUC  = status.toUpperCase();
+        const provider = await ProviderModel.findOne({ where: { account_id: id } });
+        provider.update({
+            status: statusUC
+        });
+        return this.sendResponseMessage(res, 200, 'Cập nhật trạng thái thành công');
     }
 
     /**

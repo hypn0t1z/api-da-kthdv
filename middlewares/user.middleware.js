@@ -105,6 +105,23 @@ class UserMiddleware extends Middleware {
     }
 
     /**
+     * 
+     * @param {*} req 
+     * @param {*} res 
+     * @param {*} next 
+     */
+    static async changeStatusProvider(req, res, next){
+        const { id, status } = req.params;
+        const { status } = req.body;
+        let statusUC  = status.toUpperCase();
+        await this.isProvider(id, req, res);
+        if(statusUC !== 'ON' || statusUC !== 'OFF'){
+            return this.sendResponseMessage(res, 400, `Lỗi chọn trạng thái nhà cung cấp`);
+        }
+        next();
+    }
+
+    /**
      * Get Account
      * @param {account_id} id
      * @author Hoang Tuan

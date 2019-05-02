@@ -4,6 +4,14 @@ module.exports = {
             queryInterface.addColumn(
                 'services',
                 'notes', Sequelize.TEXT
+            ),
+            queryInterface.removeColumn(
+                'services',
+                'status_id', Sequelize.INTEGER
+            ),
+            queryInterface.addColumn(
+                'services',
+                'status', Sequelize.STRING
             )
         ]);
     }, 
