@@ -2,6 +2,7 @@ const Controller = require('./controller');
 const ServiceModel = require('../database/models/08-service.model');
 const ProviderModel = require('../database/models/21-provider.model');
 const ServiceTypeModel = require('../database/models/07-service-type.model');
+const CommonService = require('../services/common.service');
 
 class ServiceController extends Controller {
 
@@ -19,6 +20,17 @@ class ServiceController extends Controller {
             return this.sendResponseMessage(res, 200, "Get services success", services)
         }
         return this.sendResponseMessage(res, 200, "Not found service");
+    }
+
+    /**
+     * Get list Service Types
+     */
+    static async getListServiceType(req, res) {
+        let where = {};
+        let resource = { model: ServiceTypeModel, req, where };
+        let data = await CommonService.paginate(resource);
+        let total = await ServiceTypeModel.count({ where });
+        return this.sendResponseMessage(res, 200, 'Đã tìm thấy ' + total+ ' kết quả', data)
     }
 
     /**

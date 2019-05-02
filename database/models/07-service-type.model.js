@@ -11,7 +11,6 @@ const ServiceTypeModel = sequelize.define(
             autoIncrement: true
         },
         name: Sequelize.STRING,
-        description: Sequelize.TEXT,
 
         //Timestamp
         createdAt: Sequelize.DATE,
