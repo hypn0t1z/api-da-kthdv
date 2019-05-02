@@ -6,11 +6,11 @@ module.exports = {
                 'notes', Sequelize.TEXT
             ),
             queryInterface.removeColumn(
-                'services',
+                'providers',
                 'status_id', Sequelize.INTEGER
             ),
             queryInterface.addColumn(
-                'services',
+                'providers',
                 'status', Sequelize.STRING
             )
         ]);
