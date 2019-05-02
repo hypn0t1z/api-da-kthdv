@@ -467,18 +467,19 @@ class UserController extends Controller {
 
     static async createProviderService(req, res) {
         const {id} = req.params;
-        const {price_min, price_max, service_type_id} = req.body;
+        const {price_min, price_max, service_type_id, description} = req.body;
         await ServiceModel.create({
             provider_id: id,
             price_min: price_min,
             price_max: price_max,
-            service_type_id: service_type_id
+            service_type_id: service_type_id,
+            description: description
         })
         return this.sendResponseMessage(res, 200, "Create service success");
     }
 
     static async updateService(req, res) {
-        const {price_min, price_max, service_type_id} = req.body;
+        const {price_min, price_max, service_type_id, description} = req.body;
         const service_id = req.params.service_id;
         const id = req.params.id
 
@@ -487,7 +488,8 @@ class UserController extends Controller {
             price_min: price_min,
             price_max: price_max,
             service_type_id: service_type_id,
-            provider_id: id
+            provider_id: id,
+            description: description
 
         })
         return this.sendResponseMessage(res, 200, "Update service success", data );
