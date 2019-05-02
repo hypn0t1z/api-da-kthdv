@@ -27,7 +27,6 @@ class UserMiddleware extends Middleware {
      */
     static async createProvider(req, res, next) {
         const {id} = req.params;
-
         const {identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more, name} = req.body;
         let user = await AccountModel.findOne({where: {id, status: 'Active'}});
         if (!user) {
@@ -44,6 +43,7 @@ class UserMiddleware extends Middleware {
                 'addr_province',
                 'addr_district',
                 'addr_ward',
+                'addr_more'
             ],
             [
                 'Tên nhà cung cấp dịch vụ không được bỏ trống',
@@ -54,6 +54,7 @@ class UserMiddleware extends Middleware {
                 'Tỉnh/Thành phố không được bỏ trống',
                 'Quận/Huyện không được bỏ trống',
                 'Phường/Xã không được bỏ trống',
+                'Số nhà/đường/phố/ngõ/ngách không được bỏ trống'
             ]
         );
 
@@ -85,6 +86,7 @@ class UserMiddleware extends Middleware {
                 'addr_province',
                 'addr_district',
                 'addr_ward',
+                'addr_more',
             ],
             [
                 'Tên nhà cung cấp dịch vụ không được bỏ trống',
@@ -95,6 +97,7 @@ class UserMiddleware extends Middleware {
                 'Tỉnh/Thành phố không được bỏ trống',
                 'Quận/Huyện không được bỏ trống',
                 'Phường/Xã không được bỏ trống',
+                'Số nhà/đường/phố/ngõ/ngách không được bỏ trống'
             ]
         );
 
