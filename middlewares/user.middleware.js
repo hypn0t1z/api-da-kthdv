@@ -34,7 +34,7 @@ class UserMiddleware extends Middleware {
             return this.sendResponseMessage(res, 400, 'Tài khoản này không tồn tại hoặc chưa được xác nhận');
         }
         const message = FieldsMiddleware.simpleCheckRequired(
-            {identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more},
+            {name, identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more},
             [
                 'name',
                 'identity_card',
@@ -75,7 +75,7 @@ class UserMiddleware extends Middleware {
             return this.sendResponseMessage(res, 400, 'Tài khoản này không tồn tại hoặc chưa được xác nhận');
         }
         const message = FieldsMiddleware.simpleCheckRequired(
-            {identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more},
+            {name, identity_card, open_time, close_time, phone, addr_province, addr_district, addr_ward, addr_more},
             [
                 'name',
                 'identity_card',
