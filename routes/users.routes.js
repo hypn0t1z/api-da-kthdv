@@ -47,7 +47,7 @@ userRouter.post('/:id/create-provider', accessToken, (req, res) => UserControlle
 userRouter.patch('/:id/update-provider', accessToken, (req, res) => UserController.updateProvider(req, res)); // account_id
 userRouter.delete('/:id/delete-provider', accessToken, (req, res) => UserController.deleteProvider(req, res)); // account_id
 userRouter.get('/:id/provider/status/:status', accessToken, (req, res) => UserController.changeStatusProvider(req, res));
-userRouter.get('/:id/provider/test', accessToken, (req, res) => UserController.test(req, res));
+userRouter.get('/:id/provider/find-nearby', accessToken, (req, res) => UserController.findNearby(req, res));
 // account
 userRouter.get('/:id', (req, res) => UserController.getAccount(req, res));
 
