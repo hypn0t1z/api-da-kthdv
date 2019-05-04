@@ -337,7 +337,7 @@ class UserController extends Controller {
                 }
             }
         }
-        res.send({data})
+        return this.sendResponseMessage(res, 200, `Đã tìm thấy ${data.length} địa điểm`, data);
     
     }
 
