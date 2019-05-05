@@ -1,5 +1,6 @@
 const Controller = require('./controller');
 const ProviderModel = require('../database/models/21-provider.model')
+const AddressModel = require('../database/models/02-address.model')
 
 
 class ProviderController extends Controller {
@@ -13,7 +14,7 @@ class ProviderController extends Controller {
         let lat1 = mylat-(dist/69);
         let lat2 = mylat+(dist/69);
         let data = [];
-        const providers = await ProviderModel.findAll({ where: { status: 'ON' }});
+        const providers = await ProviderModel.findAll({ where: { status: 'ON' }, include: [AddressModel]});
         for( let provider of providers){
             let longtitude = provider.longtitude;
             let latitude = provider.latitude;
