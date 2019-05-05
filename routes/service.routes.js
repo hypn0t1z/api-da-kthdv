@@ -21,6 +21,6 @@ serviceRouter.get('/create', (req, res) => ServiceController.getCreate(req, res)
 serviceRouter.post('/create', accessToken, (req, res) => ServiceController.createService(req, res));
 serviceRouter.patch('/:id/update', accessToken, (req, res) => ServiceController.updateService(req, res));  // id == service_id
 serviceRouter.delete('/:id/delete', accessToken, (req, res) => ServiceController.deleteService(req, res));  // id == service_id
-serviceRouter.get('/types', (req, res) => ServiceController.getProviderByType(req, res));
+serviceRouter.get('/types/provider', (req, res) => ServiceController.getProviderByType(req, res));
 
 module.exports = serviceRouter;
