@@ -3,6 +3,8 @@ const ServiceModel = require('../database/models/08-service.model');
 const ProviderModel = require('../database/models/21-provider.model');
 const ServiceTypeModel = require('../database/models/07-service-type.model');
 const CommonService = require('../services/common.service');
+const {sequelize, Sequelize} = require('sequelize');
+const Op = Sequelize.Op;
 
 class ServiceController extends Controller {
 
@@ -131,6 +133,29 @@ class ServiceController extends Controller {
         await service.destroy();
         let services = await ServiceModel.findAll({ where: { provider_id } });
         return this.sendResponseMessage(res, 200, "Delete service success", services);
+    }
+
+    /**
+     * Get providers by a service type array
+     */
+    static async getProviderByType(req, res){
+        const { typeIds } = req.body;
+        const services = await ServiceModel.findAll({ 
+            attributes:
+                [ 'id', 'service_type_id', 'price_min', 'price_max', 'provider_id'],
+            where: {
+                service_type_id: {
+                    [Op.in]: typeIds
+                },
+                
+            },
+            include: [{
+                model: ProviderModel,
+                attributes: ['account_id', 'address_id', 'name', 'open_time', 'close_time', 'longtitude', 'latitude'], 
+            }],
+            group: ['provider_id'] 
+        })
+        return this.sendResponseMessage(res, 200, `Đã tìm thấy ${services.length} nhà cung cấp`, services);
     }
 }
 module.exports = ServiceController

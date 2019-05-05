@@ -136,4 +136,9 @@ body:{
         "birthday": "1996-10-17",
     }
 
-## Get Image
+## Get Providers by Service Types
+get: /api/service/types
+param: typeIds (array)
+body:   {
+	        "typeIds": [1,2,3,4,5]
+        }
