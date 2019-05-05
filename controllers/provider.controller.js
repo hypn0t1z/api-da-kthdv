@@ -1,6 +1,7 @@
 const Controller = require('./controller');
 const ProviderModel = require('../database/models/21-provider.model')
-const ServiceModel = require('../database/models//08-service.model');
+// const ServiceModel = require('../database/models//08-service.model');
+const AddressModel = require('../database/models/02-address.model')
 const {sequelize, Sequelize} = require('sequelize');
 const Op = Sequelize.Op;
 
@@ -26,7 +27,7 @@ class ProviderController extends Controller {
                     [Op.between]: [lon1, lon2]
                 }
             }, 
-            include: [ServiceModel]
+            include: [AddressModel]
         });
         for( let provider of providers){
             let longtitude = provider.longtitude;
