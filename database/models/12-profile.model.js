@@ -1,5 +1,4 @@
 const { sequelize, Sequelize } = require('../');
-
 /**
 * ProfileModel describes 'profiles' table
 */

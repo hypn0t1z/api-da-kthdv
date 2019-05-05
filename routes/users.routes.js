@@ -27,6 +27,11 @@ userRouter.post('/:id/service', accessToken, (req, res, next) => UserMiddleWare.
 userRouter.patch('/:id/service/:service_id', accessToken, (req, res, next) => UserMiddleWare.updateService(req, res, next));
 userRouter.delete('/:id/service/:service_id', accessToken, (req, res, next) => UserMiddleWare.deleteService(req, res, next));
 
+//rate
+userRouter.get('/:id/rate/:rate_id', accessToken, (req, res, next) => UserMiddleWare.getRateById(req, res, next));    // rate_id
+userRouter.get('/:id/rate/provider/:provider_id', accessToken, (req, res, next) => UserMiddleWare.getRateByProviderId(req, res, next));
+userRouter.post('/:id/rate/create/:provider_id', accessToken, (req, res, next) => UserMiddleWare.createRate(req, res, next));
+userRouter.patch('/:id/rate/update/:rate_id', accessToken, (req, res, next) => UserMiddleWare.updateRate(req, res, next));
 
 /**
  * Controllers
@@ -46,7 +51,7 @@ userRouter.get('/:id/provider', (req, res) => UserController.getProvider(req, re
 userRouter.post('/:id/create-provider', accessToken, (req, res) => UserController.createProvider(req, res)); // account_id
 userRouter.patch('/:id/update-provider', accessToken, (req, res) => UserController.updateProvider(req, res)); // account_id
 userRouter.delete('/:id/delete-provider', accessToken, (req, res) => UserController.deleteProvider(req, res)); // account_id
-userRouter.get('/:id/provider/status/:status', accessToken, (req, res) => UserController.changeStatusProvider(req, res));
+userRouter.get('/:id/provider/status/:status', accessToken, (req, res) => UserController.changeStatusProvider(req, res)); 
 
 // account
 userRouter.get('/:id', (req, res) => UserController.getAccount(req, res));
@@ -60,5 +65,11 @@ userRouter.get('/:id/service/:service_id', accessToken, (req, res) => UserContro
 userRouter.post('/:id/service', accessToken,  (req, res) => UserController.createProviderService(req, res));
 userRouter.patch('/:id/service/:service_id', accessToken, (req, res) => UserController.updateService(req, res));
 userRouter.delete('/:id/service/:service_id', accessToken, (req, res) => UserController.deleteService(req, res));
+
+// rate
+userRouter.get('/:id/rate/:rate_id', accessToken, (req, res) => UserController.getRateById(req, res));    // rate_id
+userRouter.get('/:id/rate/provider/:provider_id', accessToken, (req, res) => UserController.getRateByProviderId(req, res));
+userRouter.post('/:id/rate/create/:provider_id', accessToken, (req, res) => UserController.createRate(req, res));
+userRouter.patch('/:id/rate/update/:rate_id', accessToken, (req, res) => UserController.updateRate(req, res));
 
 module.exports = userRouter

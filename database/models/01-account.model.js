@@ -44,8 +44,8 @@ const AccountModel = sequelize.define(
 AccountModel.hasOne(ProfileModel, { foreignKey: 'account_id' });
 ProfileModel.belongsTo(AccountModel, { foreignKey: 'account_id' });
 
-AccountModel.hasMany(RateModel, { foreignKey: 'account_id' });
-RateModel.belongsTo(AccountModel, { foreignKey: 'account_id' });
+AccountModel.hasMany(RateModel, { foreignKey: 'customer_id' });
+RateModel.belongsTo(AccountModel, { foreignKey: 'customer_id' });
 
 AccountModel.hasOne(ActiveTokenModel, { foreignKey: 'account_id' })
 ActiveTokenModel.belongsTo(AccountModel, {foreignKey: 'account_id' })
