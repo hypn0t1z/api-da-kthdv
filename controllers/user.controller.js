@@ -160,6 +160,21 @@ class UserController extends Controller {
     }
 
     /**
+     * G
+     */
+    static async getProviderByType(req, res){
+        const { typeIds } = req.body;
+        const services = await ServiceModel.findAll({ 
+            where: {
+                service_type_id: {
+                    [Op.in]: typeIds
+                }
+            } 
+        })
+        res.send({services})
+    }
+
+    /**
      * Create provider by account_id
      * @description: Check if exist provider, if existed --> Update , else --> Create
      *
@@ -326,15 +341,26 @@ class UserController extends Controller {
         let lat1 = mylat-(dist/69);
         let lat2 = mylat+(dist/69);
         let data = [];
-        const providers = await ProviderModel.findAll({ where: { status: 'ON' }, include: [ServiceModel]});
+        const providers = await ProviderModel.findAll({ 
+            attributes: ['account_id', 'name', 'open_time', 'close_time', 'longtitude', 'latitude'], 
+            where: { 
+                status: 'ON', 
+                latitude: {
+                    [Op.between]: [lat1, lat2]
+                },
+                longtitude: {
+                    [Op.between]: [lon1, lon2]
+                }
+            }, 
+            include: [ServiceModel]
+        });
         for( let provider of providers){
             let longtitude = provider.longtitude;
             let latitude = provider.latitude;
-            if(((longtitude >= lon1 && longtitude <= lon2) || (longtitude >= lon2 && longtitude <= lon1)) && ((latitude >= lat1 && latitude <= lat2) || (latitude >= lat2 && latitude <= lat1)) ){
-                let distance = 3956 * 2 * Math.asin( Math.sqrt( Math.pow( Math.sin((mylat - provider.latitude) * Math.PI/180 / 2), 2) + Math.cos(mylat *  Math.PI/180) * Math.cos(provider.latitude *  Math.PI/180) * Math.pow( Math.sin((mylon - provider.longtitude) *  Math.PI/180 / 2), 2) ));   
-                if(distance < dist){
-                    data.push(provider);
-                }
+            let distance = 3956 * 2 * Math.asin( Math.sqrt( Math.pow( Math.sin((mylat - latitude) * Math.PI/180 / 2), 2) + Math.cos(mylat *  Math.PI/180) * Math.cos(latitude *  Math.PI/180) * Math.pow( Math.sin((mylon - longtitude) *  Math.PI/180 / 2), 2) ));   
+        
+            if(distance < dist){
+                data.push(provider);
             }
         }
         return this.sendResponseMessage(res, 200, `Đã tìm thấy ${data.length} địa điểm`, data);

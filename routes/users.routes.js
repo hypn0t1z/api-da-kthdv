@@ -47,7 +47,7 @@ userRouter.post('/:id/create-provider', accessToken, (req, res) => UserControlle
 userRouter.patch('/:id/update-provider', accessToken, (req, res) => UserController.updateProvider(req, res)); // account_id
 userRouter.delete('/:id/delete-provider', accessToken, (req, res) => UserController.deleteProvider(req, res)); // account_id
 userRouter.get('/:id/provider/status/:status', accessToken, (req, res) => UserController.changeStatusProvider(req, res));
-userRouter.get('/:id/provider/find-nearby', accessToken, (req, res) => UserController.findNearby(req, res));
+userRouter.post('/:id/get-provider/', (req, res) => UserController.getProviderByType(req, res));
 // account
 userRouter.get('/:id', (req, res) => UserController.getAccount(req, res));
 
@@ -60,9 +60,5 @@ userRouter.get('/:id/service/:service_id', accessToken, (req, res) => UserContro
 userRouter.post('/:id/service', accessToken,  (req, res) => UserController.createProviderService(req, res));
 userRouter.patch('/:id/service/:service_id', accessToken, (req, res) => UserController.updateService(req, res));
 userRouter.delete('/:id/service/:service_id', accessToken, (req, res) => UserController.deleteService(req, res));
-
-
-
-
 
 module.exports = userRouter

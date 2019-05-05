@@ -93,9 +93,9 @@ body: {
     }
 
 ## Find nearby Providers
-get: /:id/provider/find-nearby
+get: api/find-nearby
 params: mylat, mylon, dist( option, default = 10 );
-ex: /:id/provider/find-nearby?mylat=121.44&mylon=37.79
+ex: /api/find-nearby?mylat=121.44&mylon=37.79
 
 ## Delete Provider
 delete: /:account_id/delete-provider
