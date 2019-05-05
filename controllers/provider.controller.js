@@ -17,7 +17,7 @@ class ProviderController extends Controller {
         let lat2 = mylat+(dist/69);
         let data = [];
         const providers = await ProviderModel.findAll({ 
-            attributes: ['account_id', 'address_id', 'name', 'open_time', 'close_time', 'longtitude', 'latitude'], 
+            attributes: ['account_id', 'address_id', 'name', 'open_time', 'close_time', 'longtitude', 'latitude', 'phone'],
             where: { 
                 status: 'ON', 
                 latitude: {
