@@ -61,8 +61,4 @@ userRouter.post('/:id/service', accessToken,  (req, res) => UserController.creat
 userRouter.patch('/:id/service/:service_id', accessToken, (req, res) => UserController.updateService(req, res));
 userRouter.delete('/:id/service/:service_id', accessToken, (req, res) => UserController.deleteService(req, res));
 
-
-
-
-
 module.exports = userRouter
