@@ -5,6 +5,7 @@ const ProviderModel = require('../database/models/21-provider.model');
 const ServiceModel = require('../database/models/08-service.model');
 const ServiceTypeModel = require('../database/models/07-service-type.model');
 const ImageModel = require('../database/models/10-images-service.model');
+const RateModel = require('../database/models/11-rate.model');
 const CommonService = require('../services/common.service');
 const {sequelize, Sequelize} = require('sequelize');
 const Controller = require('./controller');
@@ -514,6 +515,67 @@ class UserController extends Controller {
             include: [ServiceTypeModel]
         });
         return this.sendResponseMessage(res, 200, "Get services success", service)
+    }
+
+    /**
+     * Get Rate By rate_id
+     * @param { id, rate_id }
+     * @param {res}
+     * @return {object}
+     */
+    static async getRateById(req, res){
+        const {id, rate_id} = req.params;
+        const rate = await RateModel.findOne({ where: { id: rate_id, customer_id: id } });
+        return this.sendResponseMessage(res, 200, "Lấý thông tin đánh giá thành công", rate);
+    }
+
+    /**
+     * Get Rate By provider_id
+     * @param { id, rate_id }
+     * @param {res}
+     * @return {object}
+     */
+    static async getRateByProviderId(req, res){
+        const {id, provider_id} = req.params;
+        const rates = await RateModel.findAll({ 
+            where: { provider_id }, 
+            include: [
+                { 
+                    model: AccountModel,
+                    attributes: ['email'],
+                    required: false,
+                    include: [{
+                        model: ProfileModel,
+                        attributes: ['full_name', 'avatar'],
+                        required: false
+                    }]
+                }
+            ] 
+        });
+        return this.sendResponseMessage(res, 200, "Lấý thông tin đánh giá thành công", rates);
+    }
+
+    static async createRate(req, res){
+        const {id, provider_id} = req. params;
+        const { comment, star_number } = req.body;
+        let rate = await RateModel.create({
+            provider_id,
+            customer_id: id,
+            comment,
+            star_number
+        });
+        return this.sendResponseMessage(res, 200, "Đánh giá thành công", rate);
+    }
+
+    static async updateRate(req, res){
+        const {rate_id} = req. params;
+        const { comment, star_number } = req.body;
+        let rate = await RateModel.findOne( { where: { id: rate_id } });
+        await rate.update({
+            comment,
+            star_number
+        });
+        return this.sendResponseMessage(res, 200, "Cập nhật đánh giá thành công", rate);
     }
 }
 

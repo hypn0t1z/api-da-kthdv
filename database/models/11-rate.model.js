@@ -11,8 +11,10 @@ const RateModel = sequelize.define(
             autoIncrement: true,
             primaryKey: true,
         },
-        account_id: Sequelize.INTEGER,
+        customer_id: Sequelize.INTEGER,
         provider_id: Sequelize.INTEGER,
+        star_number: Sequelize.INTEGER,
+        comment: Sequelize.STRING,
 
         //Timestamp
         createdAt: Sequelize.DATE,
