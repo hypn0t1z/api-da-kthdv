@@ -8,4 +8,4 @@ const ProviderController = require('../controllers/provider.controller')
 providerRouter.get('/near/', accessToken, (req, res, next) => ProviderMiddleware.nearBy(req, res, next));
 providerRouter.get('/near/', accessToken, (req, res) => ProviderController.near(req, res));
 
-module.exports = userRouter
+module.exports = providerRouter
