@@ -142,7 +142,7 @@ class ServiceController extends Controller {
         const { typeIds } = req.body;
         const services = await ServiceModel.findAll({ 
             attributes:
-                [ 'id', 'service_type_id', 'price_min', 'price_max', 'provider_id'],
+                [ 'service_type_id', 'price_min', 'price_max', 'provider_id'],
             where: {
                 service_type_id: {
                     [Op.in]: typeIds
