@@ -1,6 +1,8 @@
 const Controller = require('./controller');
 const ProviderModel = require('../database/models/21-provider.model')
 const AddressModel = require('../database/models/02-address.model');
+const {sequelize, Sequelize} = require('sequelize');
+const Op = Sequelize.Op;
 
 class ProviderController extends Controller {
     static async near(req, res){
