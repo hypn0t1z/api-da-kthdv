@@ -29,7 +29,7 @@ class ProviderController extends Controller {
             }, 
             include: [AddressModel]
         });
-        for( let provider of providers){
+        /* for( let provider of providers){
             let longtitude = provider.longtitude;
             let latitude = provider.latitude;
             let distance = 3956 * 2 * Math.asin( Math.sqrt( Math.pow( Math.sin((mylat - latitude) * Math.PI/180 / 2), 2) + Math.cos(mylat *  Math.PI/180) * Math.cos(latitude *  Math.PI/180) * Math.pow( Math.sin((mylon - longtitude) *  Math.PI/180 / 2), 2) ));   
@@ -37,8 +37,8 @@ class ProviderController extends Controller {
             if(distance < dist){
                 data.push(provider);
             }
-        }
-        return this.sendResponseMessage(res, 200, `Đã tìm thấy ${data.length} địa điểm`, data);
+        } */
+        return this.sendResponseMessage(res, 200, `Đã tìm thấy ${data.length} địa điểm`, providers);
     }
 }
 
