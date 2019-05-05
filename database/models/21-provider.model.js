@@ -16,7 +16,7 @@ const ProviderModel = sequelize.define(
         },
         address_id: Sequelize.INTEGER,
         identity_card: Sequelize.STRING,
-        status_id: Sequelize.INTEGER,
+        status: Sequelize.STRING,
         open_time: Sequelize.STRING,
         close_time: Sequelize.STRING,
         latitude: Sequelize.FLOAT,

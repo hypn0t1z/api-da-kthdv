@@ -14,6 +14,7 @@ serviceRouter.post('/:id/update', (req, res, next) => ServiceMiddleware.updateSe
 /**
  * Controllers
  */
+serviceRouter.get('/types/list', (req, res) => ServiceController.getListServiceType(req, res)); // get service types list
 serviceRouter.get('/:id', (req, res) => ServiceController.getList(req, res)); // get services list by id == account_id
 serviceRouter.get('/:id/edit', (req, res) => ServiceController.getEdit(req, res)); // id == service_id
 serviceRouter.get('/create', (req, res) => ServiceController.getCreate(req, res));

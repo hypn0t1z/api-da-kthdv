@@ -50,7 +50,7 @@ class AuthController extends Controller{
      */
     static async register(req, res) {
         // Init
-        const url = "13.76.227.37:" + process.env.PORT
+        const url = "13.67.50.208:" + process.env.PORT
         const {email, password, phone} = req.body;
         const {USER_PASSWORD_SALT_ROUNDS: saltRounds = 10} = process.env;
         const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_';
