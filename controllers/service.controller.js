@@ -142,18 +142,17 @@ class ServiceController extends Controller {
         const { typeIds } = req.body;
         const services = await ServiceModel.findAll({ 
             attributes:
-                [ 'service_type_id', 'price_min', 'price_max', 'provider_id'],
+                [ 'id', 'service_type_id', 'price_min', 'price_max', 'provider_id'],
             where: {
                 service_type_id: {
                     [Op.in]: typeIds
-                },
-                
+                }    
             },
+            group: ['provider_id'] ,
             include: [{
                 model: ProviderModel,
                 attributes: ['account_id', 'address_id', 'name', 'open_time', 'close_time', 'longtitude', 'latitude'], 
-            }],
-            group: ['provider_id'] 
+            }]
         })
         return this.sendResponseMessage(res, 200, `Đã tìm thấy ${services.length} nhà cung cấp`, services);
     }
