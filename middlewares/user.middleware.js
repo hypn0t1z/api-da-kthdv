@@ -333,6 +333,9 @@ class UserMiddleware extends Middleware {
         next();
     }
 
+    /**
+     * Create rate with provider_id
+     */
     static async createRate(req, res, next){
         const {id, provider_id} = req.params;
         if(req.user.id != id){
@@ -366,6 +369,9 @@ class UserMiddleware extends Middleware {
         next();
     }
 
+    /**
+     * Update rate with rate_id
+     */
     static async updateRate(req, res, next){
         const {id, rate_id} = req.params;
         if(req.user.id != id){
