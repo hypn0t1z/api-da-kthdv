@@ -33,7 +33,7 @@ const AddressModel = sequelize.define(
 /**
 * Describes accounts <=> Address relationship
 */
-AddressModel.hasMany(ProfileModel, { foreignKey: 'address_id' });
+AddressModel.hasOne(ProfileModel, { foreignKey: 'address_id' });
 ProfileModel.belongsTo(AddressModel, { foreignKey: 'address_id' });
 
 AddressModel.hasMany(ProviderModel, { foreignKey: 'address_id' });
