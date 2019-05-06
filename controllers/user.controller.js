@@ -561,7 +561,7 @@ class UserController extends Controller {
         let rate = await RateModel.create({
             provider_id,
             customer_id: id,
-            comment,
+            comment: comment ? comment : '',
             star_number
         });
         return this.sendResponseMessage(res, 200, "Đánh giá thành công", rate);
@@ -572,8 +572,8 @@ class UserController extends Controller {
         const { comment, star_number } = req.body;
         let rate = await RateModel.findOne( { where: { id: rate_id } });
         await rate.update({
-            comment,
-            star_number
+            comment: comment ? comment : rate.comment,
+            star_number: star_number ? star_number : rate.star_number
         });
         return this.sendResponseMessage(res, 200, "Cập nhật đánh giá thành công", rate);
     }
