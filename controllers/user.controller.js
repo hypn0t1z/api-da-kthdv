@@ -44,10 +44,11 @@ class UserController extends Controller {
                 {
                     model: ProfileModel,
                     required: false,
+                    include: [AddressModel]
                 }
             ];
         } else {
-            include = [{model: ProfileModel, required: false}];
+            include = [{model: ProfileModel, required: false, include: [AddressModel]}];
         }
         let resource = {model: AccountModel, req, where, include};
         let data = await CommonService.paginate(resource);
