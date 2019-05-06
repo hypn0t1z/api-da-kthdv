@@ -333,12 +333,18 @@ class UserMiddleware extends Middleware {
         next();
     }
 
+    /**
+     * Create rate with provider_id
+     */
     static async createRate(req, res, next){
         const {id, provider_id} = req.params;
+        if(req.user.id != id){
+            return this.sendResponseMessage(res, 403, 'Không được phép đánh giá');
+        }
         if(id == provider_id){
             return this.sendResponseMessage(res, 403, 'Không được phép tự đánh giá');
         }
-        const user = await AccountModel.findById(id);
+        const user = await AccountModel.findOne({ where: { id, status: 'Active' } });
         if(!user){
             return this.sendResponseMessage(res, 400, 'Tài khoản này không tồn tại hoặc chưa được xác nhận');
         }
@@ -347,14 +353,14 @@ class UserMiddleware extends Middleware {
         if(rate){
             return this.sendResponseMessage(res, 403, 'Bạn đã đánh giá nhà cung cấp này');
         }
-        const { comment } = req.body;
+        const { star_number } = req.body;
         const message = FieldsMiddleware.simpleCheckRequired(
-            { comment },
+            { star_number },
             [
-                'comment',
+                'star_number'
             ],
             [
-                'Nội dung đánh giá không được bỏ trống',
+                'Vui lòng đánh giá theo sao'
             ]
         );
         if (message) {
@@ -363,28 +369,21 @@ class UserMiddleware extends Middleware {
         next();
     }
 
+    /**
+     * Update rate with rate_id
+     */
     static async updateRate(req, res, next){
         const {id, rate_id} = req.params;
-        const user = await AccountModel.findById(id);
+        if(req.user.id != id){
+            return this.sendResponseMessage(res, 403, 'Không được phép đánh giá');
+        }
+        const user = await AccountModel.findOne({ where: { id, status: 'Active' } });
         if(!user){
             return this.sendResponseMessage(res, 400, 'Tài khoản này không tồn tại hoặc chưa được xác nhận');
         }
         const rate = await RateModel.findOne({ where: { id: rate_id, customer_id: id } });
         if(!rate){
             return this.sendResponseMessage(res, 404, 'Bạn chưa đánh giá nhà cung cấp này');
-        }
-        const { comment } = req.body;
-        const message = FieldsMiddleware.simpleCheckRequired(
-            { comment },
-            [
-                'comment',
-            ],
-            [
-                'Nội dung đánh giá không được bỏ trống',
-            ]
-        );
-        if (message) {
-            return this.sendResponseMessage(res, 400, message)
         }
         next();
     }
