@@ -142,3 +142,25 @@ param: typeIds (array)
 body:   {
 	        "typeIds": [1,2,3,4,5]
         }
+
+## Get rate by rate_id
+get: /api/user/:id/rate/:rate_id
+
+## Get rates by provider_id
+get : /:id/rate/provider/:provider_id
+
+## create rate by provider_id
+post: /:id/rate/create/:provider_id
+
+body: {
+    star_number (required): 1,
+    comment (option): "xxx" 
+}
+
+## Update rate by rate_id
+patch: /:id/rate/update/:rate_id
+
+body: {
+    star_number (option): 1,
+    comment (option): "xxx" 
+}

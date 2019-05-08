@@ -38,18 +38,12 @@ class UserController extends Controller {
                             [Op.like]: '%' + key_words + '%'
                         }
                     },
+                   
                 ],
             };
-            include = [
-                {
-                    model: ProfileModel,
-                    required: false,
-                }
-            ];
-        } else {
-            include = [{model: ProfileModel, required: false}];
-        }
-        let resource = {model: AccountModel, req, where, include};
+        } 
+        include = [{model: ProfileModel, required: false, include: [AddressModel]}];
+        let resource = {model: AccountModel, where, req, include};
         let data = await CommonService.paginate(resource);
         let total = await AccountModel.count({where, include});
         return this.sendResponseMessage(res, 200, 'Đã tìm thấy ' + total + ' kết quả', data)
@@ -342,24 +336,47 @@ class UserController extends Controller {
     static async blockAccount(req, res) {
         console.log(req);
         const {id} = req.params;
-        let user = req.user;
+        let user = await AccountModel.findOne({where: {id: req.user.id, status: 'Active'}});
         if ((user.role & 0b100) === 0) {
             return this.sendResponseMessage(res, 401, 'Không được phép')
         }
         let check_account = await AccountModel.findOne({where: {id, status: 'Active'}});
         if (check_account) {
             if (check_account.role == 0b100) {
-                return this.sendResponseMessage(res, 401, 'Không thể xoá tài khoản Admin');
+                return this.sendResponseMessage(res, 401, 'Không thể chặn tài khoản Admin');
             } else {
                 await check_account.update({
                     status: 'Banned',
-                    role: 0b000,
+                    //role: 0b000,
                 })
             }
         } else {
             return this.sendResponseMessage(res, 404, 'Tài khoản đã bị chặn hoặc không tồn tại');
         }
         return this.sendResponseMessage(res, 200, 'Chặn thành công', check_account);
+    }
+
+    /**
+     * Unblock account  /api/user/unblock/:id
+     * @param {id}
+     * @author Hung Dang
+     */
+    static async unblockAccount(req, res) {
+        const {id} = req.params;
+        let user = await AccountModel.findOne({where: {id: req.user.id, status: 'Active'}});
+        if ((user.role & 0b100) === 0) {
+            return this.sendResponseMessage(res, 401, 'Không được phép')
+        }
+        let check_account = await AccountModel.findOne({where: {id, status: 'Banned'}});
+        if (check_account) {
+            await check_account.update({
+                status: 'Active',
+                //role: 0b000,
+            })
+        } else {
+            return this.sendResponseMessage(res, 404, 'Tài khoản đang hoạt động hoặc không tồn tại');
+        }
+        return this.sendResponseMessage(res, 200,'Mở chặn thành công', check_account);
     }
 
     /**
@@ -562,7 +579,7 @@ class UserController extends Controller {
         let rate = await RateModel.create({
             provider_id,
             customer_id: id,
-            comment,
+            comment: comment ? comment : '',
             star_number
         });
         return this.sendResponseMessage(res, 200, "Đánh giá thành công", rate);
@@ -573,8 +590,8 @@ class UserController extends Controller {
         const { comment, star_number } = req.body;
         let rate = await RateModel.findOne( { where: { id: rate_id } });
         await rate.update({
-            comment,
-            star_number
+            comment: comment ? comment : rate.comment,
+            star_number: star_number ? star_number : rate.star_number
         });
         return this.sendResponseMessage(res, 200, "Cập nhật đánh giá thành công", rate);
     }
