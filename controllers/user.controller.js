@@ -344,7 +344,7 @@ class UserController extends Controller {
      */
     static async blockAccount(req, res) {
         const {id} = req.params;
-        let user = req.user;
+        let user = await AccountModel.findOne({where: {id: req.user.id, status: 'Active'}});
         if ((user.role & 0b100) === 0) {
             return this.sendResponseMessage(res, 401, 'Không được phép')
         }
@@ -371,7 +371,7 @@ class UserController extends Controller {
      */
     static async unblockAccount(req, res) {
         const {id} = req.params;
-        let user = req.user;
+        let user = await AccountModel.findOne({where: {id: req.user.id, status: 'Active'}});
         if ((user.role & 0b100) === 0) {
             return this.sendResponseMessage(res, 401, 'Không được phép')
         }
