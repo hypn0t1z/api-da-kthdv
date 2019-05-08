@@ -300,6 +300,7 @@ class UserController extends Controller {
 
     static async changeStatusProvider(req, res) {
         const { id, status } = req.params; //account_id
+        console.log('status = ' + status)
         let statusUC  = status.toUpperCase();
         const provider = await ProviderModel.findOne({ where: { account_id: id } });
         provider.update({
