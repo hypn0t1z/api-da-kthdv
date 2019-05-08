@@ -60,8 +60,8 @@ userRouter.get('/:id', (req, res) => UserController.getAccount(req, res));
 userRouter.get('/:id/block', accessToken, (req, res) => UserController.blockAccount(req, res))
 
 //service
-userRouter.get('/:id/service', accessToken, (req, res) => UserController.getProviderServices(req, res));
-userRouter.get('/:id/service/:service_id', accessToken, (req, res) => UserController.getProviderServicesWithId(req, res));
+userRouter.get('/:id/service', (req, res) => UserController.getProviderServices(req, res));
+userRouter.get('/:id/service/:service_id', (req, res) => UserController.getProviderServicesWithId(req, res));
 userRouter.post('/:id/service', accessToken,  (req, res) => UserController.createProviderService(req, res));
 userRouter.patch('/:id/service/:service_id', accessToken, (req, res) => UserController.updateService(req, res));
 userRouter.delete('/:id/service/:service_id', accessToken, (req, res) => UserController.deleteService(req, res));
