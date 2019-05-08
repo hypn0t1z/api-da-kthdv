@@ -324,13 +324,15 @@ class UserController extends Controller {
                     {
                         attributes: ['id', 'full_name', 'avatar', 'address_id', 'birthday'],
                         model: ProfileModel,
-                        required: false
-                    }, 
-                    {
-                        attributes: ['id', 'province', 'district', 'ward', 'address_more'],
-                        model: AddressModel,
-                        required: false
-                    }
+                        required: false,
+                        include: [
+                            {
+                                attributes: ['id', 'province', 'district', 'ward', 'address_more'],
+                                model: AddressModel,
+                                required: false
+                            }
+                        ]
+                    },
                 ]
             }
         )
