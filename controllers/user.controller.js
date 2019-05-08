@@ -316,27 +316,16 @@ class UserController extends Controller {
     static async getAccount(req, res) {
         const {id} = req.params;
 
-        const account = await AccountModel.findOne(
-            {
-                attributes: ['id', 'email', 'phone', 'role', 'profile'],
-                where: {id}, 
-                include: [                     
-                    {
-                        attributes: ['id', 'full_name', 'avatar', 'address_id', 'birthday'],
-                        model: ProfileModel,
-                        required: false,
-                        include: [
-                            {
-                                attributes: ['id', 'province', 'district', 'ward', 'address_more'],
-                                model: AddressModel,
-                                required: false
-                            }
-                        ]
-                    },
-                ]
-            }
-        )
-        return this.sendResponseMessage(res, 200, "Get account success", account)
+        const account = await AccountModel.findOne({where: {id}, include: [ProfileModel]})
+
+        const data = {
+            id: account.id,
+            email: account.email,
+            phone: account.phone,
+            role: account.role,
+            profle: account.profile
+        }
+        return this.sendResponseMessage(res, 200, "Get account success", data)
     }
 
     /**
