@@ -57,7 +57,7 @@ userRouter.post('/:id/provider/status/:status', accessToken, (req, res) => UserC
 userRouter.get('/:id', (req, res) => UserController.getAccount(req, res));
 
 // block account
-userRouter.get('/:id/block', accessToken, (req, res) => UserController.blockAccount(req, res))
+userRouter.post('/:id/block', accessToken, (req, res) => UserController.blockAccount(req, res))
 
 //service
 userRouter.get('/:id/service', (req, res) => UserController.getProviderServices(req, res));
