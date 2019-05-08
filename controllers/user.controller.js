@@ -340,6 +340,7 @@ class UserController extends Controller {
      * @author Hung Dang
      */
     static async blockAccount(req, res) {
+        console.log(req);
         const {id} = req.params;
         let user = req.user;
         if ((user.role & 0b100) === 0) {
