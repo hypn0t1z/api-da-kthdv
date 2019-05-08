@@ -148,43 +148,51 @@ class ServiceController extends Controller {
         let lon2 = mylon+dist/Math.abs(Math.cos(mylat)*69);
         let lat1 = mylat-(dist/69);
         let lat2 = mylat+(dist/69);
-        const services = await ServiceModel.findAll({ 
-            attributes:
-                [ 'id', 'service_type_id', 'price_min', 'price_max', 'provider_id'],
+        const providers = await ProviderModel.findAll({
             where: {
-                service_type_id: {
-                    [Op.in]: typeIds
-                }    
-            },
-            group: ['provider_id'] ,
-            include: [{
-                model: ProviderModel,
-                required: true,
-                attributes: ['account_id', 'address_id', 'name', 'open_time', 'close_time', 'longtitude', 'latitude'], 
-                where: {
-                    latitude: {
-                        [Op.between]: [lat1, lat2]
-                    },
-                    longtitude: {
-                        [Op.between]: [lon1, lon2]
-                    }
+                latitude: {
+                    [Op.between]: [lat1, lat2]
                 },
-                include: [{
+                longtitude: {
+                    [Op.between]: [lon1, lon2]
+                }
+            },
+            include: [
+                {
                     attributes: ['id', 'province', 'district', 'ward'],
                     required: false,
                     model: AddressModel
-                }]
-            }]
+                }
+            ]
         });
-        let found_service = [];
-        for( let service of services){
-            found_service.push(service.id);
+        let data = [];
+        for(let i in providers){
+            const services = await ServiceModel.findAll({ 
+                where: {
+                    provider_id: providers[i].account_id,
+                    service_type_id: {
+                        [Op.in]: typeIds
+                    }  
+                }
+            });
+            if(services.length > 0){
+                let found_service = [];
+                for(let service of services){
+                    found_service.push(service.id);
+                }
+                data.push({
+                    account_id: providers[i].account_id,
+                    name: providers[i].name,
+                    open_time: providers[i].open_time,
+                    close_time: providers[i].close_time,
+                    longtitude: providers[i].longtitude,
+                    latitude: providers[i].latitude,
+                    address: providers[i].address,
+                    found_service
+                })
+            }
         }
-        let data = {};
-        data.services = services;
-        data.found_service = found_service;
-
-        return this.sendResponseMessage(res, 200, `Đã tìm thấy ${services.length} nhà cung cấp`, data);
+        return this.sendResponseMessage(res, 200, `Đã tìm thấy ${data.length} nhà cung cấp`, data);
     }
 }
 module.exports = ServiceController

@@ -59,6 +59,9 @@ userRouter.get('/:id', (req, res) => UserController.getAccount(req, res));
 // block account
 userRouter.post('/:id/block', accessToken, (req, res) => UserController.blockAccount(req, res))
 
+// unblock account
+userRouter.post('/:id/unblock', accessToken, (req, res) => UserController.unblockAccount(req, res))
+
 //service
 userRouter.get('/:id/service', (req, res) => UserController.getProviderServices(req, res));
 userRouter.get('/:id/service/:service_id', (req, res) => UserController.getProviderServicesWithId(req, res));
