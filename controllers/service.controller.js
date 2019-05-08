@@ -175,8 +175,16 @@ class ServiceController extends Controller {
                     model: AddressModel
                 }]
             }]
-        })
-        return this.sendResponseMessage(res, 200, `Đã tìm thấy ${services.length} nhà cung cấp`, services);
+        });
+        let found_service = [];
+        for( let service of services){
+            found_service.push(service.id);
+        }
+        let data = {};
+        data.services = services;
+        data.found_service = found_service;
+
+        return this.sendResponseMessage(res, 200, `Đã tìm thấy ${services.length} nhà cung cấp`, data);
     }
 }
 module.exports = ServiceController

@@ -118,7 +118,7 @@ class UserMiddleware extends Middleware {
         const { id, status } = req.params;
         let statusUC  = status.toUpperCase();
         await this.isProvider(id, req, res);
-        if(statusUC !== 'ON' || statusUC !== 'OFF'){
+        if(statusUC !== 'ON' && statusUC !== 'OFF'){
             return this.sendResponseMessage(res, 400, `Lỗi chọn trạng thái nhà cung cấp`);
         }
         next();
