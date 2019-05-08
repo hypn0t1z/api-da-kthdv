@@ -312,7 +312,7 @@ class UserMiddleware extends Middleware {
      */
     static async getRateById(req, res, next){
         const { id } = req.params;
-        const user = await AccountModel.findById(id);
+        const user = await AccountModel.findOne({ where: { id, status: 'Active' } });
         if(!user){
             return this.sendResponseMessage(res, 400, 'Tài khoản này không tồn tại hoặc chưa được xác nhận');
         }
@@ -325,7 +325,7 @@ class UserMiddleware extends Middleware {
      */
     static async getRateByProviderId(req, res, next){
         const { id, provider_id } = req.params;
-        const user = await AccountModel.findById(id);
+        const user = await AccountModel.findOne({ where: { id, status: 'Active' } });
         if(!user){
             return this.sendResponseMessage(res, 400, 'Tài khoản này không tồn tại hoặc chưa được xác nhận');
         }

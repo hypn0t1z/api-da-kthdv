@@ -21,15 +21,15 @@ userRouter.post('/:id/create-profile', accessToken, (req, res, next) => UserMidd
 userRouter.patch('/:id/update-profile', accessToken, (req, res, next) => UserMiddleWare.update(req, res, next));
 
 //service
-userRouter.get('/:id/service', accessToken, (req, res, next) => UserMiddleWare.getProviderServices(req, res, next));
-userRouter.get('/:id/service/:service_id', accessToken, (req, res, next) => UserMiddleWare.getProviderServicesWithId(req, res, next));
+userRouter.get('/:id/service', (req, res, next) => UserMiddleWare.getProviderServices(req, res, next));
+userRouter.get('/:id/service/:service_id', (req, res, next) => UserMiddleWare.getProviderServicesWithId(req, res, next));
 userRouter.post('/:id/service', accessToken, (req, res, next) => UserMiddleWare.createProviderService(req, res, next));
 userRouter.patch('/:id/service/:service_id', accessToken, (req, res, next) => UserMiddleWare.updateService(req, res, next));
 userRouter.delete('/:id/service/:service_id', accessToken, (req, res, next) => UserMiddleWare.deleteService(req, res, next));
 
 //rate
-userRouter.get('/:id/rate/:rate_id', accessToken, (req, res, next) => UserMiddleWare.getRateById(req, res, next));    // rate_id
-userRouter.get('/:id/rate/provider/:provider_id', accessToken, (req, res, next) => UserMiddleWare.getRateByProviderId(req, res, next));
+userRouter.get('/:id/rate/:rate_id', (req, res, next) => UserMiddleWare.getRateById(req, res, next));    // rate_id
+userRouter.get('/:id/rate/provider/:provider_id', (req, res, next) => UserMiddleWare.getRateByProviderId(req, res, next));
 userRouter.post('/:id/rate/create/:provider_id', accessToken, (req, res, next) => UserMiddleWare.createRate(req, res, next));
 userRouter.patch('/:id/rate/update/:rate_id', accessToken, (req, res, next) => UserMiddleWare.updateRate(req, res, next));
 
@@ -67,8 +67,8 @@ userRouter.patch('/:id/service/:service_id', accessToken, (req, res) => UserCont
 userRouter.delete('/:id/service/:service_id', accessToken, (req, res) => UserController.deleteService(req, res));
 
 // rate
-userRouter.get('/:id/rate/:rate_id', accessToken, (req, res) => UserController.getRateById(req, res));    // rate_id
-userRouter.get('/:id/rate/provider/:provider_id', accessToken, (req, res) => UserController.getRateByProviderId(req, res));
+userRouter.get('/:id/rate/:rate_id', (req, res) => UserController.getRateById(req, res));    // rate_id
+userRouter.get('/:id/rate/provider/:provider_id', (req, res) => UserController.getRateByProviderId(req, res));
 userRouter.post('/:id/rate/create/:provider_id', accessToken, (req, res) => UserController.createRate(req, res));
 userRouter.patch('/:id/rate/update/:rate_id', accessToken, (req, res) => UserController.updateRate(req, res));
 
