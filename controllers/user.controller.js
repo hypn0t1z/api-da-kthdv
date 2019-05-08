@@ -38,19 +38,12 @@ class UserController extends Controller {
                             [Op.like]: '%' + key_words + '%'
                         }
                     },
+                   
                 ],
             };
-            include = [
-                {
-                    model: ProfileModel,
-                    required: false,
-                    include: [AddressModel]
-                }
-            ];
-        } else {
-            include = [{model: ProfileModel, required: false, include: [AddressModel]}];
-        }
-        let resource = {model: AccountModel, req, where, include};
+        } 
+        include = [{model: ProfileModel, required: false, include: [AddressModel]}];
+        let resource = {model: AccountModel, where, req, include};
         let data = await CommonService.paginate(resource);
         let total = await AccountModel.count({where, include});
         return this.sendResponseMessage(res, 200, 'Đã tìm thấy ' + total + ' kết quả', data)
@@ -323,16 +316,25 @@ class UserController extends Controller {
     static async getAccount(req, res) {
         const {id} = req.params;
 
-        const account = await AccountModel.findOne({where: {id}, include: [ProfileModel]})
-
-        const data = {
-            id: account.id,
-            email: account.email,
-            phone: account.phone,
-            role: account.role,
-            profle: account.profile
-        }
-        return this.sendResponseMessage(res, 200, "Get account success", data)
+        const account = await AccountModel.findOne(
+            {
+                attributes: ['id', 'email', 'phone', 'role', 'profile'],
+                where: {id}, 
+                include: [                     
+                    {
+                        attributes: ['id', 'full_name', 'avatar', 'address_id', 'birthday'],
+                        model: ProfileModel,
+                        required: false
+                    }, 
+                    {
+                        attributes: ['id', 'province', 'district', 'ward', 'address_more'],
+                        model: AddressModel,
+                        required: false
+                    }
+                ]
+            }
+        )
+        return this.sendResponseMessage(res, 200, "Get account success", account)
     }
 
     /**
@@ -349,17 +351,40 @@ class UserController extends Controller {
         let check_account = await AccountModel.findOne({where: {id, status: 'Active'}});
         if (check_account) {
             if (check_account.role == 0b100) {
-                return this.sendResponseMessage(res, 401, 'Không thể xoá tài khoản Admin');
+                return this.sendResponseMessage(res, 401, 'Không thể chặn tài khoản Admin');
             } else {
                 await check_account.update({
                     status: 'Banned',
-                    role: 0b000,
+                    //role: 0b000,
                 })
             }
         } else {
             return this.sendResponseMessage(res, 404, 'Tài khoản đã bị chặn hoặc không tồn tại');
         }
         return this.sendResponseMessage(res, 200, 'Chặn thành công', check_account);
+    }
+
+    /**
+     * Unblock account  /api/user/unblock/:id
+     * @param {id}
+     * @author Hung Dang
+     */
+    static async unblockAccount(req, res) {
+        const {id} = req.params;
+        let user = req.user;
+        if ((user.role & 0b100) === 0) {
+            return this.sendResponseMessage(res, 401, 'Không được phép')
+        }
+        let check_account = await AccountModel.findOne({where: {id, status: 'Banned'}});
+        if (check_account) {
+            await check_account.update({
+                status: 'Active',
+                //role: 0b000,
+            })
+        } else {
+            return this.sendResponseMessage(res, 404, 'Tài khoản đang hoạt động hoặc không tồn tại');
+        }
+        return this.sendResponseMessage(res, 200,'Mở chặn thành công', check_account);
     }
 
     /**
