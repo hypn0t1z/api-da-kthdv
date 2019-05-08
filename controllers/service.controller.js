@@ -1,6 +1,7 @@
 const Controller = require('./controller');
 const ServiceModel = require('../database/models/08-service.model');
 const ProviderModel = require('../database/models/21-provider.model');
+const AddressModel = require('../database/models/02-address.model');
 const ServiceTypeModel = require('../database/models/07-service-type.model');
 const CommonService = require('../services/common.service');
 const {sequelize, Sequelize} = require('sequelize');
@@ -139,7 +140,14 @@ class ServiceController extends Controller {
      * Get providers by a service type array
      */
     static async getProviderByType(req, res){
-        const { typeIds } = req.body;
+        let { typeIds, mylat = 0,  mylon = 0, dist = 10 } = req.body;
+        mylat = parseFloat(mylat);
+        mylon = parseFloat(mylon);
+        dist = parseFloat(dist);
+        let lon1 = mylon-dist/Math.abs(Math.cos(mylat)*69);
+        let lon2 = mylon+dist/Math.abs(Math.cos(mylat)*69);
+        let lat1 = mylat-(dist/69);
+        let lat2 = mylat+(dist/69);
         const services = await ServiceModel.findAll({ 
             attributes:
                 [ 'id', 'service_type_id', 'price_min', 'price_max', 'provider_id'],
@@ -153,6 +161,19 @@ class ServiceController extends Controller {
                 model: ProviderModel,
                 required: true,
                 attributes: ['account_id', 'address_id', 'name', 'open_time', 'close_time', 'longtitude', 'latitude'], 
+                where: {
+                    latitude: {
+                        [Op.between]: [lat1, lat2]
+                    },
+                    longtitude: {
+                        [Op.between]: [lon1, lon2]
+                    }
+                },
+                include: [{
+                    attributes: ['id', 'province', 'district', 'ward'],
+                    required: false,
+                    model: AddressModel
+                }]
             }]
         })
         return this.sendResponseMessage(res, 200, `Đã tìm thấy ${services.length} nhà cung cấp`, services);
