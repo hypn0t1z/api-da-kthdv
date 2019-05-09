@@ -283,7 +283,7 @@ class UserController extends Controller {
         if(!account){
             return this.sendResponseMessage(res, 404, "Tài khoản này không tồn tại hoặc chưa xác nhận email");
         }
-        if ((account.role === 0b100) || (account.role === 0b010)){
+        if ((account.role == 0b100) || (account.role == 0b010)){
             const provider = await ProviderModel.findOne({ where: { account_id: id } });
             if(!provider){
                 return this.sendResponseMessage(res, 404, "Không tìm thấy nhà cung cấp");
