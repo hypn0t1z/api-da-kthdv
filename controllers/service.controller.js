@@ -159,7 +159,6 @@ class ServiceController extends Controller {
             },
             include: [
                 {
-                    attributes: ['id', 'province', 'district', 'ward'],
                     required: false,
                     model: AddressModel
                 }
@@ -182,11 +181,13 @@ class ServiceController extends Controller {
                 }
                 data.push({
                     account_id: providers[i].account_id,
+                    address_id: providers[i].address_id,
                     name: providers[i].name,
                     open_time: providers[i].open_time,
                     close_time: providers[i].close_time,
                     longtitude: providers[i].longtitude,
                     latitude: providers[i].latitude,
+                    phone: providers[i].phone,
                     address: providers[i].address,
                     found_service
                 })
