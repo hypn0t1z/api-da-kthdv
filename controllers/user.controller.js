@@ -278,7 +278,7 @@ class UserController extends Controller {
      * @param {*} res
      */
     static async deleteProvider(req, res) {
-        /* const {id} = req.params; // account_id
+        const {id} = req.params; // account_id
         const account = await AccountModel.findOne({ where: { id , status: 'Active' } });
         if(!account){
             return this.sendResponseMessage(res, 404, "Tài khoản này không tồn tại hoặc chưa xác nhận email");
@@ -295,7 +295,7 @@ class UserController extends Controller {
         }
         else{
             return this.sendResponseMessage(res, 401, 'Không được phép')
-        } */
+        }
     }
 
     static async changeStatusProvider(req, res) {
@@ -334,7 +334,6 @@ class UserController extends Controller {
      * @author Hung Dang
      */
     static async blockAccount(req, res) {
-        console.log(req);
         const {id} = req.params;
         let user = await AccountModel.findOne({where: {id: req.user.id, status: 'Active'}});
         if ((user.role & 0b100) === 0) {
