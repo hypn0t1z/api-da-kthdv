@@ -11,7 +11,7 @@ const { accessToken } = require('../middlewares/auth.middleware');
  */
 serviceRouter.get('/types/list', (req, res) => ServiceController.getListServiceType(req, res)); // get service types list
 serviceRouter.get('/:id', (req, res) => ServiceController.getList(req, res)); // get services list by id == account_id
-serviceRouter.get('/types/provider', (req, res) => ServiceController.getProviderByType(req, res));
+serviceRouter.post('/types/provider', (req, res) => ServiceController.getProviderByType(req, res));
 //serviceRouter.get('/types/:type_id', (req, res) => ServiceController.getDetailType(req, res));
 
 module.exports = serviceRouter;
