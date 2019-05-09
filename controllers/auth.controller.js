@@ -20,6 +20,10 @@ class AuthController extends Controller{
         let emailRegex = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
         let type = value.match(emailRegex) ? 'email' : 'phone';
         const account = await AccountModel.findOne( {where: { [type]: value } });
+        let isAdmin = false;
+        if(account.role == 0b100){
+            isAdmin = true;
+        }
         const token = JWTService.generateTokenByUser(account);
         // Process
         const activeToken = await ActiveTokenModel.findOne({where: {account_id: account.id}});
@@ -29,6 +33,7 @@ class AuthController extends Controller{
 
         const res_return = {
             token: token,
+            isAdmin,
             id: account.id
         }
 
