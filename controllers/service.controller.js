@@ -159,7 +159,6 @@ class ServiceController extends Controller {
             },
             include: [
                 {
-                    attributes: ['id', 'province', 'district', 'ward'],
                     required: false,
                     model: AddressModel
                 }
