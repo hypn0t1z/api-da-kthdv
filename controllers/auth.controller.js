@@ -37,7 +37,7 @@ class AuthController extends Controller{
             id: account.id
         }
 
-        return this.sendResponseMessage(res, 200, "Login sucess, here is token!!", res_return)
+        return this.sendResponseMessage(res, 200, "Đăng nhập thành công !", res_return)
     }
 
     /**

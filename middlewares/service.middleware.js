@@ -8,7 +8,7 @@ class ServiceMiddleware extends Middleware {
         const {serviceDt} = req.body;
         let provider = await ProviderModel.findOne({ where: { account_id: req.user.id } });
         if(!provider){
-            return this.sendResponseMessage(res, 404, 'This account is not provider')
+            return this.sendResponseMessage(res, 404, 'Tài khoản này không phải nhà cung cấp dịch vụ')
         }
         const message = FieldsMiddleware.simpleCheckRequired(
             { price_min: serviceDt.price_min, price_max: serviceDt.price_max, service_type_id: serviceDt.service_type_id },
@@ -35,10 +35,10 @@ class ServiceMiddleware extends Middleware {
         let service = await ServiceModel.findOne({ where: { id } });
         let provider = await ProviderModel.findOne({ where: { account_id: req.user.id } });
         if(!provider){
-            return this.sendResponseMessage(res, 404, 'This account is not provider')
+            return this.sendResponseMessage(res, 404, 'Tài khoản này không phải nhà cung cấp dịch vụ')
         }
         if(!service){
-            return this.sendResponseMessage(res, 404, "Service not found"); 
+            return this.sendResponseMessage(res, 404, "Không tìm thấy dịch vụ"); 
         }
         const message = FieldsMiddleware.simpleCheckRequired(
             { price_min: serviceDt.price_min, price_max: serviceDt.price_max, service_type_id: serviceDt.service_type_id },

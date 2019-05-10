@@ -15,7 +15,7 @@ class UserMiddleware extends Middleware {
         const {id} = req.params;
         const user = await AccountModel.findOne({where: {id}})
         if (!user)
-            return this.sendResponseMessage(res, 404, "user with this this id not found!")
+            return this.sendResponseMessage(res, 404, "Không tìm thấy thông tin tài khoản!")
 
         next()
     }
@@ -134,7 +134,7 @@ class UserMiddleware extends Middleware {
 
         const account = await AccountModel.findOne({where: {id}})
         if (!account)
-            return this.sendResponseMessage(res, 404, `account with id = ${id} not found`)
+            return this.sendResponseMessage(res, 404, `Không tìm thấy tài khoản ${id}`)
         next()
     }
 
@@ -185,7 +185,7 @@ class UserMiddleware extends Middleware {
         const profile = await ProfileModel.findOne({where: {account_id: id}})
 
         if (!profile)
-            return this.sendResponseMessage(res, 400, "This account not have profile!");
+            return this.sendResponseMessage(res, 400, "Tài khoản này chưa có profile !");
 
         const message = FieldsMiddleware.simpleCheckRequired(
             {full_name, province, district, ward, address_more, birthday},
@@ -233,20 +233,18 @@ class UserMiddleware extends Middleware {
     }
 
     static async isProvider(user_id, req, res) {
-        console.log(`check is provider with id ${user_id}`)
         const user = await AccountModel.findOne({where: {id: user_id}})
         if (!user)
-            return this.sendResponseMessage(res, 404, `user with id ${user_id} not found`)
+            return this.sendResponseMessage(res, 404, `Không tìm thấy người dùng ${user_id}`)
 
-        console.log(`user role is ${user.role}`)
         if ((user.role & 0b010) === 0) {
             //this is not provider,
-            return this.sendResponseMessage(res, 400, `user with id ${user_id} was not provider`)
+            return this.sendResponseMessage(res, 400, `Người dùng ${user_id} không phải là nhà cung cấp`)
         }
 
         const provider = await ProviderModel.findOne({where: {account_id: user_id}})
         if (!provider)
-            return this.sendResponseMessage(res, 400, 'provider info was not set, please setup it')
+            return this.sendResponseMessage(res, 400, 'Thông tin nhà cung cấp chưa được tạo, vui lòng tạo thông tin')
 
     }
 

@@ -14,7 +14,7 @@ class AddressController extends Controller {
      */
     static async getAllAddress(req, res) {
        let addresses = await ProvinceModel.findAll({ include: { model: DistrictModel, include: [WardModel] } });
-       return this.sendResponseMessage(res, 200, "get all addresses success", addresses)
+       return this.sendResponseMessage(res, 200, "Lấy địa chỉ thành công", addresses)
     }
 
     /**
@@ -26,7 +26,7 @@ class AddressController extends Controller {
     static async getDetailAddress(req, res) {
         const { address } = req.params;
         let result = await CommonService.getAddress(address);
-        return this.sendResponseMessage(res, 200, "get detail address success", result)
+        return this.sendResponseMessage(res, 200, "Lấy chi tiết địa chỉ thành công", result)
     }
 
     /**

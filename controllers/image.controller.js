@@ -12,7 +12,7 @@ class ImageController extends Controller{
         const { path } = req.query;
         if(path){
             const data  = {value: `${url}/${path}`}
-            return this.sendResponseMessage(res, 200, "get image sucess", data)
+            return this.sendResponseMessage(res, 200, "Lấy ảnh thành công", data)
         }
     }
 
@@ -25,7 +25,7 @@ class ImageController extends Controller{
         const { base64String } = req.body;
         let image = CommonService.uploadImage(base64String);
         const data = {image: image};
-        return this.sendResponseMessage(res, 200, "upload image success", data);
+        return this.sendResponseMessage(res, 200, "Tải ảnh lên thành công", data);
     }
 
     static async encodeBase64(req, res) {

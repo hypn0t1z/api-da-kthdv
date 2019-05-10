@@ -20,9 +20,9 @@ class ServiceController extends Controller {
         let services = {};
         if(check_service && Object.keys(check_service).length){
             services = await ServiceModel.findAll({ where: { provider_id: id }, include: [ServiceTypeModel]});
-            return this.sendResponseMessage(res, 200, "Get services success", services)
+            return this.sendResponseMessage(res, 200, "Lấy danh sách dịch vụ thành công", services)
         }
-        return this.sendResponseMessage(res, 200, "Not found service");
+        return this.sendResponseMessage(res, 200, "Không tìm thấy dịch vụ");
     }
 
     /**
@@ -50,7 +50,7 @@ class ServiceController extends Controller {
             service: serviceDt,
             service_types
         }
-        return this.sendResponseMessage(res, 200, "Get create service success", data);
+        return this.sendResponseMessage(res, 200, "Lấy thông tin tạo dịch vụ thành công", data);
     }
 
     /**
@@ -70,7 +70,7 @@ class ServiceController extends Controller {
             price_max: serviceDt.price_max,
             service_type_id: serviceDt.service_type_id
         })
-        return this.sendResponseMessage(res, 200, "Create service success");
+        return this.sendResponseMessage(res, 200, "Tạo mới dịch vụ thành công");
     }
 
     /**
@@ -90,13 +90,13 @@ class ServiceController extends Controller {
                 service_type_id: serviceDt.service_type_id
             }
         }else{
-            return this.sendResponseMessage(res, 404, "Service not found"); 
+            return this.sendResponseMessage(res, 404, "Không tìm thấy dịch vụ"); 
         }
         let data = {
             serviceDt,
             service_types
         }
-        return this.sendResponseMessage(res, 200, "Get edit info service success", data);
+        return this.sendResponseMessage(res, 200, "Lấy thông tin chỉnh sửa dịch vụ thành công", data);
     }
 
     /**
@@ -113,7 +113,7 @@ class ServiceController extends Controller {
             price_max: serviceDt.price_max,
             service_type_id: serviceDt.service_type_id
         })
-        return this.sendResponseMessage(res, 200, "Update service success", data );
+        return this.sendResponseMessage(res, 200, "Cập nhật thông tin dịch vụ thành công", data );
     }
 
     /**
@@ -126,12 +126,12 @@ class ServiceController extends Controller {
         const { id } = req.params; // service_id
         let service = await ServiceModel.findOne({ where: { id } });
         if(!service){
-            return this.sendResponseMessage(res, 404, "Service not found");
+            return this.sendResponseMessage(res, 404, "Không tìm thấy dịch vụ");
         }
         let { provider_id } = service;
         await service.destroy();
         let services = await ServiceModel.findAll({ where: { provider_id } });
-        return this.sendResponseMessage(res, 200, "Delete service success", services);
+        return this.sendResponseMessage(res, 200, "Xoá dịch vụ thành công", services);
     }
 
     /**

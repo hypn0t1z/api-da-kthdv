@@ -59,7 +59,7 @@ class UserController extends Controller {
         const {phone} = req.params;
         const user = await AccountModel.findOne({where: {phone}});
         if (user) {
-            return this.sendResponseMessage(res, 200, "user exist!")
+            return this.sendResponseMessage(res, 200, "Người dùng này đã tồn tại!")
         } else
             return this.sendResponseMessage(res, 404, "user not exist!")
     }
@@ -132,7 +132,7 @@ class UserController extends Controller {
 
         //check is provider
         if ((user.role & 0b010) === 0)
-            return this.sendResponseMessage(res, 400, 'This account is not provider')
+            return this.sendResponseMessage(res, 400, 'Tài khoản này không phải là nhà cung cấp')
 
         const provider = await ProviderModel.findOne({where: {account_id: id}, include: [AddressModel]});
         let data = {
@@ -152,7 +152,7 @@ class UserController extends Controller {
         }
         const images = await ImageModel.findAll({where: {provider_id: id}});
         data.images = images;
-        return this.sendResponseMessage(res, 200, "Get provider success", data)
+        return this.sendResponseMessage(res, 200, "Lấy thông tin nhà cung cấp dịch vụ thành công", data)
     }
 
     /**
@@ -326,7 +326,7 @@ class UserController extends Controller {
             role: account.role,
             profle: account.profile
         }
-        return this.sendResponseMessage(res, 200, "Get account success", data)
+        return this.sendResponseMessage(res, 200, "Lấy thông tin tài khoản thành công", data)
     }
 
     /**
@@ -401,7 +401,7 @@ class UserController extends Controller {
         const {id} = req.params; // account_id
         let profile = await ProfileModel.findOne({where: {account_id: id}, include: [AddressModel]});
         if (profile) {
-            return this.sendResponseMessage(res, 200, 'Profile Existed', profile)
+            return this.sendResponseMessage(res, 200, 'Profile đã tồn tại', profile)
         }
         return this.sendResponseMessage(res, 404, 'Bạn chưa có thông tin cá nhân. Vui lòng tạo thông tin và thử lại')
     }
@@ -417,12 +417,12 @@ class UserController extends Controller {
 
         const profile = await ProfileModel.findOne({where: {account_id: id}, include: [AddressModel]})
         if (!profile)
-            return this.sendResponseMessage(res, 404, "profile with this id not found", {});
+            return this.sendResponseMessage(res, 404, "Không tìm thấy profile", {});
 
         if (!profile.full_name || !profile.birthday || !profile.address_id)
-            return this.sendResponseMessage(res, 404, "profile not complete", profile)
+            return this.sendResponseMessage(res, 404, "Thông tin profile chưa đầy đủ", profile)
 
-        return this.sendResponseMessage(res, 200, "get profile success", profile)
+        return this.sendResponseMessage(res, 200, "Lấy thông tin profile thành công", profile)
     }
 
     /**
@@ -435,7 +435,7 @@ class UserController extends Controller {
         const {province, district, ward, address_more, birthday, avatar, full_name} = req.body;
         let profile = await ProfileModel.findOne({where: {account_id: id}});
         if (profile) {
-            return this.sendResponseMessage(res, 400, "Profile is existed");
+            return this.sendResponseMessage(res, 400, "Profile đã tồn tại");
         }
         let image = avatar ? await CommonService.uploadImage(avatar) : '';
         let address = await AddressModel.create({
@@ -494,7 +494,7 @@ class UserController extends Controller {
     static async getProviderServices(req, res) {
         const {id} = req.params;
         let services = await ServiceModel.findAll({where: {provider_id: id}, include: [ServiceTypeModel]});
-        return this.sendResponseMessage(res, 200, "Get services success", services)
+        return this.sendResponseMessage(res, 200, "Lấy danh sách các dịch vụ thành công", services)
     }
 
     static async createProviderService(req, res) {
@@ -507,7 +507,7 @@ class UserController extends Controller {
             service_type_id: service_type_id,
             description: description
         })
-        return this.sendResponseMessage(res, 200, "Create service success");
+        return this.sendResponseMessage(res, 200, "Tạo mới dịch vụ thành công");
     }
 
     static async updateService(req, res) {
@@ -524,7 +524,7 @@ class UserController extends Controller {
             description: description
 
         })
-        return this.sendResponseMessage(res, 200, "Update service success", data );
+        return this.sendResponseMessage(res, 200, "Cập nhật dịch vụ thành công", data );
     }
 
     static async deleteService(req, res) {
@@ -533,7 +533,7 @@ class UserController extends Controller {
         let service = await ServiceModel.findOne({ where: { id: service_id } });
         await service.destroy();
         let services = await ServiceModel.findAll({ where: { provider_id: id } });
-        return this.sendResponseMessage(res, 200, "Delete service success", services);
+        return this.sendResponseMessage(res, 200, "Xoá dịch vụ thành công", services);
     }
 
     static async getProviderServicesWithId(req, res) {
@@ -545,7 +545,7 @@ class UserController extends Controller {
             },
             include: [ServiceTypeModel]
         });
-        return this.sendResponseMessage(res, 200, "Get services success", service)
+        return this.sendResponseMessage(res, 200, "Lấy thông tin dịch vụ thành công", service)
     }
 
     /**
