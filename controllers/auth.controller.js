@@ -165,7 +165,8 @@ class AuthController extends Controller{
      */
     static async forgotPassword(req, res) {
         // Init
-        const {email, url, password, token} = req.body;
+        const url = "https://fixcar.netlify.com";
+        const {email, password, token} = req.body;
         const {USER_PASSWORD_SALT_ROUNDS: saltRounds = 10} = process.env;
 
         if (!token) {
@@ -200,7 +201,7 @@ class AuthController extends Controller{
                 return this.sendResponseMessage(res, 404, 'Đường dẫn không tìm thấy, hoặc hết hạn')
             }
             if (!password) {
-                return this.sendResponseMessage(res, 400, "mat khau khong duoc de trong")
+                return this.sendResponseMessage(res, 400, "Mật khẩu không đươc để trống")
             } else {
                 const passwordHash = await bcrypt.hash(password, +saltRounds);
                 user.update({
