@@ -49,7 +49,7 @@ class MailService {
         }
         if(template.type == 'forgot password'){
             mail_template = `
-                <h1>Hello `+ template.data.username ` </h1>
+                <h1>Hello `+ template.data.username +` </h1>
                 <p>You have requested new password from our website.</p>
                 <p>Please click <a style="color: red;" href="https://`+ template.data.url +`/forgot-password/`+ template.data.forgot_token +`">HERE</a> to confirm!</p>
             `
