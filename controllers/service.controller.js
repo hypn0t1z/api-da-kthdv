@@ -29,11 +29,9 @@ class ServiceController extends Controller {
      * Get list Service Types
      */
     static async getListServiceType(req, res) {
-        let where = {};
-        let resource = { model: ServiceTypeModel, req, where };
-        let data = await CommonService.paginate(resource);
-        let total = await ServiceTypeModel.count({ where });
-        return this.sendResponseMessage(res, 200, 'Đã tìm thấy ' + total+ ' kết quả', data)
+        let types = await ServiceTypeModel.findAll();
+        let total = types.length;
+        return this.sendResponseMessage(res, 200, 'Đã tìm thấy ' + total+ ' kết quả', types)
     }
 
     /**
