@@ -6,6 +6,7 @@ const ServiceModel = require('../database/models/08-service.model');
 const ServiceTypeModel = require('../database/models/07-service-type.model');
 const ImageModel = require('../database/models/10-images-service.model');
 const RateModel = require('../database/models/11-rate.model');
+const ActiveTokenModel = require('../database/models/active-token.model');
 const CommonService = require('../services/common.service');
 const {sequelize, Sequelize} = require('sequelize');
 const Controller = require('./controller');
@@ -344,10 +345,17 @@ class UserController extends Controller {
             if (check_account.role == 0b100) {
                 return this.sendResponseMessage(res, 401, 'Không thể chặn tài khoản Admin');
             } else {
+                let active_token = await ActiveTokenModel.findOne({ where: { account_id: id } });
+                if(active_token){
+                    await active_token.update({
+                        token: null
+                    })
+                }
                 await check_account.update({
                     status: 'Banned',
                     //role: 0b000,
-                })
+                });
+                
             }
         } else {
             return this.sendResponseMessage(res, 404, 'Tài khoản đã bị chặn hoặc không tồn tại');
