@@ -20,6 +20,10 @@ class AuthController extends Controller{
         let emailRegex = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
         let type = value.match(emailRegex) ? 'email' : 'phone';
         const account = await AccountModel.findOne( {where: { [type]: value } });
+        let isAdmin = false;
+        if(account.role == 0b100){
+            isAdmin = true;
+        }
         const token = JWTService.generateTokenByUser(account);
         // Process
         const activeToken = await ActiveTokenModel.findOne({where: {account_id: account.id}});
@@ -29,10 +33,11 @@ class AuthController extends Controller{
 
         const res_return = {
             token: token,
+            isAdmin,
             id: account.id
         }
 
-        return this.sendResponseMessage(res, 200, "Login sucess, here is token!!", res_return)
+        return this.sendResponseMessage(res, 200, "Đăng nhập thành công !", res_return)
     }
 
     /**
@@ -149,8 +154,8 @@ class AuthController extends Controller{
                 status: 'Active',
                 mail_token: null,
             });
-
-            return this.sendResponseMessage(res, 200, "confirm success, this is token", {token: token})
+            res.send('Đăng kí thành công, trở lại trang đăng nhập để đăng nhập');
+            //return this.sendResponseMessage(res, 200, "Đăng kí thành công, trở lại trang đăng nhập để đăng nhập")
         }
     }
 
@@ -160,7 +165,8 @@ class AuthController extends Controller{
      */
     static async forgotPassword(req, res) {
         // Init
-        const {email, url, password, token} = req.body;
+        const url = "fixcar.netlify.com";
+        const {email, password, token} = req.body;
         const {USER_PASSWORD_SALT_ROUNDS: saltRounds = 10} = process.env;
 
         if (!token) {
@@ -181,7 +187,7 @@ class AuthController extends Controller{
             }
             const template = {
                 data: {
-                    username: user.username,
+                    username: user.email,
                     url,
                     forgot_token,
                 },
@@ -195,7 +201,7 @@ class AuthController extends Controller{
                 return this.sendResponseMessage(res, 404, 'Đường dẫn không tìm thấy, hoặc hết hạn')
             }
             if (!password) {
-                return this.sendResponseMessage(res, 400, "mat khau khong duoc de trong")
+                return this.sendResponseMessage(res, 400, "Mật khẩu không đươc để trống")
             } else {
                 const passwordHash = await bcrypt.hash(password, +saltRounds);
                 user.update({

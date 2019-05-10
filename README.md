@@ -93,9 +93,9 @@ body: {
     }
 
 ## Find nearby Providers
-get: /:id/provider/find-nearby
+get: api/find-nearby
 params: mylat, mylon, dist( option, default = 10 );
-ex: /:id/provider/find-nearby?mylat=121.44&mylon=37.79
+ex: /api/find-nearby?mylat=121.44&mylon=37.79
 
 ## Delete Provider
 delete: /:account_id/delete-provider
@@ -136,4 +136,31 @@ body:{
         "birthday": "1996-10-17",
     }
 
-## Get Image
+## Get Providers by Service Types
+get: /api/service/types
+param: typeIds (array)
+body:   {
+	        "typeIds": [1,2,3,4,5]
+        }
+
+## Get rate by rate_id
+get: /api/user/:id/rate/:rate_id
+
+## Get rates by provider_id
+get : /:id/rate/provider/:provider_id
+
+## create rate by provider_id
+post: /:id/rate/create/:provider_id
+
+body: {
+    star_number (required): 1,
+    comment (option): "xxx" 
+}
+
+## Update rate by rate_id
+patch: /:id/rate/update/:rate_id
+
+body: {
+    star_number (option): 1,
+    comment (option): "xxx" 
+}

@@ -29,7 +29,6 @@ class JWTService {
         }
 
         const { id, email, account_type, role } = accountModel;
-
         return jwt.sign(
             { id, email, account_type, role },
             secretOrKey,

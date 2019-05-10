@@ -1,8 +1,11 @@
 const Controller = require('./controller');
 const ServiceModel = require('../database/models/08-service.model');
 const ProviderModel = require('../database/models/21-provider.model');
+const AddressModel = require('../database/models/02-address.model');
 const ServiceTypeModel = require('../database/models/07-service-type.model');
 const CommonService = require('../services/common.service');
+const {sequelize, Sequelize} = require('sequelize');
+const Op = Sequelize.Op;
 
 class ServiceController extends Controller {
 
@@ -17,20 +20,18 @@ class ServiceController extends Controller {
         let services = {};
         if(check_service && Object.keys(check_service).length){
             services = await ServiceModel.findAll({ where: { provider_id: id }, include: [ServiceTypeModel]});
-            return this.sendResponseMessage(res, 200, "Get services success", services)
+            return this.sendResponseMessage(res, 200, "Lấy danh sách dịch vụ thành công", services)
         }
-        return this.sendResponseMessage(res, 200, "Not found service");
+        return this.sendResponseMessage(res, 200, "Không tìm thấy dịch vụ");
     }
 
     /**
      * Get list Service Types
      */
     static async getListServiceType(req, res) {
-        let where = {};
-        let resource = { model: ServiceTypeModel, req, where };
-        let data = await CommonService.paginate(resource);
-        let total = await ServiceTypeModel.count({ where });
-        return this.sendResponseMessage(res, 200, 'Đã tìm thấy ' + total+ ' kết quả', data)
+        let types = await ServiceTypeModel.findAll();
+        let total = types.length;
+        return this.sendResponseMessage(res, 200, 'Đã tìm thấy ' + total+ ' kết quả', types)
     }
 
     /**
@@ -49,7 +50,7 @@ class ServiceController extends Controller {
             service: serviceDt,
             service_types
         }
-        return this.sendResponseMessage(res, 200, "Get create service success", data);
+        return this.sendResponseMessage(res, 200, "Lấy thông tin tạo dịch vụ thành công", data);
     }
 
     /**
@@ -69,7 +70,7 @@ class ServiceController extends Controller {
             price_max: serviceDt.price_max,
             service_type_id: serviceDt.service_type_id
         })
-        return this.sendResponseMessage(res, 200, "Create service success");
+        return this.sendResponseMessage(res, 200, "Tạo mới dịch vụ thành công");
     }
 
     /**
@@ -89,13 +90,13 @@ class ServiceController extends Controller {
                 service_type_id: serviceDt.service_type_id
             }
         }else{
-            return this.sendResponseMessage(res, 404, "Service not found"); 
+            return this.sendResponseMessage(res, 404, "Không tìm thấy dịch vụ"); 
         }
         let data = {
             serviceDt,
             service_types
         }
-        return this.sendResponseMessage(res, 200, "Get edit info service success", data);
+        return this.sendResponseMessage(res, 200, "Lấy thông tin chỉnh sửa dịch vụ thành công", data);
     }
 
     /**
@@ -112,7 +113,7 @@ class ServiceController extends Controller {
             price_max: serviceDt.price_max,
             service_type_id: serviceDt.service_type_id
         })
-        return this.sendResponseMessage(res, 200, "Update service success", data );
+        return this.sendResponseMessage(res, 200, "Cập nhật thông tin dịch vụ thành công", data );
     }
 
     /**
@@ -125,12 +126,73 @@ class ServiceController extends Controller {
         const { id } = req.params; // service_id
         let service = await ServiceModel.findOne({ where: { id } });
         if(!service){
-            return this.sendResponseMessage(res, 404, "Service not found");
+            return this.sendResponseMessage(res, 404, "Không tìm thấy dịch vụ");
         }
         let { provider_id } = service;
         await service.destroy();
         let services = await ServiceModel.findAll({ where: { provider_id } });
-        return this.sendResponseMessage(res, 200, "Delete service success", services);
+        return this.sendResponseMessage(res, 200, "Xoá dịch vụ thành công", services);
+    }
+
+    /**
+     * Get providers by a service type array
+     */
+    static async getProviderByType(req, res){
+        let { typeIds, mylat = 0,  mylon = 0, dist = 10 } = req.body;
+        mylat = parseFloat(mylat);
+        mylon = parseFloat(mylon);
+        dist = parseFloat(dist);
+        let lon1 = mylon-dist/Math.abs(Math.cos(mylat)*69);
+        let lon2 = mylon+dist/Math.abs(Math.cos(mylat)*69);
+        let lat1 = mylat-(dist/69);
+        let lat2 = mylat+(dist/69);
+        const providers = await ProviderModel.findAll({
+            where: {
+                status: 'ON',
+                latitude: {
+                    [Op.between]: [lat1, lat2]
+                },
+                longtitude: {
+                    [Op.between]: [lon1, lon2]
+                }
+            },
+            include: [
+                {
+                    required: false,
+                    model: AddressModel
+                }
+            ]
+        });
+        let data = [];
+        for(let i in providers){
+            const services = await ServiceModel.findAll({ 
+                where: {
+                    provider_id: providers[i].account_id,
+                    service_type_id: {
+                        [Op.in]: typeIds
+                    }  
+                }
+            });
+            if(services.length > 0){
+                let found_service = [];
+                for(let service of services){
+                    found_service.push(service.id);
+                }
+                data.push({
+                    account_id: providers[i].account_id,
+                    address_id: providers[i].address_id,
+                    name: providers[i].name,
+                    open_time: providers[i].open_time,
+                    close_time: providers[i].close_time,
+                    longtitude: providers[i].longtitude,
+                    latitude: providers[i].latitude,
+                    phone: providers[i].phone,
+                    address: providers[i].address,
+                    found_service
+                })
+            }
+        }
+        return this.sendResponseMessage(res, 200, `Đã tìm thấy ${data.length} nhà cung cấp`, data);
     }
 }
 module.exports = ServiceController

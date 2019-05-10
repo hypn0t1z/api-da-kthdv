@@ -5,6 +5,8 @@ const ProviderModel = require('../database/models/21-provider.model');
 const ServiceModel = require('../database/models/08-service.model');
 const ServiceTypeModel = require('../database/models/07-service-type.model');
 const ImageModel = require('../database/models/10-images-service.model');
+const RateModel = require('../database/models/11-rate.model');
+const ActiveTokenModel = require('../database/models/active-token.model');
 const CommonService = require('../services/common.service');
 const {sequelize, Sequelize} = require('sequelize');
 const Controller = require('./controller');
@@ -37,18 +39,12 @@ class UserController extends Controller {
                             [Op.like]: '%' + key_words + '%'
                         }
                     },
+                   
                 ],
             };
-            include = [
-                {
-                    model: ProfileModel,
-                    required: false,
-                }
-            ];
-        } else {
-            include = [{model: ProfileModel, required: false}];
-        }
-        let resource = {model: AccountModel, req, where, include};
+        } 
+        include = [{model: ProfileModel, required: false, include: [AddressModel]}];
+        let resource = {model: AccountModel, where, req, include};
         let data = await CommonService.paginate(resource);
         let total = await AccountModel.count({where, include});
         return this.sendResponseMessage(res, 200, 'Đã tìm thấy ' + total + ' kết quả', data)
@@ -63,7 +59,7 @@ class UserController extends Controller {
         const {phone} = req.params;
         const user = await AccountModel.findOne({where: {phone}});
         if (user) {
-            return this.sendResponseMessage(res, 200, "user exist!")
+            return this.sendResponseMessage(res, 200, "Người dùng này đã tồn tại!")
         } else
             return this.sendResponseMessage(res, 404, "user not exist!")
     }
@@ -136,7 +132,7 @@ class UserController extends Controller {
 
         //check is provider
         if ((user.role & 0b010) === 0)
-            return this.sendResponseMessage(res, 400, 'This account is not provider')
+            return this.sendResponseMessage(res, 400, 'Tài khoản này không phải là nhà cung cấp')
 
         const provider = await ProviderModel.findOne({where: {account_id: id}, include: [AddressModel]});
         let data = {
@@ -156,7 +152,7 @@ class UserController extends Controller {
         }
         const images = await ImageModel.findAll({where: {provider_id: id}});
         data.images = images;
-        return this.sendResponseMessage(res, 200, "Get provider success", data)
+        return this.sendResponseMessage(res, 200, "Lấy thông tin nhà cung cấp dịch vụ thành công", data)
     }
 
     /**
@@ -283,12 +279,12 @@ class UserController extends Controller {
      * @param {*} res
      */
     static async deleteProvider(req, res) {
-        /* const {id} = req.params; // account_id
+        const {id} = req.params; // account_id
         const account = await AccountModel.findOne({ where: { id , status: 'Active' } });
         if(!account){
             return this.sendResponseMessage(res, 404, "Tài khoản này không tồn tại hoặc chưa xác nhận email");
         }
-        if ((account.role === 0b100) || (account.role === 0b010)){
+        if ((account.role == 0b100) || (account.role == 0b010)){
             const provider = await ProviderModel.findOne({ where: { account_id: id } });
             if(!provider){
                 return this.sendResponseMessage(res, 404, "Không tìm thấy nhà cung cấp");
@@ -300,7 +296,7 @@ class UserController extends Controller {
         }
         else{
             return this.sendResponseMessage(res, 401, 'Không được phép')
-        } */
+        }
     }
 
     static async changeStatusProvider(req, res) {
@@ -311,34 +307,6 @@ class UserController extends Controller {
             status: statusUC
         });
         return this.sendResponseMessage(res, 200, 'Cập nhật trạng thái thành công');
-    }
-
-    /**
-     * Find Nearby Car repair locations
-     */
-    static async findNearby(req, res){
-        let { mylat = 0, mylon = 0, dist = 10 } = req.query; 
-        mylat = parseFloat(mylat);
-        mylon = parseFloat(mylon);
-        dist = parseFloat(dist);
-        let lon1 = mylon-dist/Math.abs(Math.cos(mylat)*69);
-        let lon2 = mylon+dist/Math.abs(Math.cos(mylat)*69);
-        let lat1 = mylat-(dist/69);
-        let lat2 = mylat+(dist/69);
-        let data = [];
-        const providers = await ProviderModel.findAll({ where: { status: 'ON' }, include: [ServiceModel]});
-        for( let provider of providers){
-            let longtitude = provider.longtitude;
-            let latitude = provider.latitude;
-            if(((longtitude >= lon1 && longtitude <= lon2) || (longtitude >= lon2 && longtitude <= lon1)) && ((latitude >= lat1 && latitude <= lat2) || (latitude >= lat2 && latitude <= lat1)) ){
-                let distance = 3956 * 2 * Math.asin( Math.sqrt( Math.pow( Math.sin((mylat - provider.latitude) * Math.PI/180 / 2), 2) + Math.cos(mylat *  Math.PI/180) * Math.cos(provider.latitude *  Math.PI/180) * Math.pow( Math.sin((mylon - provider.longtitude) *  Math.PI/180 / 2), 2) ));   
-                if(distance < dist){
-                    data.push(provider);
-                }
-            }
-        }
-        return this.sendResponseMessage(res, 200, `Đã tìm thấy ${data.length} địa điểm`, data);
-    
     }
 
     /**
@@ -358,7 +326,7 @@ class UserController extends Controller {
             role: account.role,
             profle: account.profile
         }
-        return this.sendResponseMessage(res, 200, "Get account success", data)
+        return this.sendResponseMessage(res, 200, "Lấy thông tin tài khoản thành công", data)
     }
 
     /**
@@ -368,24 +336,60 @@ class UserController extends Controller {
      */
     static async blockAccount(req, res) {
         const {id} = req.params;
-        let user = req.user;
+        let user = await AccountModel.findOne({where: {id: req.user.id, status: 'Active'}});
         if ((user.role & 0b100) === 0) {
             return this.sendResponseMessage(res, 401, 'Không được phép')
         }
         let check_account = await AccountModel.findOne({where: {id, status: 'Active'}});
         if (check_account) {
             if (check_account.role == 0b100) {
-                return this.sendResponseMessage(res, 401, 'Không thể xoá tài khoản Admin');
+                return this.sendResponseMessage(res, 401, 'Không thể chặn tài khoản Admin');
             } else {
+                let active_token = await ActiveTokenModel.findOne({ where: { account_id: id } });
+                if(active_token){
+                    await active_token.update({
+                        token: null
+                    })
+                }
+                let isProvider = await ProviderModel.findOne({ where: { account_id: id }});
+                if(isProvider){
+                    await isProvider.update({
+                        status: 'OFF'
+                    })
+                }
                 await check_account.update({
                     status: 'Banned',
-                    role: 0b000,
-                })
+                    //role: 0b000,
+                });
+                
             }
         } else {
             return this.sendResponseMessage(res, 404, 'Tài khoản đã bị chặn hoặc không tồn tại');
         }
         return this.sendResponseMessage(res, 200, 'Chặn thành công', check_account);
+    }
+
+    /**
+     * Unblock account  /api/user/unblock/:id
+     * @param {id}
+     * @author Hung Dang
+     */
+    static async unblockAccount(req, res) {
+        const {id} = req.params;
+        let user = await AccountModel.findOne({where: {id: req.user.id, status: 'Active'}});
+        if ((user.role & 0b100) === 0) {
+            return this.sendResponseMessage(res, 401, 'Không được phép')
+        }
+        let check_account = await AccountModel.findOne({where: {id, status: 'Banned'}});
+        if (check_account) {
+            await check_account.update({
+                status: 'Active',
+                //role: 0b000,
+            })
+        } else {
+            return this.sendResponseMessage(res, 404, 'Tài khoản đang hoạt động hoặc không tồn tại');
+        }
+        return this.sendResponseMessage(res, 200,'Mở chặn thành công', check_account);
     }
 
     /**
@@ -397,7 +401,7 @@ class UserController extends Controller {
         const {id} = req.params; // account_id
         let profile = await ProfileModel.findOne({where: {account_id: id}, include: [AddressModel]});
         if (profile) {
-            return this.sendResponseMessage(res, 200, 'Profile Existed', profile)
+            return this.sendResponseMessage(res, 200, 'Profile đã tồn tại', profile)
         }
         return this.sendResponseMessage(res, 404, 'Bạn chưa có thông tin cá nhân. Vui lòng tạo thông tin và thử lại')
     }
@@ -413,12 +417,12 @@ class UserController extends Controller {
 
         const profile = await ProfileModel.findOne({where: {account_id: id}, include: [AddressModel]})
         if (!profile)
-            return this.sendResponseMessage(res, 404, "profile with this id not found", {});
+            return this.sendResponseMessage(res, 404, "Không tìm thấy profile", {});
 
         if (!profile.full_name || !profile.birthday || !profile.address_id)
-            return this.sendResponseMessage(res, 404, "profile not complete", profile)
+            return this.sendResponseMessage(res, 404, "Thông tin profile chưa đầy đủ", profile)
 
-        return this.sendResponseMessage(res, 200, "get profile success", profile)
+        return this.sendResponseMessage(res, 200, "Lấy thông tin profile thành công", profile)
     }
 
     /**
@@ -431,7 +435,7 @@ class UserController extends Controller {
         const {province, district, ward, address_more, birthday, avatar, full_name} = req.body;
         let profile = await ProfileModel.findOne({where: {account_id: id}});
         if (profile) {
-            return this.sendResponseMessage(res, 400, "Profile is existed");
+            return this.sendResponseMessage(res, 400, "Profile đã tồn tại");
         }
         let image = avatar ? await CommonService.uploadImage(avatar) : '';
         let address = await AddressModel.create({
@@ -490,7 +494,7 @@ class UserController extends Controller {
     static async getProviderServices(req, res) {
         const {id} = req.params;
         let services = await ServiceModel.findAll({where: {provider_id: id}, include: [ServiceTypeModel]});
-        return this.sendResponseMessage(res, 200, "Get services success", services)
+        return this.sendResponseMessage(res, 200, "Lấy danh sách các dịch vụ thành công", services)
     }
 
     static async createProviderService(req, res) {
@@ -503,7 +507,7 @@ class UserController extends Controller {
             service_type_id: service_type_id,
             description: description
         })
-        return this.sendResponseMessage(res, 200, "Create service success");
+        return this.sendResponseMessage(res, 200, "Tạo mới dịch vụ thành công");
     }
 
     static async updateService(req, res) {
@@ -520,7 +524,7 @@ class UserController extends Controller {
             description: description
 
         })
-        return this.sendResponseMessage(res, 200, "Update service success", data );
+        return this.sendResponseMessage(res, 200, "Cập nhật dịch vụ thành công", data );
     }
 
     static async deleteService(req, res) {
@@ -529,7 +533,7 @@ class UserController extends Controller {
         let service = await ServiceModel.findOne({ where: { id: service_id } });
         await service.destroy();
         let services = await ServiceModel.findAll({ where: { provider_id: id } });
-        return this.sendResponseMessage(res, 200, "Delete service success", services);
+        return this.sendResponseMessage(res, 200, "Xoá dịch vụ thành công", services);
     }
 
     static async getProviderServicesWithId(req, res) {
@@ -541,7 +545,68 @@ class UserController extends Controller {
             },
             include: [ServiceTypeModel]
         });
-        return this.sendResponseMessage(res, 200, "Get services success", service)
+        return this.sendResponseMessage(res, 200, "Lấy thông tin dịch vụ thành công", service)
+    }
+
+    /**
+     * Get Rate By rate_id
+     * @param { id, rate_id }
+     * @param {res}
+     * @return {object}
+     */
+    static async getRateById(req, res){
+        const {id, rate_id} = req.params;
+        const rate = await RateModel.findOne({ where: { id: rate_id, customer_id: id } });
+        return this.sendResponseMessage(res, 200, "Lấý thông tin đánh giá thành công", rate);
+    }
+
+    /**
+     * Get Rate By provider_id
+     * @param { id, rate_id }
+     * @param {res}
+     * @return {object}
+     */
+    static async getRateByProviderId(req, res){
+        const {id, provider_id} = req.params;
+        const rates = await RateModel.findAll({ 
+            where: { provider_id }, 
+            include: [
+                { 
+                    model: AccountModel,
+                    attributes: ['email'],
+                    required: false,
+                    include: [{
+                        model: ProfileModel,
+                        attributes: ['full_name', 'avatar'],
+                        required: false
+                    }]
+                }
+            ] 
+        });
+        return this.sendResponseMessage(res, 200, "Lấý thông tin đánh giá thành công", rates);
+    }
+
+    static async createRate(req, res){
+        const {id, provider_id} = req. params;
+        const { comment, star_number } = req.body;
+        let rate = await RateModel.create({
+            provider_id,
+            customer_id: id,
+            comment: comment ? comment : '',
+            star_number
+        });
+        return this.sendResponseMessage(res, 200, "Đánh giá thành công", rate);
+    }
+
+    static async updateRate(req, res){
+        const {rate_id} = req. params;
+        const { comment, star_number } = req.body;
+        let rate = await RateModel.findOne( { where: { id: rate_id } });
+        await rate.update({
+            comment: comment ? comment : rate.comment,
+            star_number: star_number ? star_number : rate.star_number
+        });
+        return this.sendResponseMessage(res, 200, "Cập nhật đánh giá thành công", rate);
     }
 }
 
