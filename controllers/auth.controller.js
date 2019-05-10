@@ -154,8 +154,8 @@ class AuthController extends Controller{
                 status: 'Active',
                 mail_token: null,
             });
-
-            return this.sendResponseMessage(res, 200, "confirm success, this is token", {token: token})
+            res.send('Đăng kí thành công, trở lại trang đăng nhập để đăng nhập');
+            //return this.sendResponseMessage(res, 200, "Đăng kí thành công, trở lại trang đăng nhập để đăng nhập")
         }
     }
 
