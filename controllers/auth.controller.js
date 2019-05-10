@@ -165,7 +165,7 @@ class AuthController extends Controller{
      */
     static async forgotPassword(req, res) {
         // Init
-        const url = "https://fixcar.netlify.com";
+        const url = "fixcar.netlify.com";
         const {email, password, token} = req.body;
         const {USER_PASSWORD_SALT_ROUNDS: saltRounds = 10} = process.env;
 
