@@ -187,7 +187,7 @@ class AuthController extends Controller{
             }
             const template = {
                 data: {
-                    username: user.username,
+                    username: user.email,
                     url,
                     forgot_token,
                 },
