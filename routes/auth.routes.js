@@ -12,7 +12,7 @@ authRouter.post('/before/register', (req, res, next) => AuthMiddleware.beforeReg
 authRouter.get('/confirm-register/:mail_token', (req, res, next) => AuthMiddleware.confirmRegister(req, res, next))
 authRouter.get('/is-token-still-alive/:token', (req, res, next) => AuthMiddleware.isTokenStillAlive(req, res, next))
 authRouter.post('/upload-avatar/', (req, res, next) => AuthMiddleware.uploadAvatar(req, res, next))
-authRouter.post('/forgot-pass/:token', (req, res, next) => AuthMiddleware.forgotPassword(req, res, next))
+authRouter.post('/forgot-pass', (req, res, next) => AuthMiddleware.forgotPassword(req, res, next))
 
 /**
  * Validate succes will process controller
@@ -23,7 +23,7 @@ authRouter.post('/register', (req, res) => AuthController.register(req, res));
 authRouter.post('/before/register', (req, res) => AuthController.beforeRegister(req, res));
 authRouter.post('/upload-avatar/', (req, res) => AuthController.uploadAvatar(req, res))
 authRouter.get('/is-token-still-alive/:token', (req, res) => AuthController.isTokenStillAlive(req, res))
-authRouter.post('/forgot-pass/:token', (req, res) => AuthController.forgotPassword(req, res))
+authRouter.post('/forgot-pass', (req, res) => AuthController.forgotPassword(req, res))
 
 
 /**
