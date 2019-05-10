@@ -351,6 +351,12 @@ class UserController extends Controller {
                         token: null
                     })
                 }
+                let isProvider = await ProviderModel.findOne({ where: { account_id: id }});
+                if(isProvider){
+                    await isProvider.update({
+                        status: 'OFF'
+                    })
+                }
                 await check_account.update({
                     status: 'Banned',
                     //role: 0b000,

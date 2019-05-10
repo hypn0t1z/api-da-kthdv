@@ -148,6 +148,7 @@ class ServiceController extends Controller {
         let lat2 = mylat+(dist/69);
         const providers = await ProviderModel.findAll({
             where: {
+                status: 'ON',
                 latitude: {
                     [Op.between]: [lat1, lat2]
                 },
